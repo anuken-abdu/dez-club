@@ -72,7 +72,7 @@
   "@type": "FAQPage",
   "mainEntity": [
     {"@type":"Question","name":"Безопасна ли обработка для детей и животных?","acceptedAnswer":{"@type":"Answer","text":"Да, мы используем сертифицированные препараты с минимальным классом опасности. После обработки достаточно проветрить помещение 2-3 часа. Дети и животные могут возвращаться без последствий."}},
-    {"@type":"Question","name":"Сколько стоит обработка квартиры от тараканов?","acceptedAnswer":{"@type":"Answer","text":"Однокомнатная квартира — от 9 000 ₸, двухкомнатная — от 12 000 ₸, трёхкомнатная — от 15 000 ₸. Точная цена зависит от площади и степени заражения."}},
+    {"@type":"Question","name":"Сколько стоит обработка квартиры от тараканов?","acceptedAnswer":{"@type":"Answer","text":"Однокомнатная квартира — от 15 000 ₸, двухкомнатная — от 20 000 ₸, трёхкомнатная — от 25 000 ₸. Точная цена зависит от площади и степени заражения."}},
     {"@type":"Question","name":"Какая гарантия?","acceptedAnswer":{"@type":"Answer","text":"Гарантия до 12 месяцев с договором. Если в течение гарантийного срока вредители появятся снова — повторная обработка бесплатно."}}
   ]
 }
@@ -539,6 +539,50 @@ nav.nav a:hover{color:var(--green);background:var(--green-soft)}
 .fc-card .t{font-size:11px;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;font-weight:700}
 .fc-card .v{font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;font-weight:700;color:#fff}
 
+/* ========== REVIEWS ========== */
+.rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media (max-width:1023px){.rev-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:600px){.rev-grid{grid-template-columns:1fr;gap:14px}}
+
+.rev{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  transition:.3s;cursor:zoom-in;position:relative;display:flex;flex-direction:column;
+}
+.rev:hover{border-color:var(--green);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.rev-img{
+  aspect-ratio:3/4;background:var(--bg-2);overflow:hidden;position:relative;
+}
+.rev-img img{width:100%;height:100%;object-fit:cover;display:block;transition:.4s}
+.rev:hover .rev-img img{transform:scale(1.03)}
+.rev-img::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 60%,rgba(0,0,0,.5));
+  opacity:0;transition:.3s;
+}
+.rev:hover .rev-img::after{opacity:1}
+.rev-zoom{
+  position:absolute;right:10px;top:10px;width:32px;height:32px;border-radius:8px;
+  background:rgba(255,255,255,.9);color:var(--ink);display:grid;place-items:center;
+  opacity:0;transition:.3s;
+}
+.rev:hover .rev-zoom{opacity:1}
+.rev-zoom svg{width:16px;height:16px}
+.rev-meta{
+  padding:14px 16px;display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--line);
+}
+.rev-meta .src{font-size:12px;font-weight:600;color:var(--ink-2);display:flex;align-items:center;gap:8px}
+.rev-meta .src svg{width:16px;height:16px;color:var(--green)}
+.rev-meta .stars{color:#f5a524;font-size:13px;letter-spacing:1px}
+
+/* Lightbox for review preview */
+.rlb{position:fixed;inset:0;z-index:1300;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.92);animation:fadeIn .25s}
+.rlb.open{display:flex}
+.rlb img{max-width:100%;max-height:90vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.rlb-close{position:absolute;top:20px;right:20px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;display:grid;place-items:center;transition:.2s;cursor:pointer}
+.rlb-close:hover{background:rgba(255,255,255,.25)}
+.rlb-close svg{width:22px;height:22px}
+
 /* ========== FOOTER ========== */
 footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
 .foot-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1.1fr;gap:40px;padding-bottom:36px;border-bottom:1px solid #1a2820}
@@ -677,6 +721,7 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
       <a href="#services">Услуги</a>
       <a href="#prices">Цены</a>
       <a href="#methods">Методы</a>
+      <a href="#reviews">Отзывы</a>
       <a href="#cities">География</a>
       <a href="#faq">FAQ</a>
       <a href="#contacts">Контакты</a>
@@ -865,10 +910,10 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
         <h3>Квартиры</h3>
         <p class="prc-area">Стандартная обработка холодным туманом</p>
         <ul class="prc-rows">
-          <li class="prc-row"><span class="name">1-комнатная</span><span class="price">от 9 000 ₸</span></li>
-          <li class="prc-row"><span class="name">2-комнатная</span><span class="price">от 12 000 ₸</span></li>
-          <li class="prc-row"><span class="name">3-комнатная</span><span class="price">от 15 000 ₸</span></li>
-          <li class="prc-row"><span class="name">4+ комнат</span><span class="price">от 18 000 ₸</span></li>
+          <li class="prc-row"><span class="name">1-комнатная</span><span class="price">от 15 000 ₸</span></li>
+          <li class="prc-row"><span class="name">2-комнатная</span><span class="price">от 20 000 ₸</span></li>
+          <li class="prc-row"><span class="name">3-комнатная</span><span class="price">от 25 000 ₸</span></li>
+          <li class="prc-row"><span class="name">4+ комнат</span><span class="price">от 28 000 ₸</span></li>
         </ul>
         <button class="prc-btn" onclick="openModal('order','Обработка квартиры')">Заказать</button>
       </div>
@@ -1005,6 +1050,95 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
   </div>
 </section>
 
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="s-eyebrow">Отзывы клиентов</div>
+      <h2>Что говорят о&nbsp;<span class="g">нашей работе</span></h2>
+      <p class="lead">Реальные отзывы клиентов из&nbsp;соцсетей, 2ГИС и&nbsp;OLX. Нажмите на&nbsp;любой отзыв чтобы увеличить.</p>
+    </div>
+
+    <div class="rev-grid">
+      <div class="rev" onclick="openLightbox('/images/review-1.jpg')">
+        <div class="rev-img">
+          <img src="/images/review-1.jpg" alt="Отзыв клиента 1" loading="lazy">
+          <span class="rev-zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg></span>
+        </div>
+        <div class="rev-meta">
+          <span class="src"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>2ГИС</span>
+          <span class="stars">★★★★★</span>
+        </div>
+      </div>
+
+      <div class="rev" onclick="openLightbox('/images/review-2.jpg')">
+        <div class="rev-img">
+          <img src="/images/review-2.jpg" alt="Отзыв клиента 2" loading="lazy">
+          <span class="rev-zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg></span>
+        </div>
+        <div class="rev-meta">
+          <span class="src"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zM17.5 6.5h.01"/></svg>Instagram</span>
+          <span class="stars">★★★★★</span>
+        </div>
+      </div>
+
+      <div class="rev" onclick="openLightbox('/images/review-3.jpg')">
+        <div class="rev-img">
+          <img src="/images/review-3.jpg" alt="Отзыв клиента 3" loading="lazy">
+          <span class="rev-zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg></span>
+        </div>
+        <div class="rev-meta">
+          <span class="src"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.38c-.28-.14-1.66-.82-1.92-.91-.26-.1-.44-.14-.63.14-.19.28-.72.91-.88 1.09-.16.19-.33.21-.6.07-.28-.14-1.18-.43-2.24-1.38-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.56.12-.12.28-.33.42-.49.14-.16.19-.28.28-.46.09-.19.05-.35-.02-.49-.07-.14-.63-1.51-.86-2.07-.23-.55-.46-.47-.63-.47l-.54-.01c-.18 0-.48.07-.74.35-.26.28-.97.95-.97 2.31 0 1.36 1 2.67 1.14 2.85.14.19 1.96 3 4.75 4.21.66.29 1.18.46 1.58.59.67.21 1.27.18 1.75.11.53-.08 1.66-.68 1.89-1.33.23-.65.23-1.2.16-1.33-.06-.12-.25-.2-.53-.34zM12 2.04C6.5 2.04 2.04 6.5 2.04 12c0 1.76.46 3.45 1.33 4.95L2 22l5.22-1.36c1.45.79 3.08 1.21 4.78 1.21 5.5 0 9.96-4.46 9.96-9.96 0-2.66-1.03-5.17-2.92-7.05C17.17 3.07 14.66 2.04 12 2.04"/></svg>WhatsApp</span>
+          <span class="stars">★★★★★</span>
+        </div>
+      </div>
+
+      <div class="rev" onclick="openLightbox('/images/review-4.jpg')">
+        <div class="rev-img">
+          <img src="/images/review-4.jpg" alt="Отзыв клиента 4" loading="lazy">
+          <span class="rev-zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg></span>
+        </div>
+        <div class="rev-meta">
+          <span class="src"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>2ГИС</span>
+          <span class="stars">★★★★★</span>
+        </div>
+      </div>
+
+      <div class="rev" onclick="openLightbox('/images/review-5.jpg')">
+        <div class="rev-img">
+          <img src="/images/review-5.jpg" alt="Отзыв клиента 5" loading="lazy">
+          <span class="rev-zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg></span>
+        </div>
+        <div class="rev-meta">
+          <span class="src"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zM17.5 6.5h.01"/></svg>Instagram</span>
+          <span class="stars">★★★★★</span>
+        </div>
+      </div>
+
+      <div class="rev" onclick="openLightbox('/images/review-6.jpg')">
+        <div class="rev-img">
+          <img src="/images/review-6.jpg" alt="Отзыв клиента 6" loading="lazy">
+          <span class="rev-zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg></span>
+        </div>
+        <div class="rev-meta">
+          <span class="src"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.38c-.28-.14-1.66-.82-1.92-.91-.26-.1-.44-.14-.63.14-.19.28-.72.91-.88 1.09-.16.19-.33.21-.6.07-.28-.14-1.18-.43-2.24-1.38-.83-.74-1.39-1.65-1.55-1.93-.16-.28-.02-.43.12-.56.12-.12.28-.33.42-.49.14-.16.19-.28.28-.46.09-.19.05-.35-.02-.49-.07-.14-.63-1.51-.86-2.07-.23-.55-.46-.47-.63-.47l-.54-.01c-.18 0-.48.07-.74.35-.26.28-.97.95-.97 2.31 0 1.36 1 2.67 1.14 2.85.14.19 1.96 3 4.75 4.21.66.29 1.18.46 1.58.59.67.21 1.27.18 1.75.11.53-.08 1.66-.68 1.89-1.33.23-.65.23-1.2.16-1.33-.06-.12-.25-.2-.53-.34zM12 2.04C6.5 2.04 2.04 6.5 2.04 12c0 1.76.46 3.45 1.33 4.95L2 22l5.22-1.36c1.45.79 3.08 1.21 4.78 1.21 5.5 0 9.96-4.46 9.96-9.96 0-2.66-1.03-5.17-2.92-7.05C17.17 3.07 14.66 2.04 12 2.04"/></svg>WhatsApp</span>
+          <span class="stars">★★★★★</span>
+        </div>
+      </div>
+    </div>
+
+    <p style="text-align:center;margin-top:32px;font-size:14px;color:var(--ink-3)">
+      Больше отзывов — на&nbsp;<a href="https://2gis.kz/almaty/firm/70000001082661942" target="_blank" rel="noopener" style="color:var(--green);font-weight:700">2ГИС</a>, <a href="https://www.instagram.com/dezclub.kz?igsh=Z3B6cm52b2JkbmZt" target="_blank" rel="noopener" style="color:var(--green);font-weight:700">Instagram</a> и&nbsp;<a href="https://www.olx.kz/d/obyavlenie/dezinfektsiya-unichtozhenie-klopov-tarakanov-bloh-muravev-os-krys-i-myshey-IDqtCXE.html" target="_blank" rel="noopener" style="color:var(--green);font-weight:700">OLX</a>
+    </p>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div class="rlb" id="reviewLightbox" onclick="closeLightbox()">
+  <button class="rlb-close" aria-label="Закрыть"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  <img id="rlbImg" src="" alt="Отзыв">
+</div>
+
 <!-- CITIES (география) -->
 <section id="cities">
   <div class="wrap">
@@ -1131,7 +1265,7 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
       </div>
       <div class="faq-i">
         <button class="faq-q">Сколько стоит обработка квартиры от&nbsp;тараканов?<span class="pl">+</span></button>
-        <div class="faq-a"><p>1-комнатная квартира — от&nbsp;9&nbsp;000&nbsp;₸, 2-комнатная — от&nbsp;12&nbsp;000&nbsp;₸, 3-комнатная — от&nbsp;15&nbsp;000&nbsp;₸. Точная цена зависит от&nbsp;площади, степени заражения и&nbsp;выбранного метода обработки.</p></div>
+        <div class="faq-a"><p>1-комнатная квартира — от&nbsp;15&nbsp;000&nbsp;₸, 2-комнатная — от&nbsp;20&nbsp;000&nbsp;₸, 3-комнатная — от&nbsp;25&nbsp;000&nbsp;₸, 4-комнатная — от&nbsp;28&nbsp;000&nbsp;₸. Точная цена зависит от&nbsp;площади, степени заражения и&nbsp;выбранного метода обработки.</p></div>
       </div>
       <div class="faq-i">
         <button class="faq-q">Какая гарантия и&nbsp;что если вредители появятся снова?<span class="pl">+</span></button>
@@ -1358,6 +1492,7 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
         <a href="#prices" onclick="closeBurger()">Прайс-лист</a>
         <a href="#methods" onclick="closeBurger()">Методы обработки</a>
         <a href="#why" onclick="closeBurger()">Преимущества</a>
+        <a href="#reviews" onclick="closeBurger()">Отзывы клиентов</a>
         <a href="#b2b" onclick="closeBurger()">Юрлицам</a>
         <a href="#process" onclick="closeBurger()">Как работаем</a>
         <a href="#faq" onclick="closeBurger()">FAQ</a>
@@ -1579,8 +1714,24 @@ document.addEventListener('keydown', e => {
     document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
     document.body.style.overflow = '';
     closeBurger();
+    closeLightbox();
   }
 });
+
+/* ===== REVIEW LIGHTBOX ===== */
+function openLightbox(src){
+  const lb = document.getElementById('reviewLightbox');
+  const img = document.getElementById('rlbImg');
+  img.src = src;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(){
+  document.getElementById('reviewLightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+window.openLightbox = openLightbox;
+window.closeLightbox = closeLightbox;
 
 /* ===== GOOGLE ADS CONVERSION TRACKING (click) ===== */
 function gtag_report_conversion(url) {
