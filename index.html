@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="ru">
 <head>
 <!-- Google tag (gtag.js) -->
@@ -81,7 +81,7 @@
 <style>
 /* ========== RESET ========== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;overflow-x:hidden;width:100%}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;width:100%}
 body{
   font-family:'Manrope',-apple-system,BlinkMacSystemFont,sans-serif;
   font-weight:400;line-height:1.6;color:var(--ink);background:var(--bg);
@@ -169,11 +169,12 @@ section{padding:100px 0;position:relative}
 
 /* ========== HEADER ========== */
 header{
-  position:sticky;top:0;z-index:900;height:var(--header-h);
-  background:rgba(255,255,255,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  position:-webkit-sticky;position:sticky;top:0;z-index:900;height:var(--header-h);
+  background:rgba(255,255,255,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   border-bottom:1px solid var(--line);
+  width:100%;
 }
-[data-theme="dark"] header{background:rgba(10,20,16,.85)}
+[data-theme="dark"] header{background:rgba(10,20,16,.92)}
 .hrow{display:flex;align-items:center;justify-content:space-between;height:100%;gap:20px}
 
 .brand{
@@ -223,47 +224,58 @@ nav.nav a:hover{color:var(--green);background:var(--green-soft)}
 
 /* ========== HERO ========== */
 .hero{
-  padding:90px 0 110px;position:relative;overflow:hidden;
-  background:
-    radial-gradient(ellipse 60% 50% at 50% 0%,var(--green-soft),transparent 70%),
-    linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);
+  position:relative;overflow:hidden;
+  min-height:520px;height:calc(80vh - var(--header-h));max-height:680px;
+  display:flex;align-items:flex-end;
+  background-image:linear-gradient(180deg,rgba(8,18,12,.18) 0%,rgba(8,18,12,.35) 55%,rgba(8,18,12,.78) 100%),url("/images/hero-bg.jpg");
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+  color:#fff;
 }
-.hero::before{
-  content:"";position:absolute;inset:0;pointer-events:none;opacity:.4;
-  background-image:radial-gradient(circle at 20% 30%,var(--green) 1px,transparent 1.5px),radial-gradient(circle at 70% 60%,var(--green) 1px,transparent 1.5px),radial-gradient(circle at 90% 25%,var(--green) 1px,transparent 1.5px),radial-gradient(circle at 30% 80%,var(--green) 1px,transparent 1.5px);
-  background-size:240px 240px,300px 300px,180px 180px,260px 260px;
-  animation:float 30s linear infinite;
+@media (max-width:767px){
+  .hero{min-height:440px;height:auto;padding:100px 0 50px}
 }
-@keyframes float{0%{background-position:0 0,0 0,0 0,0 0}100%{background-position:240px 240px,-300px 300px,180px -180px,-260px -260px}}
-
-.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1.15fr .85fr;gap:60px;align-items:center}
-@media (max-width:959px){.hero-inner{grid-template-columns:1fr;gap:40px}}
+.hero::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:90px;
+  background:linear-gradient(to bottom,transparent,var(--bg));pointer-events:none;
+}
+.hero-inner{position:relative;z-index:2;width:100%;padding-bottom:60px}
+@media (max-width:767px){.hero-inner{padding-bottom:30px}}
 
 .hero-badge{
   display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;
-  background:var(--card);border:1px solid var(--line);color:var(--green);
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;
-  margin-bottom:24px;box-shadow:var(--shadow-sm);
+  margin-bottom:20px;
   animation:slideUp .7s ease both;
 }
 .hero-badge svg{width:16px;height:16px}
 
 .hero h1{
   font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;
-  font-size:clamp(36px,5.4vw,64px);line-height:1.02;letter-spacing:-.03em;color:var(--ink);
-  margin-bottom:22px;
+  font-size:clamp(34px,5.6vw,68px);line-height:1.02;letter-spacing:-.03em;color:#fff;
+  max-width:820px;
+  text-shadow:0 2px 18px rgba(0,0,0,.35);
   animation:slideUp .7s .1s ease both;
 }
-.hero h1 .g{color:var(--green);position:relative;display:inline-block}
-.hero h1 .g::after{
-  content:"";position:absolute;left:0;right:0;bottom:-2px;height:14px;background:var(--green-soft);z-index:-1;border-radius:2px;
-  animation:expand .9s .5s ease both;transform-origin:left;
+.hero h1 .g{color:var(--accent);position:relative;display:inline-block}
+
+/* ========== INTRO STATS (stat block under hero) ========== */
+.intro{padding:80px 0;background:var(--bg);position:relative}
+@media (max-width:767px){.intro{padding:50px 0}}
+.intro-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:center}
+@media (max-width:959px){.intro-grid{grid-template-columns:1fr;gap:32px}}
+
+.intro-text h2{
+  font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;
+  font-size:clamp(26px,3.4vw,40px);line-height:1.1;letter-spacing:-.02em;color:var(--ink);margin-bottom:14px;
 }
-@keyframes expand{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.intro-text h2 .g{color:var(--green)}
+.intro-text p{color:var(--ink-3);font-size:15.5px;line-height:1.65;max-width:560px;margin-bottom:24px}
 
-.hero-sub{font-size:clamp(15px,1.55vw,18px);color:var(--ink-3);margin-bottom:36px;max-width:560px;line-height:1.65;animation:slideUp .7s .2s ease both}
+.intro-cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn-out-dark{background:transparent;color:var(--ink);border-color:var(--line-2)}
+.btn-out-dark:hover{background:var(--green-soft);border-color:var(--green);color:var(--green)}
 
-.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:44px;animation:slideUp .7s .3s ease both}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;
   padding:15px 28px;border-radius:12px;font-weight:700;font-size:15px;
@@ -271,54 +283,28 @@ nav.nav a:hover{color:var(--green);background:var(--green-soft)}
 }
 .btn-green{background:var(--green);color:#fff;box-shadow:0 10px 24px -8px var(--green-glow)}
 .btn-green:hover{background:var(--green-d);transform:translateY(-2px);box-shadow:0 14px 30px -8px var(--green-glow)}
-.btn-out{background:transparent;color:var(--ink);border-color:var(--line-2)}
-.btn-out:hover{border-color:var(--green);color:var(--green);background:var(--green-soft)}
+.btn-out{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.4);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.btn-out:hover{background:#fff;color:var(--green);border-color:#fff}
 
-.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;border-top:1px solid var(--line);padding-top:28px;max-width:560px;animation:slideUp .7s .4s ease both}
-.hero-stat .big{
-  font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:42px;line-height:1;color:var(--green);letter-spacing:-.025em;
+.intro-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.intro-stat{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:24px 20px;text-align:center;transition:.3s;
 }
-.hero-stat .lbl{font-size:11.5px;color:var(--mute);margin-top:6px;text-transform:uppercase;letter-spacing:.14em;font-weight:600}
-@media (max-width:480px){.hero-stat .big{font-size:28px}.hero-stat .lbl{font-size:10px}.hero-stats{gap:14px}}
-
-/* Hero visual */
-.hero-fig{
-  position:relative;aspect-ratio:1/1.05;max-width:460px;margin-left:auto;
-  background:linear-gradient(140deg,var(--green) 0%,var(--green-d) 100%);
-  color:#fff;border-radius:var(--r-lg);overflow:hidden;
-  box-shadow:var(--shadow-lg);
-  animation:slideUp .8s .3s ease both;
+.intro-stat:hover{border-color:var(--green);transform:translateY(-3px);box-shadow:var(--shadow)}
+.intro-stat .big{
+  font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:38px;line-height:1;
+  color:var(--green);letter-spacing:-.025em;
 }
-.hero-fig::before{
-  content:"";position:absolute;inset:0;opacity:.18;
-  background-image:radial-gradient(circle at 25% 25%,#fff 1.5px,transparent 2px),radial-gradient(circle at 75% 75%,#fff 1.5px,transparent 2px);
-  background-size:50px 50px;animation:float 40s linear infinite;
+.intro-stat .lbl{
+  font-size:11.5px;color:var(--mute);margin-top:8px;text-transform:uppercase;
+  letter-spacing:.14em;font-weight:600;
 }
-.hero-fig::after{
-  content:"";position:absolute;right:-100px;top:-100px;width:300px;height:300px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,255,255,.25),transparent 70%);
+@media (max-width:480px){
+  .intro-stat{padding:18px 12px}
+  .intro-stat .big{font-size:26px}
+  .intro-stat .lbl{font-size:10px}
 }
-.hero-fig-content{position:relative;z-index:2;height:100%;padding:36px;display:flex;flex-direction:column;justify-content:space-between}
-.hero-fig-tag{
-  display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:rgba(255,255,255,.18);
-  border-radius:6px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;align-self:flex-start;
-}
-.hero-fig-tag::before{content:"";width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 2s infinite}
-
-.hero-fig-num{
-  font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:clamp(70px,10vw,110px);line-height:.85;letter-spacing:-.04em;color:#fff;margin-bottom:8px;
-}
-.hero-fig-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;letter-spacing:.04em;line-height:1.3;color:rgba(255,255,255,.95);max-width:240px}
-
-.hero-fig-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
-.hero-fig-item{
-  display:flex;align-items:center;gap:10px;padding:10px 12px;
-  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:8px;
-  font-size:13px;font-weight:600;
-}
-.hero-fig-item svg{width:16px;height:16px;flex-shrink:0;color:#fff}
-@media (max-width:959px){.hero-fig{max-width:100%;margin:0 auto}}
-@media (max-width:480px){.hero-fig-content{padding:24px}}
 
 /* ========== TRUST STRIP ========== */
 .tstrip{background:#0f1f15;color:#fff;padding:24px 0;position:relative;overflow:hidden}
@@ -541,9 +527,43 @@ nav.nav a:hover{color:var(--green);background:var(--green-soft)}
 
 /* ========== CERTIFICATES ========== */
 .cert-section{background:var(--bg-2)}
-.cert-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-@media (max-width:959px){.cert-grid{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:480px){.cert-grid{grid-template-columns:1fr;gap:14px}}
+
+/* Scroll wrapper with arrows */
+.scroll-wrap{position:relative}
+.scroll-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:5;
+  width:44px;height:44px;border-radius:50%;background:#fff;color:var(--green);
+  border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.1);
+  display:none;align-items:center;justify-content:center;cursor:pointer;transition:.2s;
+}
+[data-theme="dark"] .scroll-arrow{background:var(--card);border-color:var(--line-2);color:var(--green)}
+.scroll-arrow:hover{background:var(--green);color:#fff;transform:translateY(-50%) scale(1.05)}
+.scroll-arrow.left{left:-22px}
+.scroll-arrow.right{right:-22px}
+.scroll-arrow svg{width:20px;height:20px}
+.scroll-arrow:disabled{opacity:.35;cursor:default;background:var(--bg-3)}
+.scroll-arrow:disabled:hover{background:var(--bg-3);color:var(--green);transform:translateY(-50%)}
+@media (min-width:1024px){.scroll-arrow{display:flex}}
+.scroll-hint{
+  text-align:center;font-size:12.5px;color:var(--mute);margin-top:14px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.scroll-hint svg{width:16px;height:16px;color:var(--green)}
+@media (min-width:1024px){.scroll-hint{display:none}}
+
+.cert-grid{
+  display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:8px 4px 22px;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:var(--green) var(--bg-3);
+  scroll-padding-left:24px;scroll-behavior:smooth;
+}
+.cert-grid::-webkit-scrollbar{height:8px}
+.cert-grid::-webkit-scrollbar-track{background:var(--bg-3);border-radius:4px}
+.cert-grid::-webkit-scrollbar-thumb{background:var(--green);border-radius:4px}
+.cert-grid::-webkit-scrollbar-thumb:hover{background:var(--green-d)}
+.cert-grid > .cert{flex:0 0 calc((100% - 54px)/4);min-width:240px;scroll-snap-align:start}
+@media (max-width:959px){.cert-grid > .cert{flex:0 0 calc((100% - 18px)/2)}}
+@media (max-width:600px){.cert-grid > .cert{flex:0 0 80%}}
 
 .cert{
   background:#ffffff;border:1px solid #e8e8e8;border-radius:var(--r);overflow:hidden;
@@ -580,9 +600,19 @@ nav.nav a:hover{color:var(--green);background:var(--green-soft)}
 .cert-meta .nm{font-size:12.5px;font-weight:700;color:#0c1a14;line-height:1.3}
 
 /* ========== REVIEWS ========== */
-.rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-@media (max-width:1023px){.rev-grid{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:600px){.rev-grid{grid-template-columns:1fr;gap:14px}}
+.rev-grid{
+  display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:8px 4px 22px;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:var(--green) var(--bg-3);
+  scroll-padding-left:24px;scroll-behavior:smooth;
+}
+.rev-grid::-webkit-scrollbar{height:8px}
+.rev-grid::-webkit-scrollbar-track{background:var(--bg-3);border-radius:4px}
+.rev-grid::-webkit-scrollbar-thumb{background:var(--green);border-radius:4px}
+.rev-grid::-webkit-scrollbar-thumb:hover{background:var(--green-d)}
+.rev-grid > .rev{flex:0 0 calc((100% - 36px)/3);min-width:260px;scroll-snap-align:start}
+@media (max-width:1023px){.rev-grid > .rev{flex:0 0 calc((100% - 18px)/2)}}
+@media (max-width:600px){.rev-grid > .rev{flex:0 0 80%}}
 
 .rev{
   background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
@@ -786,42 +816,36 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
 <!-- HERO -->
 <section class="hero">
   <div class="wrap hero-inner">
-    <div class="hero-text">
-      <span class="hero-badge">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
-        Сертифицировано · Работаем по всей Алматы
-      </span>
-      <h1>Профессиональная <span class="g">дезинфекция</span> в&nbsp;Алматы</h1>
-      <p class="hero-sub">Уничтожаем клопов, тараканов, грызунов и&nbsp;все виды вредителей. Сертифицированные средства, договор на&nbsp;услуги, гарантия до&nbsp;12&nbsp;месяцев. Безопасно для&nbsp;людей и&nbsp;домашних животных.</p>
-      <div class="hero-cta">
-        <button class="btn btn-green" onclick="openModal('order')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
-          Вызвать мастера
-        </button>
-        <a href="#prices" class="btn btn-out">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h4"/></svg>
-          Прайс-лист
-        </a>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><div class="big" data-count="18">0</div><div class="lbl">видов услуг</div></div>
-        <div class="hero-stat"><div class="big" data-count="12">0</div><div class="lbl">мес. гарантии</div></div>
-        <div class="hero-stat"><div class="big" data-count="100">0</div><div class="lbl">% безопасно</div></div>
-      </div>
-    </div>
+    <span class="hero-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+      Сертифицировано · Работаем по всей Алматы
+    </span>
+    <h1>Профессиональная <span class="g">дезинфекция</span> в&nbsp;Алматы</h1>
+  </div>
+</section>
 
-    <div class="hero-fig">
-      <div class="hero-fig-content">
-        <div>
-          <span class="hero-fig-tag">Скидка новым клиентам</span>
-          <div class="hero-fig-num" style="margin-top:24px">15<span style="font-size:.5em">%</span></div>
-          <div class="hero-fig-label">Скидка на&nbsp;первое обращение при&nbsp;заявке через сайт</div>
+<!-- INTRO STATS -->
+<section class="intro">
+  <div class="wrap">
+    <div class="intro-grid">
+      <div class="intro-text">
+        <h2>Безопасное решение от&nbsp;<span class="g">любых вредителей</span></h2>
+        <p>Уничтожаем клопов, тараканов, грызунов и&nbsp;все виды вредителей. Сертифицированные средства с&nbsp;минимальным классом опасности, договор и&nbsp;гарантия до&nbsp;12&nbsp;месяцев. Безопасно для&nbsp;детей и&nbsp;домашних животных после стандартного проветривания. Работаем во&nbsp;всех районах Алматы.</p>
+        <div class="intro-cta">
+          <button class="btn btn-green" onclick="openModal('order')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+            Вызвать мастера
+          </button>
+          <a href="#prices" class="btn btn-out-dark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h8M8 14h4"/></svg>
+            Прайс-лист
+          </a>
         </div>
-        <div class="hero-fig-list">
-          <div class="hero-fig-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>Гарантия до 12 мес.</div>
-          <div class="hero-fig-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Сертификаты СЭС</div>
-          <div class="hero-fig-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Выезд в день обращения</div>
-        </div>
+      </div>
+      <div class="intro-stats">
+        <div class="intro-stat"><div class="big" data-count="18">0</div><div class="lbl">видов услуг</div></div>
+        <div class="intro-stat"><div class="big" data-count="12">0</div><div class="lbl">мес. гарантии</div></div>
+        <div class="intro-stat"><div class="big" data-count="100">0</div><div class="lbl">% безопасно</div></div>
       </div>
     </div>
   </div>
@@ -979,7 +1003,7 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
           <li class="prc-row"><span class="name">Офис до 50 м²</span><span class="price">от 15 000 ₸</span></li>
           <li class="prc-row"><span class="name">Кафе / ресторан</span><span class="price">от 25 000 ₸</span></li>
           <li class="prc-row"><span class="name">Магазин / склад</span><span class="price">от 20 000 ₸</span></li>
-          <li class="prc-row"><span class="name">Договор на ТО</span><span class="price">скидка 15%</span></li>
+          <li class="prc-row"><span class="name">Договор на ТО</span><span class="price">по запросу</span></li>
         </ul>
         <button class="prc-btn" onclick="openModal('legal')">Получить КП</button>
       </div>
@@ -1082,9 +1106,9 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
         <p>Приезжаем без&nbsp;опознавательных надписей — соседи ничего не&nbsp;узнают.</p>
       </div>
       <div class="why">
-        <div class="why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1l3 6 6 1-4.5 4 1 6-5.5-3-5.5 3 1-6L3 8l6-1z"/></svg></div>
-        <h3>Скидка 15%</h3>
-        <p>Для&nbsp;новых клиентов при&nbsp;обращении через сайт или&nbsp;WhatsApp.</p>
+        <div class="why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18M5 6h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/></svg></div>
+        <h3>Без предоплаты</h3>
+        <p>Оплата только после успешной обработки и&nbsp;осмотра результата.</p>
       </div>
     </div>
   </div>
@@ -1099,7 +1123,11 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
       <p class="lead">Все используемые препараты сертифицированы. Работаем по&nbsp;официальным разрешениям. Нажмите на&nbsp;любой документ чтобы увеличить.</p>
     </div>
 
-    <div class="cert-grid">
+    <div class="scroll-wrap">
+      <button class="scroll-arrow left" data-target="certScroll" data-dir="-1" aria-label="Назад"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="scroll-arrow right" data-target="certScroll" data-dir="1" aria-label="Вперёд"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+
+      <div class="cert-grid" id="certScroll">
       <div class="cert" onclick="openLightbox('/images/certificate-1.jpg')">
         <div class="cert-img">
           <img src="/images/certificate-1.jpg" alt="Сертификат соответствия" loading="lazy">
@@ -1143,7 +1171,9 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
           <span class="nm">Свидетельство об&nbsp;обучении</span>
         </div>
       </div>
+      </div>
     </div>
+    <p class="scroll-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>Свайпайте, чтобы посмотреть все документы</p>
   </div>
 </section>
 
@@ -1156,7 +1186,11 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
       <p class="lead">Реальные отзывы клиентов из&nbsp;соцсетей, 2ГИС и&nbsp;OLX. Нажмите на&nbsp;любой отзыв чтобы увеличить.</p>
     </div>
 
-    <div class="rev-grid">
+    <div class="scroll-wrap">
+      <button class="scroll-arrow left" data-target="revScroll" data-dir="-1" aria-label="Назад"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <button class="scroll-arrow right" data-target="revScroll" data-dir="1" aria-label="Вперёд"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+
+      <div class="rev-grid" id="revScroll">
       <div class="rev" onclick="openLightbox('/images/review-1.jpg')">
         <div class="rev-img">
           <img src="/images/review-1.jpg" alt="Отзыв клиента 1" loading="lazy">
@@ -1222,7 +1256,9 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
           <span class="stars">★★★★★</span>
         </div>
       </div>
+      </div>
     </div>
+    <p class="scroll-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>Свайпайте, чтобы увидеть больше отзывов</p>
 
     <p style="text-align:center;margin-top:32px;font-size:14px;color:var(--ink-3)">
       Больше отзывов — на&nbsp;<a href="https://2gis.kz/almaty/firm/70000001082661942" target="_blank" rel="noopener" style="color:var(--green);font-weight:700">2ГИС</a>, <a href="https://www.instagram.com/dezclub.kz?igsh=Z3B6cm52b2JkbmZt" target="_blank" rel="noopener" style="color:var(--green);font-weight:700">Instagram</a> и&nbsp;<a href="https://www.olx.kz/d/obyavlenie/dezinfektsiya-unichtozhenie-klopov-tarakanov-bloh-muravev-os-krys-i-myshey-IDqtCXE.html" target="_blank" rel="noopener" style="color:var(--green);font-weight:700">OLX</a>
@@ -1248,7 +1284,7 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
     <div class="b2b-grid">
       <ul class="b2b-list">
         <li>Сертификаты СЭС и&nbsp;разрешения Минздрава РК</li>
-        <li>Договор на&nbsp;регулярное обслуживание со&nbsp;скидкой до&nbsp;15%</li>
+        <li>Договор на&nbsp;регулярное обслуживание с&nbsp;индивидуальными тарифами</li>
         <li>Безналичный расчёт с&nbsp;НДС, отсрочка по&nbsp;договору</li>
         <li>Соответствие требованиям СанПиН для&nbsp;общепита и&nbsp;медучреждений</li>
         <li>Экстренный выезд в&nbsp;течение часа для&nbsp;корпоративных клиентов</li>
@@ -1341,7 +1377,7 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
       </div>
       <div class="faq-i">
         <button class="faq-q">Работаете ли с&nbsp;юридическими лицами?<span class="pl">+</span></button>
-        <div class="faq-a"><p>Да, с&nbsp;ТОО и&nbsp;ИП на&nbsp;ОУР. Полный пакет документов: договор, счёт, АВР, ЭСФ, акт обработки для&nbsp;контролирующих органов. Возможен договор на&nbsp;регулярное обслуживание со&nbsp;скидкой до&nbsp;15%. Соответствуем требованиям СанПиН для&nbsp;общепита, медучреждений и&nbsp;детских учреждений.</p></div>
+        <div class="faq-a"><p>Да, с&nbsp;ТОО и&nbsp;ИП на&nbsp;ОУР. Полный пакет документов: договор, счёт, АВР, ЭСФ, акт обработки для&nbsp;контролирующих органов. Возможен договор на&nbsp;регулярное обслуживание с&nbsp;индивидуальными тарифами. Соответствуем требованиям СанПиН для&nbsp;общепита, медучреждений и&nbsp;детских учреждений.</p></div>
       </div>
       <div class="faq-i">
         <button class="faq-q">Узнают ли соседи о&nbsp;вашем визите?<span class="pl">+</span></button>
@@ -1360,7 +1396,7 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
   <div class="wrap">
     <div class="fc-inner">
       <h2>Готовы избавить вас от&nbsp;<span class="g">любых вредителей</span></h2>
-      <p>Получите скидку 15% на&nbsp;первое обращение — оставьте заявку прямо сейчас</p>
+      <p>Оставьте заявку — выезд мастера в&nbsp;день обращения по&nbsp;всему Алматы</p>
       <div class="fc-row">
         <a href="tel:+77005250108" class="btn btn-green" onclick="return gtag_report_conversion('tel:+77005250108');">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="18" height="18" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
@@ -1630,7 +1666,7 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
           <div class="ffield"><label>БИН</label><input type="text" name="bin" placeholder="12 цифр" maxlength="12"></div>
         </div>
         <button type="submit" class="fsubmit">Отправить заявку</button>
-        <p class="fnote">Скидка 15% активируется автоматически. Заявка придёт в&nbsp;WhatsApp менеджера.</p>
+        <p class="fnote">Перезвоним в&nbsp;течение 10&nbsp;минут. Заявка придёт в&nbsp;WhatsApp менеджера.</p>
       </form>
     </div>
   </div>
@@ -1704,7 +1740,7 @@ function closeBurger(){ burgerMenu.classList.remove('open'); document.body.style
 window.closeBurger = closeBurger;
 
 /* ===== HERO COUNTERS ===== */
-const counters = document.querySelectorAll('.hero-stat .big');
+const counters = document.querySelectorAll('.intro-stat .big');
 function animateCounters(){
   counters.forEach(el => {
     const target = +el.dataset.count;
@@ -1723,7 +1759,7 @@ if ('IntersectionObserver' in window) {
   const io = new IntersectionObserver((entries, obs) => {
     entries.forEach(e => { if (e.isIntersecting) { animateCounters(); obs.disconnect(); } });
   }, {threshold:.3});
-  const hs = document.querySelector('.hero-stats');
+  const hs = document.querySelector('.intro-stats');
   if (hs) io.observe(hs);
 } else animateCounters();
 
@@ -1783,6 +1819,38 @@ function closeLightbox(){
 window.openLightbox = openLightbox;
 window.closeLightbox = closeLightbox;
 
+/* ===== HORIZONTAL SCROLL ARROWS ===== */
+document.querySelectorAll('.scroll-arrow').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = document.getElementById(btn.dataset.target);
+    if (!target) return;
+    const dir = parseInt(btn.dataset.dir, 10);
+    const card = target.querySelector(':scope > *');
+    const step = card ? card.getBoundingClientRect().width + 18 : 280;
+    target.scrollBy({left: dir * step, behavior: 'smooth'});
+  });
+});
+function updateArrowState(scrollEl){
+  const wrap = scrollEl.closest('.scroll-wrap');
+  if (!wrap) return;
+  const left = wrap.querySelector('.scroll-arrow.left');
+  const right = wrap.querySelector('.scroll-arrow.right');
+  if (!left || !right) return;
+  const max = scrollEl.scrollWidth - scrollEl.clientWidth - 1;
+  if (max <= 0) {
+    left.style.display = 'none';
+    right.style.display = 'none';
+    return;
+  }
+  left.disabled = scrollEl.scrollLeft <= 1;
+  right.disabled = scrollEl.scrollLeft >= max;
+}
+document.querySelectorAll('.cert-grid, .rev-grid').forEach(el => {
+  updateArrowState(el);
+  el.addEventListener('scroll', () => updateArrowState(el), {passive:true});
+  window.addEventListener('resize', () => updateArrowState(el));
+});
+
 /* ===== GOOGLE ADS CONVERSION TRACKING (click) ===== */
 function gtag_report_conversion(url) {
   var callback = function () {
@@ -1837,7 +1905,6 @@ function submitOrder(e){
     if (d.company) msg += `🏢 Компания: ${d.company}%0A`;
     if (d.bin) msg += `🔢 БИН: ${d.bin}%0A`;
   }
-  msg += `%0A🎁 Скидка 15% (новый клиент)`;
   if (typeof gtag_report_conversion === 'function') gtag_report_conversion();
   window.open(`https://wa.me/${PHONE}?text=${msg}`, '_blank');
   showToast();
