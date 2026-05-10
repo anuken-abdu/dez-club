@@ -291,7 +291,7 @@ nav.nav a:hover{color:var(--green);background:var(--green-soft)}
 .tstrip-item svg{width:22px;height:22px;color:var(--green-l);flex-shrink:0}
 @media (max-width:767px){.tstrip-grid{grid-template-columns:repeat(2,1fr);gap:14px}.tstrip-item{font-size:12px}}
 
-/* ========== SERVICES (18 cards) ========== */
+/* ========== SERVICES (карточки с квадратными фото и подписями снизу) ========== */
 /* Эта секция всегда на белом фоне — даже в тёмной теме */
 #services{
   background:#ffffff;
@@ -302,39 +302,86 @@ nav.nav a:hover{color:var(--green);background:var(--green-soft)}
 [data-theme="dark"] #services .s-eyebrow{background:var(--green-soft);color:var(--green)}
 [data-theme="dark"] #services .s-head h2{color:#0f1f15}
 [data-theme="dark"] #services .s-head .lead{color:#536059}
-.svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-@media (max-width:1023px){.svc-grid{grid-template-columns:repeat(3,1fr)}}
-@media (max-width:600px){.svc-grid{grid-template-columns:repeat(2,1fr)}}
+.svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media (max-width:1023px){.svc-grid{grid-template-columns:repeat(3,1fr);gap:14px}}
+@media (max-width:600px){.svc-grid{grid-template-columns:repeat(2,1fr);gap:12px}}
 @media (max-width:380px){.svc-grid{grid-template-columns:1fr}}
 
 .svc{
-  background:#ffffff;border:1px solid #d4d4cf;border-radius:var(--r);padding:20px 16px 18px;
-  text-align:center;cursor:pointer;position:relative;overflow:hidden;
-  display:flex;flex-direction:column;align-items:center;gap:14px;
-  box-shadow:0 1px 3px rgba(15,40,20,.05);
+  background:#ffffff;
+  border:1px solid #e3e7e3;
+  border-radius:14px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 1px 3px rgba(15,40,20,.04);
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
 }
-.svc::before{
-  content:"";position:absolute;left:0;right:0;bottom:0;height:0;background:var(--green);
-  z-index:0;
+.svc:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--shadow-lg);
+  border-color:var(--green);
 }
-.svc:hover{box-shadow:var(--shadow-lg);border-color:var(--green)}
-.svc:hover::before{height:3px}
+
+/* Квадратное превью — фото занимает всю площадь */
 .svc-img{
-  width:88px;height:88px;border-radius:50%;background:#f5f7f5;
-  display:grid;place-items:center;overflow:hidden;position:relative;z-index:1;
+  position:relative;
+  width:100%;
+  aspect-ratio:1/1;
+  background:#f5f7f5;
+  overflow:hidden;
 }
-.svc:hover .svc-img{background:var(--green-soft);}
-.svc-img img{width:80%;height:80%;object-fit:contain}
-.svc-img .ph{
-  width:42px;height:42px;color:var(--green);
+.svc-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform .4s ease;
 }
-.svc-img .ph svg{width:100%;height:100%}
-.svc-name{font-family:'Manrope',sans-serif;font-size:13.5px;font-weight:700;color:#0c1a14;line-height:1.3;position:relative;z-index:1}
-.svc-name .strong{color:var(--green);font-weight:800}
-@media (max-width:480px){
-  .svc{padding:16px 12px 14px}
-  .svc-img{width:72px;height:72px}
-  .svc-name{font-size:12.5px}
+.svc:hover .svc-img img{transform:scale(1.05)}
+
+/* Тонкий нижний градиент для лучшей читаемости при тёмных снимках —
+   только если потребуется надпись поверх (сейчас не используем,
+   подпись — отдельным блоком ниже) */
+.svc-img::after{
+  content:"";
+  position:absolute;left:0;right:0;bottom:0;height:0;
+  background:var(--green);
+  transition:height .25s ease;
+}
+.svc:hover .svc-img::after{height:3px}
+
+/* Подпись — аккуратный отдельный блок под фото */
+.svc-name{
+  padding:14px 14px 16px;
+  font-family:'Manrope',sans-serif;
+  font-size:14px;
+  font-weight:600;
+  color:#0c1a14;
+  line-height:1.35;
+  text-align:center;
+  letter-spacing:-.005em;
+  background:#ffffff;
+  border-top:1px solid #eef1ee;
+}
+.svc-name .strong{
+  display:block;
+  margin-top:2px;
+  color:var(--green);
+  font-weight:800;
+  font-size:15px;
+  letter-spacing:-.01em;
+}
+
+@media (max-width:600px){
+  .svc-name{padding:12px 10px 14px;font-size:13px}
+  .svc-name .strong{font-size:13.5px}
+}
+@media (max-width:380px){
+  .svc-name{padding:14px 12px 16px;font-size:14px}
+  .svc-name .strong{font-size:15px}
 }
 
 /* ========== PRICES ========== */
@@ -751,12 +798,6 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
 @media (max-width:767px){.toast{bottom:140px;font-size:13px;padding:12px 18px}}
 
 /* ========== ANIMATIONS ========== */
-
-
-
-
-
-
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}}
 </style>
 </head>
@@ -863,76 +904,76 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
 
     <div class="svc-grid">
       <div class="svc" onclick="openModal('order','Уничтожение клопов')">
-        <div class="svc-img"><img src="/images/svc-klop.png" alt="Клоп"></div>
-        <div class="svc-name">Уничтожение <span class="strong">клопов</span></div>
+        <div class="svc-img"><img src="/images/svc-klop.png" alt="Клоп" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">клопов</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение тараканов')">
-        <div class="svc-img"><img src="/images/svc-tarakan.png" alt="Таракан"></div>
-        <div class="svc-name">Уничтожение <span class="strong">тараканов</span></div>
+        <div class="svc-img"><img src="/images/svc-tarakan.png" alt="Таракан" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">тараканов</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Устранение неприятного запаха')">
-        <div class="svc-img"><img src="/images/svc-zapah.png" alt="Запах"></div>
-        <div class="svc-name">Устранение <span class="strong">неприятного запаха</span></div>
+        <div class="svc-img"><img src="/images/svc-zapah.png" alt="Запах" loading="lazy"></div>
+        <div class="svc-name">Устранение<span class="strong">неприятного запаха</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение грибка')">
-        <div class="svc-img"><img src="/images/svc-gribok.png" alt="Грибок"></div>
-        <div class="svc-name">Уничтожение <span class="strong">грибка</span></div>
+        <div class="svc-img"><img src="/images/svc-gribok.png" alt="Грибок" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">грибка</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение плесени')">
-        <div class="svc-img"><img src="/images/svc-plesen.png" alt="Плесень"></div>
-        <div class="svc-name">Уничтожение <span class="strong">плесени</span></div>
+        <div class="svc-img"><img src="/images/svc-plesen.png" alt="Плесень" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">плесени</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Выведение кротов')">
-        <div class="svc-img"><img src="/images/svc-krot.png" alt="Крот"></div>
-        <div class="svc-name">Выведение <span class="strong">кротов</span></div>
+        <div class="svc-img"><img src="/images/svc-krot.png" alt="Крот" loading="lazy"></div>
+        <div class="svc-name">Выведение<span class="strong">кротов</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Выведение змей')">
-        <div class="svc-img"><img src="/images/svc-zmeya.png" alt="Змея"></div>
-        <div class="svc-name">Выведение <span class="strong">змей</span></div>
+        <div class="svc-img"><img src="/images/svc-zmeya.png" alt="Змея" loading="lazy"></div>
+        <div class="svc-name">Выведение<span class="strong">змей</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение кожееда')">
-        <div class="svc-img"><img src="/images/svc-kozheed.png" alt="Кожеед"></div>
-        <div class="svc-name">Уничтожение <span class="strong">кожееда</span></div>
+        <div class="svc-img"><img src="/images/svc-kozheed.png" alt="Кожеед" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">кожееда</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Выведение крыс и мышей')">
-        <div class="svc-img"><img src="/images/svc-krysa.png" alt="Крыса"></div>
-        <div class="svc-name">Выведение <span class="strong">крыс и мышей</span></div>
+        <div class="svc-img"><img src="/images/svc-krysa.png" alt="Крыса" loading="lazy"></div>
+        <div class="svc-name">Выведение<span class="strong">крыс и мышей</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение комаров')">
-        <div class="svc-img"><img src="/images/svc-komar.png" alt="Комар"></div>
-        <div class="svc-name">Уничтожение <span class="strong">комаров</span></div>
+        <div class="svc-img"><img src="/images/svc-komar.png" alt="Комар" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">комаров</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение мокриц')">
-        <div class="svc-img"><img src="/images/svc-mokrica.png" alt="Мокрица"></div>
-        <div class="svc-name">Уничтожение <span class="strong">мокриц</span></div>
+        <div class="svc-img"><img src="/images/svc-mokrica.png" alt="Мокрица" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">мокриц</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение чешуйниц')">
-        <div class="svc-img"><img src="/images/svc-cheshuynica.png" alt="Чешуйница"></div>
-        <div class="svc-name">Уничтожение <span class="strong">чешуйниц</span></div>
+        <div class="svc-img"><img src="/images/svc-cheshuynica.png" alt="Чешуйница" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">чешуйниц</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение пауков и каракуртов')">
-        <div class="svc-img"><img src="/images/svc-pauk.png" alt="Паук"></div>
-        <div class="svc-name">Уничтожение <span class="strong">пауков, каракуртов</span></div>
+        <div class="svc-img"><img src="/images/svc-pauk.png" alt="Паук" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">пауков, каракуртов</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение клещей')">
-        <div class="svc-img"><img src="/images/svc-kleshch.png" alt="Клещ"></div>
-        <div class="svc-name">Уничтожение <span class="strong">клещей</span></div>
+        <div class="svc-img"><img src="/images/svc-kleshch.png" alt="Клещ" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">клещей</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение осиных гнёзд')">
-        <div class="svc-img"><img src="/images/svc-osa.png" alt="Осиное гнездо"></div>
-        <div class="svc-name">Уничтожение <span class="strong">осиных гнёзд</span></div>
+        <div class="svc-img"><img src="/images/svc-osa.png" alt="Осиное гнездо" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">осиных гнёзд</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение муравьёв')">
-        <div class="svc-img"><img src="/images/svc-muravey.png" alt="Муравей"></div>
-        <div class="svc-name">Уничтожение <span class="strong">муравьёв</span></div>
+        <div class="svc-img"><img src="/images/svc-muravey.png" alt="Муравей" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">муравьёв</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение блох')">
-        <div class="svc-img"><img src="/images/svc-bloha.png" alt="Блоха"></div>
-        <div class="svc-name">Уничтожение <span class="strong">блох</span></div>
+        <div class="svc-img"><img src="/images/svc-bloha.png" alt="Блоха" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">блох</span></div>
       </div>
       <div class="svc" onclick="openModal('order','Уничтожение моли')">
-        <div class="svc-img"><img src="/images/svc-mol.png" alt="Моль"></div>
-        <div class="svc-name">Уничтожение <span class="strong">моли</span></div>
+        <div class="svc-img"><img src="/images/svc-mol.png" alt="Моль" loading="lazy"></div>
+        <div class="svc-name">Уничтожение<span class="strong">моли</span></div>
       </div>
     </div>
   </div>
@@ -1667,7 +1708,6 @@ footer{background:#070d09;color:#a4b3a8;padding:64px 0 20px}
 /* ===== THEME (dark by default) ===== */
 const themeBtn = document.getElementById('themeBtn');
 const savedTheme = localStorage.getItem('dc-theme');
-// Тёмный по умолчанию: применяем dark если нет savedTheme или savedTheme === 'dark'
 if (savedTheme !== 'light') document.documentElement.setAttribute('data-theme','dark');
 themeBtn.addEventListener('click', () => {
   const cur = document.documentElement.getAttribute('data-theme');
