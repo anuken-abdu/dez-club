@@ -177,6 +177,7 @@ def city_options():
 def overlays():
     cities = "".join(f'<li><button type="button" data-city-set="{c[0]}">{c[1]}</button></li>' for c in CITIES)
     return f'''
+<div class="fnav"><button class="fnav-b" type="button" data-back aria-label="Назад">{ui("left")}</button><button class="fnav-b" type="button" data-top aria-label="Наверх">{ui("up")}</button></div>
 <button class="fab" type="button" data-chat aria-label="Онлайн-консультант"><span class="fab-i">{ui("chat")}</span><span class="t"><b>Онлайн-консультант</b><small>Ответим на вопросы сразу</small></span></button>
 <div class="fab-tip" id="fabTip"><button type="button" aria-label="Скрыть" data-tip-x>{ui("close")}</button>Есть вопрос по обработке? Напишите онлайн-консультанту — ответит сразу.</div>
 <div class="mbar"><a class="btn btn-c" href="tel:{PHONE_TEL}">{ui("phone")}Позвонить</a><a class="btn btn-wa" {wa_attr("Здравствуйте! Нужна консультация по обработке.")}>{ui("wa")}WhatsApp</a></div>
@@ -334,7 +335,7 @@ def biz_html():
 <ul>{li}</ul></div></div></section>'''
 
 def poster(i):
-    return f"/images/portfolio/work-{i}.jpg"
+    return f"/images/portfolio/work-{i}.jpg?v={MV}"
 
 def video_cards(n=None):
     out = []
@@ -343,7 +344,7 @@ def video_cards(n=None):
     return out
 
 def review_cards():
-    return [f'<button class="rev" type="button" data-lb="r" data-type="img" data-src="/images/reviews/review-{i}.jpg" aria-label="Открыть отзыв {i}"><img src="/images/reviews/review-{i}.jpg" alt="Отзыв клиента {BRAND} №{i}" loading="lazy" width="540" height="960"></button>' for i in range(1, REVIEWS_COUNT + 1)]
+    return [f'<button class="rev" type="button" data-lb="r" data-type="img" data-src="/images/reviews/review-{i}.webp?v={MV}" aria-label="Открыть отзыв {i}"><img src="/images/reviews/review-{i}.webp?v={MV}" alt="Отзыв клиента {BRAND} №{i}" loading="lazy" width="510" height="800"></button>' for i in range(1, REVIEWS_COUNT + 1)]
 
 def scroller(cards, sid):
     return f'<div class="scr"><div class="scr-t" id="{sid}">{"".join(cards)}</div></div>'
@@ -388,7 +389,7 @@ def geo_sec(cur="almaty"):
 <div><h3>Города Казахстана</h3><p>Работаем по всему Казахстану. Выберите город, чтобы узнать условия выезда.</p><ul class="chips">{cities}</ul></div></div>''', alt=True)
 
 def hero_art():
-    return f'''<div class="hero-art"><img class="hero-ph" src="/images/hero-1.webp" alt="Специалисты {BRAND} в защитных костюмах" width="900" height="900" fetchpriority="high">
+    return f'''<div class="hero-art"><img class="hero-ph" src="/images/hero.png?v={MV}" alt="{BRAND} — санитарная служба" width="914" height="1000" fetchpriority="high">
 <div class="art-card art-k3">{icon("doc", eager=True)}<span>Договор и акт выполненных работ<small>для квартир, домов и бизнеса</small></span></div></div>'''
 
 def trust_html():
@@ -399,7 +400,7 @@ def initials(n):
     return (p[1][0] + p[0][0]) if len(p) > 1 else p[0][0]
 
 def team_html():
-    cards = "".join(f'''<li class="tm"><div class="tm-ph"><span>{initials(n)}</span><img src="/images/team/team-{i}.webp" alt="{E(n)} — {E(r)}" width="914" height="1000" loading="lazy" style="object-position:50% 20%" onerror="this.remove()"></div><b>{E(n)}</b><small>{E(r)}</small></li>''' for i, (n, r) in enumerate(TEAM, 1))
+    cards = "".join(f'''<li class="tm"><div class="tm-ph"><span>{initials(n)}</span><img src="/images/team/team-{i}.webp?v={MV}" alt="{E(n)} — {E(r)}" width="914" height="1000" loading="lazy" style="object-position:50% 20%" onerror="this.remove()"></div><b>{E(n)}</b><small>{E(r)}</small></li>''' for i, (n, r) in enumerate(TEAM, 1))
     return f'<ul class="team">{cards}</ul>'
 
 def team_sec(alt=False):
@@ -711,7 +712,8 @@ def build_assets():
         if (ROOT / "assets" / f).exists():
             shutil.copy(ROOT / "assets" / f, DIST / f)
 
-VER = "2610182153"  # менять при изменении styles.css / app.js
+VER = "2610182300"  # версия файлов: менять при обновлении стилей, скриптов и фото
+MV = VER
 
 if __name__ == "__main__":
     if DIST.exists(): shutil.rmtree(DIST)

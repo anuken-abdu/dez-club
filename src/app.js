@@ -403,6 +403,31 @@
     $("[data-tip-x]", tip).addEventListener("click", function () { hideTip(); store.sset("dz_tip", "1"); });
   }
 
+  /* ---------------- наверх / назад / прозрачность у конца ---------------- */
+  var bTop = $("[data-top]"), bBack = $("[data-back]");
+  var inner = location.pathname !== "/";
+  if (bBack) {
+    bBack.hidden = !inner;
+    bBack.addEventListener("click", function () {
+      var ref = document.referrer, same = false;
+      try { same = ref && new URL(ref).host === location.host; } catch (e) {}
+      if (same && history.length > 1) { history.back(); return; }
+      var cr = $$(".crumbs a"); location.href = cr.length ? cr[cr.length - 1].getAttribute("href") : "/";
+    });
+  }
+  if (bTop) bTop.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+  var ticking = false;
+  function onScroll() {
+    ticking = false;
+    var y = window.pageYOffset || document.documentElement.scrollTop;
+    if (bTop) bTop.hidden = y < 500;
+    var end = y + window.innerHeight >= document.documentElement.scrollHeight - 140;
+    document.body.classList.toggle("at-end", end && y > 200);
+  }
+  window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+  window.addEventListener("resize", onScroll);
+  onScroll();
+
   /* ---------------- Esc ---------------- */
   document.addEventListener("keydown", function (e) {
     if (lb && lb.classList.contains("on")) {

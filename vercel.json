@@ -1,10 +1,10 @@
 {
-  "buildCommand": "",
+  "buildCommand": "mkdir -p dist/images dist/videos && cp -r images/. dist/images/ && (cp -r videos/. dist/videos/ 2>/dev/null || true)",
   "installCommand": "",
   "outputDirectory": "dist",
   "trailingSlash": true,
   "headers": [
     { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
-    { "source": "/(images|videos)/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }] }
+    { "source": "/(images|videos)/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] }
   ]
 }

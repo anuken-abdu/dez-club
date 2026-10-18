@@ -28,6 +28,7 @@ UI = {
     "chev": f'<path {US} d="m6 9 6 6 6-6"/>',
     "right": f'<path {US} d="m9 6 6 6-6 6"/>',
     "left": f'<path {US} d="m15 6-6 6 6 6"/>',
+    "up": f'<path {US} d="M12 19V5M6 11l6-6 6 6"/>',
     "arrow": f'<path {US} d="M7 17 17 7M8 7h9v9"/>',
     "search": f'<circle {US} cx="11" cy="11" r="7"/><path {US} d="m20 20-4-4"/>',
     "close": f'<path {US} d="M6 6l12 12M18 6 6 18"/>',
