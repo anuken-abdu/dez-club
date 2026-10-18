@@ -91,7 +91,7 @@ def mega():
 </div></div></div></div>'''
 
 def header():
-    nav_company = [("О компании", "/o-kompanii/"), ("Портфолио", "/portfolio/"), ("Отзывы", "/otzyvy/"), ("Города", "/goroda/")]
+    nav_company = [("О компании", "/o-kompanii/"), ("Лицензия и документы", "/dokumenty/"), ("Портфолио", "/portfolio/"), ("Отзывы", "/otzyvy/"), ("Города", "/goroda/")]
     nav_pests = [(p["name"], f"/vrediteli/{p['slug']}/") for p in PESTS]
     nav_obj = [(o[1], f"/obekty/{o[0]}/") for o in OBJECTS]
     dd = lambda items: '<ul class="dd">' + "".join(f'<li><a href="{u}">{E(t)}</a></li>' for t, u in items) + "</ul>"
@@ -144,7 +144,7 @@ def drawer():
  <ul class="drw-l">
   {sub("Все услуги", svc)}{sub("Вредители", pst)}{sub("Объекты", obj)}
   <li><a href="/portfolio/">Портфолио</a></li><li><a href="/otzyvy/">Отзывы</a></li><li><a href="/o-kompanii/">О компании</a></li>
-  <li><a href="/oplata/">Оплата и реквизиты</a></li><li><a href="/stati/">Статьи</a></li><li><a href="/goroda/">Города</a></li><li><a href="/kontakty/">Контакты</a></li>
+  <li><a href="/dokumenty/">Лицензия и документы</a></li><li><a href="/oplata/">Оплата и реквизиты</a></li><li><a href="/stati/">Статьи</a></li><li><a href="/goroda/">Города</a></li><li><a href="/kontakty/">Контакты</a></li>
  </ul>
  <div class="drw-ct"><a class="btn btn-c" href="tel:{PHONE_TEL}">{ui("phone")}{PHONE_DISPLAY}</a><button class="btn btn-o" type="button" data-chat>Онлайн-консультант</button></div>
 </div></div>'''
@@ -155,14 +155,14 @@ def footer():
     obj = "".join(f'<li><a href="/obekty/{o[0]}/">{o[1]}</a></li>' for o in OBJECTS)
     return f'''<footer class="ftr"><div class="wrap">
  <div class="ftr-g">
-  <div>{logo()}<p class="ftr-req">{BRAND_SUB.capitalize()}.<br>{E(COMPANY["legal"])}, БИН {COMPANY["bin"]}<br>{E(COMPANY["address"])}</p></div>
+  <div>{logo()}<p class="ftr-req">{BRAND_SUB.capitalize()}.<br>{E(COMPANY["legal"])}, БИН {COMPANY["bin"]}<br><a href="/dokumenty/">Лицензия № {LICENSE_NO} от {LICENSE_DATE}</a><br>{E(COMPANY["address"])}</p></div>
   <div><h4>Услуги</h4><ul>{svc}</ul></div>
   <div class="f-pst"><h4>Вредители</h4><ul>{pst}</ul></div>
   <div class="f-obj"><h4>Объекты</h4><ul>{obj}</ul></div>
   <div><h4>Контакты</h4>
    <a class="ftr-ph" href="tel:{PHONE_TEL}">{PHONE_DISPLAY}</a>
    <ul><li><a {wa_attr("Здравствуйте! Нужна консультация.")}>Написать в WhatsApp</a></li>
-   <li><a href="/kontakty/">Адрес и карта</a></li><li><a href="/oplata/">Оплата и реквизиты</a></li><li><a href="/o-kompanii/">О компании</a></li><li><a href="/portfolio/">Портфолио</a></li><li><a href="/otzyvy/">Отзывы</a></li><li><a href="/stati/">Статьи</a></li><li><a href="/goroda/">Города Казахстана</a></li></ul>
+   <li><a href="/kontakty/">Адрес и карта</a></li><li><a href="/oplata/">Оплата и реквизиты</a></li><li><a href="/dokumenty/">Лицензия и документы</a></li><li><a href="/o-kompanii/">О компании</a></li><li><a href="/portfolio/">Портфолио</a></li><li><a href="/otzyvy/">Отзывы</a></li><li><a href="/stati/">Статьи</a></li><li><a href="/goroda/">Города Казахстана</a></li></ul>
   </div>
  </div>
  <div class="ftr-b"><span>© {YEAR} {E(COMPANY["legal"])}. Дезинфекция, дезинсекция и дератизация по всему Казахстану.</span><a href="/privacy-policy/">Политика конфиденциальности</a></div>
@@ -221,6 +221,10 @@ def org_schema():
         "geo": {"@type": "GeoCoordinates", "latitude": COMPANY["lat"], "longitude": COMPANY["lng"]},
         "areaServed": [{"@type": "Country", "name": "Казахстан"}] + [{"@type": "City", "name": c[1]} for c in CITIES],
         "founder": {"@type": "Person", "name": COMPANY["director"], "jobTitle": "Генеральный директор"},
+        "hasCredential": {"@type": "EducationalOccupationalCredential", "credentialCategory": "license",
+                          "name": f"Лицензия на оказание услуг по дезинфекции, дезинсекции, дератизации № {LICENSE_NO} от {LICENSE_DATE}",
+                          "url": SITE_URL + "/dokumenty/",
+                          "recognizedBy": {"@type": "GovernmentOrganization", "name": LICENSE_BY}},
         "employee": [{"@type": "Person", "name": n, "jobTitle": r} for n, r in TEAM],
         "contactPoint": {"@type": "ContactPoint", "telephone": PHONE_TEL, "contactType": "customer service",
                          "availableLanguage": ["ru", "kk"], "areaServed": "KZ"},
@@ -393,7 +397,18 @@ def hero_art():
 <div class="art-card art-k3">{icon("doc", eager=True)}<span>Договор и акт выполненных работ<small>для квартир, домов и бизнеса</small></span></div></div>'''
 
 def trust_html():
-    return '<ul class="trust">' + "".join(f'<li><img src="/assets/ic/{b}.svg" alt="" width="64" height="64"><span>{t}</span></li>' for b, t in TRUST) + "</ul>"
+    lic = f'<li><a href="/dokumenty/"><img src="/assets/ic/b-lic.svg" alt="" width="64" height="64"><span>Лицензия № {LICENSE_NO}</span></a></li>'
+    return '<ul class="trust">' + lic + "".join(f'<li><img src="/assets/ic/{b}.svg" alt="" width="64" height="64"><span>{t}</span></li>' for b, t in TRUST) + "</ul>"
+
+def doc_card(slug, title, sub):
+    return (f'<button class="doc" type="button" data-lb="d" data-type="img" data-src="/images/docs/{slug}.webp?v={MV}" aria-label="Открыть: {E(title)}">'
+            f'<span class="doc-im"><img src="/images/docs/{slug}-s.webp?v={MV}" alt="{E(title)}" loading="lazy" width="560" height="560"></span>'
+            f'<b>{E(title)}</b><small>{E(sub)}</small></button>')
+
+def docs_sec(alt=False):
+    cards = [doc_card(*d) for _, items in DOCS for d in items]
+    return sec_scroll("Лицензия и документы", cards, "scrD", ("Все документы", "/dokumenty/"),
+                      f"Государственная лицензия № {LICENSE_NO} от {LICENSE_DATE}, документы специалистов и свидетельства на препараты.", alt)
 
 def initials(n):
     p = n.split()
@@ -442,6 +457,7 @@ def build_home():
 {portfolio_sec(alt=True)}
 {sec("Почему выбирают " + BRAND, adv_html())}
 {team_sec(alt=True)}
+{docs_sec()}
 {biz_html()}
 {sec("Обрабатываем любые объекты", obj_grid(), "", ("Все объекты", "/obekty/"), alt=True)}
 {reviews_sec()}
@@ -614,7 +630,7 @@ def build_misc():
     # оплата
     rows = [("Получатель", COMPANY["legal"]), ("БИН", COMPANY["bin"]), ("ИИК (номер счёта)", COMPANY["iik"]),
             ("БИК банка", COMPANY["bik"]), ("КБе", COMPANY["kbe"]), ("Юридический адрес", "Казахстан, Алматинская обл., г. Алматы, мкр Турксибский, ул. Бекмаханова, дом 96"),
-            ("Генеральный директор", COMPANY["director"])]
+            ("Генеральный директор", COMPANY["director"]), ("Лицензия", f"№ {LICENSE_NO} от {LICENSE_DATE}")]
     tbl = '<table class="req">' + "".join(f'<tr><th>{k}</th><td><span>{E(v)}</span>{"<button class=cp type=button data-copy=\"" + E(v) + "\">копировать</button>" if k in ("БИН","ИИК (номер счёта)","БИК банка") else ""}</td></tr>' for k, v in rows) + "</table>"
     pays = ["Безналичный расчёт по счёту для ТОО и ИП", "Оплата по договору с актом выполненных работ", "Для частных клиентов — наличными или переводом, способ согласуем при заявке"]
     body = f'''{ph("Оплата и реквизиты", "Работаем официально как ТОО. Для организаций выставляем счёт, заключаем договор и передаём закрывающие документы.", "card", "Здравствуйте! Нужен счёт на оплату.")}
@@ -646,10 +662,22 @@ def build_misc():
 <h2>Как мы работаем</h2><p>Каждую обработку начинаем с выяснения ситуации: какой вредитель, какой объект, кто в нём живёт или работает. От этого зависит выбор препарата, метод и время возвращения в помещение. После работы выдаём акт и рекомендации, для бизнеса — полный пакет документов.</p>
 <h2>Наши принципы</h2>{adv_html()}
 <h2>Документы и стандарты</h2>{trust_html()}
+<p>Лицензия, документы специалистов и свидетельства на препараты — на странице <a href="/dokumenty/">«Лицензия и документы»</a>.</p>
 <h2>Реквизиты</h2><p>{E(COMPANY["legal"])}, БИН {COMPANY["bin"]}. Генеральный директор — {E(COMPANY["director"])}. Адрес: {E(COMPANY["address"])}. <a href="/oplata/">Все реквизиты</a>.</p>
 </article>{side_box("консультация")}</div></section>{team_sec(alt=True)}{portfolio_sec()}{reviews_sec(alt=True)}'''
     page("/o-kompanii/", f"О компании ТОО DezClub — санитарная служба | {BRAND}", "ТОО DezClub — санитарная служба дезинфекции, дезинсекции и дератизации в Алматы и по всему Казахстану.",
          body, crumbs=[("О компании", "/o-kompanii/")], kw="о компании", prio="0.5")
+    # лицензия и документы
+    groups = "".join(f'<h2 class="doc-h">{E(h)}</h2><div class="doc-g">' + "".join(doc_card(*d) for d in items) + "</div>" for h, items in DOCS)
+    body = f'''{ph("Лицензия и документы", f"{E(COMPANY['legal'])} работает по государственной лицензии № {LICENSE_NO} от {LICENSE_DATE} на оказание услуг по дезинфекции, дезинсекции и дератизации. Ниже — лицензия, документы о квалификации специалистов и свидетельства о регистрации препаратов, которые мы применяем.", "doc", "Здравствуйте! Нужны копии документов для договора.")}
+<section class="sec"><div class="wrap">{groups}
+<p class="doc-note">Подлинность лицензии можно проверить на портале <a href="https://elicense.kz" target="_blank" rel="noopener">elicense.kz</a> по номеру {LICENSE_NO}. Копии документов для договора и проверок отправим по запросу в WhatsApp.</p></div></section>
+{team_sec(alt=True)}{biz_html()}'''
+    lic_sch = {"@context": "https://schema.org", "@type": "WebPage", "name": "Лицензия и документы", "url": SITE_URL + "/dokumenty/",
+               "about": {"@id": SITE_URL + "/#org"}}
+    page("/dokumenty/", f"Лицензия на дезинфекцию № {LICENSE_NO} и документы | {BRAND}",
+         f"Государственная лицензия ТОО «DezClub» на дезинфекцию, дезинсекцию и дератизацию № {LICENSE_NO} от {LICENSE_DATE}, документы специалистов и свидетельства на препараты.",
+         body, [lic_sch], crumbs=[("Лицензия и документы", "/dokumenty/")], kw="лицензия документы сертификаты свидетельства", prio="0.6")
     # политика конфиденциальности
     P = [
      ("1. Общие положения", [f"Настоящая политика определяет порядок обработки и защиты персональных данных пользователей сайта {SITE_URL.replace('https://','')} (далее — Сайт). Оператор персональных данных — {COMPANY['legal']}, БИН {COMPANY['bin']}, адрес: {COMPANY['address']} (далее — Оператор).",
@@ -686,7 +714,8 @@ def build_meta():
     llms = [f"# {BRAND} — санитарная служба (Казахстан)", "",
             f"> {COMPANY['legal']} (БИН {COMPANY['bin']}) — дезинфекция, дезинсекция, дератизация, фумигация, дезодорация, озонирование, акарицидная и гербицидная обработка, pest control. Основная база — Алматы ({COMPANY['street']}), работа по всему Казахстану.", "",
             f"- Телефон и WhatsApp: {PHONE_DISPLAY}", f"- Сайт: {SITE_URL}/", "- Клиенты: квартиры, частные дома, кафе, магазины, склады, гостиницы, офисы, общежития, предприятия, участки",
-            "- Документы: договор, акт выполненных работ, журналы учёта, схема точек контроля; безналичный расчёт для юрлиц", "",
+            "- Документы: договор, акт выполненных работ, журналы учёта, схема точек контроля; безналичный расчёт для юрлиц",
+            f"- Государственная лицензия на дезинфекцию, дезинсекцию, дератизацию № {LICENSE_NO} от {LICENSE_DATE} ({LICENSE_BY}): {SITE_URL}/dokumenty/", "",
             "## Услуги"] + [f"- [{s['title']}]({SITE_URL}/uslugi/{s['slug']}/): {s['sub']}" for s in SERVICES] + \
            ["", "## Вредители"] + [f"- [Уничтожение {p['gen']}]({SITE_URL}/vrediteli/{p['slug']}/)" for p in PESTS] + \
            ["", "## Города"] + [f"- [{c[1]}]({SITE_URL}{city_url(c[0])})" for c in CITIES] + \
@@ -712,7 +741,7 @@ def build_assets():
         if (ROOT / "assets" / f).exists():
             shutil.copy(ROOT / "assets" / f, DIST / f)
 
-VER = "2610182300"  # версия файлов: менять при обновлении стилей, скриптов и фото
+VER = "2610182330"  # версия файлов: менять при обновлении стилей, скриптов и фото
 MV = VER
 
 if __name__ == "__main__":
