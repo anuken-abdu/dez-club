@@ -34,6 +34,9 @@
   /* ---------------- город ---------------- */
   function findCity(slug) { for (var i = 0; i < CITIES.length; i++) if (CITIES[i][0] === slug) return CITIES[i]; return CITIES[0]; }
   var body = document.body;
+  var qCity = null;
+  try { qCity = new URLSearchParams(location.search).get("city"); } catch (e) {}
+  if (qCity && CITIES.some(function (c) { return c[0] === qCity; })) store.set("dz_city", qCity);
   var city = findCity(body.getAttribute("data-fixed") ? body.getAttribute("data-city") : (store.get("dz_city") || "almaty"));
   if (body.getAttribute("data-fixed")) store.set("dz_city", city[0]);
 

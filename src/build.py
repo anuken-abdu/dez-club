@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from data import *
-from icons import icon, ui, ICONS
+from icons import icon, ui
 
 ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
@@ -32,10 +32,10 @@ PAGES = []          # для sitemap и поиска
 SEARCH = []
 
 # ------------------------------------------------------------------ части
-LOGO_EM = '''<svg class="logo-em" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="21" fill="#e8f8fb"/><path d="M32 5a27 27 0 0 1 26.6 22.4" stroke="#f4d21c" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M58.7 36.5A27 27 0 1 1 23.3 6.4" stroke="#05a9c5" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M32 15.5 45.5 20.6v10.2c0 9.3-5.9 15.6-13.5 18.7-7.6-3.1-13.5-9.4-13.5-18.7V20.6z" fill="#05a9c5"/><path d="M32 24.5c3.3 4.2 5.4 7.4 5.4 10.1a5.4 5.4 0 0 1-10.8 0c0-2.7 2.1-5.9 5.4-10.1z" fill="#fff"/></svg>'''
+LOGO_IMG = '<img class="logo-em" src="/assets/logo-mark.png" alt="" width="88" height="72">'
 
 def logo(tag="a"):
-    return f'''<a class="logo" href="/" aria-label="{BRAND} — на главную">{LOGO_EM}<span class="logo-t"><span class="logo-n">Dez<b>Club</b></span><span class="logo-s">{BRAND_SUB}</span></span></a>'''
+    return f'''<a class="logo" href="/" aria-label="{BRAND} — на главную">{LOGO_IMG}<span class="logo-t"><span class="logo-n">DezClub</span><span class="logo-tag">{BRAND_TAG}</span></span></a>'''
 
 def mega_groups(s):
     slug = s["slug"]
@@ -155,7 +155,7 @@ def footer():
     obj = "".join(f'<li><a href="/obekty/{o[0]}/">{o[1]}</a></li>' for o in OBJECTS)
     return f'''<footer class="ftr"><div class="wrap">
  <div class="ftr-g">
-  <div>{logo()}<p class="ftr-req">{E(COMPANY["legal"])}<br>БИН {COMPANY["bin"]}<br>{E(COMPANY["address"])}</p></div>
+  <div>{logo()}<p class="ftr-req">{BRAND_SUB.capitalize()}.<br>{E(COMPANY["legal"])}, БИН {COMPANY["bin"]}<br>{E(COMPANY["address"])}</p></div>
   <div><h4>Услуги</h4><ul>{svc}</ul></div>
   <div class="f-pst"><h4>Вредители</h4><ul>{pst}</ul></div>
   <div class="f-obj"><h4>Объекты</h4><ul>{obj}</ul></div>
@@ -165,7 +165,7 @@ def footer():
    <li><a href="/kontakty/">Адрес и карта</a></li><li><a href="/oplata/">Оплата и реквизиты</a></li><li><a href="/o-kompanii/">О компании</a></li><li><a href="/portfolio/">Портфолио</a></li><li><a href="/otzyvy/">Отзывы</a></li><li><a href="/stati/">Статьи</a></li><li><a href="/goroda/">Города Казахстана</a></li></ul>
   </div>
  </div>
- <div class="ftr-b"><span>© {YEAR} {E(COMPANY["legal"])}. Дезинфекция, дезинсекция и дератизация по всему Казахстану.</span><span>Разработка сайта и реклама — <a href="https://wa.me/{STUDIO_WA}" target="_blank" rel="noopener">Anuken</a></span></div>
+ <div class="ftr-b"><span>© {YEAR} {E(COMPANY["legal"])}. Дезинфекция, дезинсекция и дератизация по всему Казахстану.</span><a href="/privacy-policy/">Политика конфиденциальности</a></div>
 </div></footer>'''
 
 def svc_options():
@@ -194,7 +194,7 @@ def overlays():
  <h3 id="cbT">Заказать звонок</h3><p>Оставьте имя и номер — откроется WhatsApp с готовой заявкой, специалист перезвонит.</p>
  <form class="frm" data-wa-form="Здравствуйте! Прошу перезвонить."><div class="fld"><label for="cbN">Имя</label><input id="cbN" name="name" autocomplete="name" required></div>
  <div class="fld"><label for="cbP">Телефон</label><input id="cbP" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" required data-mask></div>
- <button class="btn btn-y" type="submit">Отправить заявку</button><p class="frm-note">Или позвоните: <a href="tel:{PHONE_TEL}">{PHONE_DISPLAY}</a></p></form>
+ <button class="btn btn-y" type="submit">Отправить заявку</button><p class="frm-note">Нажимая кнопку, вы соглашаетесь с <a href="/privacy-policy/">политикой конфиденциальности</a>. Или позвоните: <a href="tel:{PHONE_TEL}">{PHONE_DISPLAY}</a></p></form>
 </div></div>
 
 <div class="mdl mdl-city" id="cityM" role="dialog" aria-modal="true" aria-labelledby="ctT"><div class="mdl-c">
@@ -219,7 +219,8 @@ def org_schema():
                     "addressRegion": "Алматы", "addressCountry": "KZ"},
         "geo": {"@type": "GeoCoordinates", "latitude": COMPANY["lat"], "longitude": COMPANY["lng"]},
         "areaServed": [{"@type": "Country", "name": "Казахстан"}] + [{"@type": "City", "name": c[1]} for c in CITIES],
-        "founder": {"@type": "Person", "name": COMPANY["director"]},
+        "founder": {"@type": "Person", "name": COMPANY["director"], "jobTitle": "Генеральный директор"},
+        "employee": [{"@type": "Person", "name": n, "jobTitle": r} for n, r in TEAM],
         "contactPoint": {"@type": "ContactPoint", "telephone": PHONE_TEL, "contactType": "customer service",
                          "availableLanguage": ["ru", "kk"], "areaServed": "KZ"},
         "makesOffer": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": s["name"], "url": f"{SITE_URL}/uslugi/{s['slug']}/"}} for s in SERVICES],
@@ -264,12 +265,12 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
 <meta name="description" content="{E(desc)}">
 <link rel="canonical" href="{full}">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<meta name="theme-color" content="#05a9c5">
+<meta name="theme-color" content="#4f9f2a">
 <meta name="geo.region" content="KZ-75"><meta name="geo.placename" content="Алматы"><meta name="geo.position" content="{COMPANY["lat"]};{COMPANY["lng"]}"><meta name="ICBM" content="{COMPANY["lat"]}, {COMPANY["lng"]}">
 <meta property="og:type" content="website"><meta property="og:locale" content="ru_KZ"><meta property="og:site_name" content="{BRAND}">
 <meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}"><meta property="og:url" content="{full}"><meta property="og:image" content="{SITE_URL}/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.png" sizes="96x96" type="image/png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon.png" sizes="96x96" type="image/png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/montserrat-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/montserrat-cyrillic-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/styles.css?v={VER}">
@@ -376,7 +377,7 @@ def lead_form(title="Рассчитаем стоимость обработки"
  <div class="fld"><label for="lfC">Город</label><select id="lfC" name="city" data-city-sel>{copts}</select></div>
  <div class="fld full"><label for="lfM">Что случилось (необязательно)</label><textarea id="lfM" name="msg" rows="3" placeholder="Например: тараканы на кухне, квартира 60 м²"></textarea></div>
  <div class="full"><button class="btn btn-y" type="submit">Получить расчёт в WhatsApp</button></div>
- <p class="frm-note full">Нажимая кнопку, вы соглашаетесь на обработку персональных данных для связи с вами.</p>
+ <p class="frm-note full">Нажимая кнопку, вы соглашаетесь с <a href="/privacy-policy/">политикой конфиденциальности</a>.</p>
 </form></div></div></section>'''
 
 def geo_sec(cur="almaty"):
@@ -387,14 +388,22 @@ def geo_sec(cur="almaty"):
 <div><h3>Города Казахстана</h3><p>Работаем по всему Казахстану. Выберите город, чтобы узнать условия выезда.</p><ul class="chips">{cities}</ul></div></div>''', alt=True)
 
 def hero_art():
-    hp = (ROOT / "images" / "hero.png")
-    shield = f'''<div class="art-c"></div><svg class="art-sh" viewBox="0 0 200 230" aria-hidden="true"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14bcd8"/><stop offset="1" stop-color="#0391a9"/></linearGradient></defs><path d="M100 6 188 38v72c0 58-38 95-88 114C50 205 12 168 12 110V38z" fill="url(#hg)"/><path d="M100 22 172 48v62c0 48-31 79-72 95-41-16-72-47-72-95V48z" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3"/><circle cx="100" cy="112" r="56" fill="#fff"/><svg x="62" y="74" width="76" height="76" viewBox="0 0 48 48" style="color:#05a9c5">{ICONS["cockroach"][ICONS["cockroach"].index(">")+1:-6]}</svg><path d="M66 78 134 146" stroke="#ef5160" stroke-width="9" stroke-linecap="round"/></svg>'''
-    if hp.exists():
-        shield = '<img src="/images/hero.png" alt="Специалисты DezClub в защитных костюмах" width="900" height="900" fetchpriority="high">'
-    return f'''<div class="hero-art">{shield}
-<div class="art-card art-k1">{icon("s_rat")}<span>Дератизация<small>крысы и мыши</small></span></div>
-<div class="art-card art-k2">{icon("cockroach")}<span>Дезинсекция<small>тараканы, клопы, блохи</small></span></div>
-<div class="art-card art-k3">{icon("doc")}<span>Договор и акт выполненных работ<small>для квартир, домов и бизнеса</small></span></div></div>'''
+    return f'''<div class="hero-art"><img class="hero-ph" src="/images/hero.png" alt="Специалисты {BRAND} в защитных костюмах" width="900" height="900" fetchpriority="high">
+<div class="art-card art-k3">{icon("doc", eager=True)}<span>Договор и акт выполненных работ<small>для квартир, домов и бизнеса</small></span></div></div>'''
+
+def trust_html():
+    return '<ul class="trust">' + "".join(f'<li><img src="/assets/ic/{b}.svg" alt="" width="64" height="64"><span>{t}</span></li>' for b, t in TRUST) + "</ul>"
+
+def initials(n):
+    p = n.split()
+    return (p[1][0] + p[0][0]) if len(p) > 1 else p[0][0]
+
+def team_html():
+    cards = "".join(f'''<li class="tm"><div class="tm-ph"><span>{initials(n)}</span><img src="/images/team/team-{i}.jpg" alt="{E(n)} — {E(r)}" width="400" height="400" loading="lazy" onerror="this.remove()"></div><b>{E(n)}</b><small>{E(r)}</small></li>''' for i, (n, r) in enumerate(TEAM, 1))
+    return f'<ul class="team">{cards}</ul>'
+
+def team_sec(alt=False):
+    return sec("Наша команда", team_html(), "Специалисты, которые отвечают за качество каждой обработки.", alt=alt, sid="team")
 
 def ph(h1, lead, ic, btn_text):
     return f'''<section class="ph"><div class="wrap"><!--CRUMBS--></div><div class="wrap ph-in"><div><h1>{h1}</h1><p class="lead-t">{lead}</p>{btns_main(btn_text)}</div><div class="ph-ic">{icon(ic)}</div></div></section>'''
@@ -424,13 +433,14 @@ def build_home():
 <h1>Санитарная служба дезинсекции, дезинфекции, дератизации и пест‑контроля <span data-cin>в Алматы</span></h1>
 <p class="hero-lead">Избавляем дома, бизнес и производства от насекомых, грызунов, бактерий и запахов. <b>Подбираем метод под объект</b> — квартиру с детьми, кафе, склад или участок, — работаем <b>по договору</b> и выдаём акт выполненных работ.</p>
 {btns_main()}
-<ul class="hero-pts"><li>{ui("check")}Квартиры и частные дома</li><li>{ui("check")}Кафе, магазины, склады</li><li>{ui("check")}Документы для СЭС</li></ul>
+{trust_html()}
 </div>{hero_art()}</div></section>
 {sec("Закрываем все вопросы по санитарным нормам", svc_grid(), "Дезинфекция, дезинсекция, дератизация и смежные обработки для жилья, бизнеса и территорий.", ("Все услуги", "/uslugi/"))}
 {sec("От кого избавляем", pest_grid(), "Определяем вид вредителя и подбираем средство, которое действует именно на него.", ("Все вредители", "/vrediteli/"), alt=True)}
 {sec("Как мы работаем", steps_html())}
 {portfolio_sec(alt=True)}
 {sec("Почему выбирают " + BRAND, adv_html())}
+{team_sec(alt=True)}
 {biz_html()}
 {sec("Обрабатываем любые объекты", obj_grid(), "", ("Все объекты", "/obekty/"), alt=True)}
 {reviews_sec()}
@@ -603,7 +613,7 @@ def build_misc():
     # оплата
     rows = [("Получатель", COMPANY["legal"]), ("БИН", COMPANY["bin"]), ("ИИК (номер счёта)", COMPANY["iik"]),
             ("БИК банка", COMPANY["bik"]), ("КБе", COMPANY["kbe"]), ("Юридический адрес", "Казахстан, Алматинская обл., г. Алматы, мкр Турксибский, ул. Бекмаханова, дом 96"),
-            ("Руководитель", COMPANY["director"])]
+            ("Генеральный директор", COMPANY["director"])]
     tbl = '<table class="req">' + "".join(f'<tr><th>{k}</th><td><span>{E(v)}</span>{"<button class=cp type=button data-copy=\"" + E(v) + "\">копировать</button>" if k in ("БИН","ИИК (номер счёта)","БИК банка") else ""}</td></tr>' for k, v in rows) + "</table>"
     pays = ["Безналичный расчёт по счёту для ТОО и ИП", "Оплата по договору с актом выполненных работ", "Для частных клиентов — наличными или переводом, способ согласуем при заявке"]
     body = f'''{ph("Оплата и реквизиты", "Работаем официально как ТОО. Для организаций выставляем счёт, заключаем договор и передаём закрывающие документы.", "card", "Здравствуйте! Нужен счёт на оплату.")}
@@ -634,10 +644,32 @@ def build_misc():
 <h2>Чем мы занимаемся</h2><p>Мы уничтожаем насекомых и грызунов, проводим дезинфекцию, дезодорацию и озонирование помещений, обрабатываем территории от клещей и сорняков, а для предприятий выстраиваем систему pest control. Работаем с квартирами, частными домами, кафе, магазинами, складами, гостиницами, офисами и производствами.</p>
 <h2>Как мы работаем</h2><p>Каждую обработку начинаем с выяснения ситуации: какой вредитель, какой объект, кто в нём живёт или работает. От этого зависит выбор препарата, метод и время возвращения в помещение. После работы выдаём акт и рекомендации, для бизнеса — полный пакет документов.</p>
 <h2>Наши принципы</h2>{adv_html()}
-<h2>Реквизиты</h2><p>{E(COMPANY["legal"])}, БИН {COMPANY["bin"]}. Руководитель — {E(COMPANY["director"])}. Адрес: {E(COMPANY["address"])}. <a href="/oplata/">Все реквизиты</a>.</p>
-</article>{side_box("консультация")}</div></section>{portfolio_sec(alt=True)}{reviews_sec()}'''
+<h2>Документы и стандарты</h2>{trust_html()}
+<h2>Реквизиты</h2><p>{E(COMPANY["legal"])}, БИН {COMPANY["bin"]}. Генеральный директор — {E(COMPANY["director"])}. Адрес: {E(COMPANY["address"])}. <a href="/oplata/">Все реквизиты</a>.</p>
+</article>{side_box("консультация")}</div></section>{team_sec(alt=True)}{portfolio_sec()}{reviews_sec(alt=True)}'''
     page("/o-kompanii/", f"О компании ТОО DezClub — санитарная служба | {BRAND}", "ТОО DezClub — санитарная служба дезинфекции, дезинсекции и дератизации в Алматы и по всему Казахстану.",
          body, crumbs=[("О компании", "/o-kompanii/")], kw="о компании", prio="0.5")
+    # политика конфиденциальности
+    P = [
+     ("1. Общие положения", [f"Настоящая политика определяет порядок обработки и защиты персональных данных пользователей сайта {SITE_URL.replace('https://','')} (далее — Сайт). Оператор персональных данных — {COMPANY['legal']}, БИН {COMPANY['bin']}, адрес: {COMPANY['address']} (далее — Оператор).",
+       "Обработка персональных данных осуществляется в соответствии с Законом Республики Казахстан «О персональных данных и их защите». Используя Сайт и отправляя заявку, пользователь подтверждает согласие с настоящей политикой."]),
+     ("2. Какие данные мы обрабатываем", ["Данные, которые пользователь указывает сам: имя, номер телефона, город, описание задачи и сообщения, отправленные через онлайн-консультант, форму заявки или WhatsApp.",
+       "Данные, которые собираются автоматически: технические сведения о посещении (тип устройства и браузера, страницы, время визита), файлы cookie и сведения из локального хранилища браузера (выбранный город, история чата в текущем сеансе)."]),
+     ("3. Цели обработки", ["Ответ на обращения и консультация по услугам; расчёт стоимости и согласование выезда специалиста; заключение и исполнение договора, подготовка актов и иных документов; улучшение работы Сайта и оценка эффективности рекламы. Рекламные рассылки направляются только с отдельного согласия пользователя."]),
+     ("4. Передача третьим лицам", ["Данные передаются только сотрудникам Оператора, выполняющим обработку на объекте, и только для оказания услуги. Оператор не продаёт и не передаёт персональные данные третьим лицам в рекламных целях без согласия пользователя.",
+       "Для работы Сайта используются сторонние сервисы: мессенджер WhatsApp (при переходе в чат), сервисы веб-аналитики и рекламы Google, карты Google, а также сервис обработки сообщений онлайн-консультанта. Эти сервисы обрабатывают данные по собственным правилам. Данные также могут быть предоставлены государственным органам в случаях, предусмотренных законодательством Республики Казахстан."]),
+     ("5. Хранение и защита", ["Оператор принимает организационные и технические меры для защиты данных от неправомерного доступа, изменения, раскрытия и уничтожения: ограничение доступа, защита учётных записей, использование защищённого соединения (HTTPS).",
+       "Персональные данные хранятся не дольше, чем этого требуют цели обработки или законодательство, после чего удаляются или обезличиваются."]),
+     ("6. Права пользователя", ["Пользователь вправе получить сведения о своих персональных данных, потребовать их уточнения, блокирования или удаления, отозвать согласие на обработку, а также обратиться в уполномоченный орган по защите персональных данных. Для этого достаточно связаться с Оператором по контактам, указанным ниже."]),
+     ("7. Файлы cookie", ["Cookie и локальное хранилище браузера используются для удобства работы Сайта (запоминание города, работа чата) и для аналитики. Пользователь может ограничить или удалить cookie в настройках браузера; при этом часть функций Сайта может работать некорректно."]),
+     ("8. Контакты", [f"По вопросам обработки персональных данных: телефон и WhatsApp {PHONE_DISPLAY}, адрес: {COMPANY['address']}."]),
+     ("9. Изменение политики", ["Оператор вправе вносить изменения в настоящую политику. Актуальная редакция всегда размещена на этой странице и вступает в силу с момента публикации."]),
+    ]
+    content = "".join(f"<h2>{h}</h2>" + "".join(f"<p>{E(x)}</p>" for x in ps) for h, ps in P)
+    body = f'''<section class="ph"><div class="wrap"><!--CRUMBS--></div><div class="wrap ph-in"><div><h1>Политика конфиденциальности</h1><p class="lead-t">Как {E(COMPANY["legal"])} обрабатывает и защищает персональные данные пользователей сайта. Редакция от 18.10.2026.</p></div><div class="ph-ic">{icon("shield")}</div></div></section>
+<section class="sec"><div class="wrap"><article class="prose">{content}</article></div></section>'''
+    page("/privacy-policy/", f"Политика конфиденциальности | {BRAND}", f"Политика обработки персональных данных {COMPANY['legal']}: какие данные собираются на сайте, цели, передача, хранение и права пользователей.",
+         body, crumbs=[("Политика конфиденциальности", "/privacy-policy/")], kw="политика конфиденциальности персональные данные", prio="0.2")
     # 404
     body = f'''<section class="ph"><div class="wrap ph-in" style="padding-top:60px"><div><h1>Страница не найдена</h1><p class="lead-t">Возможно, она была перемещена. Перейдите на главную или выберите услугу.</p><div class="btns"><a class="btn btn-y" href="/">На главную</a><a class="btn btn-o" href="/uslugi/">Все услуги</a></div></div><div class="ph-ic">{icon("s_pest")}</div></div></section>{sec("Услуги", svc_grid(compact=True, limit=8))}'''
     page("/404.html", f"Страница не найдена | {BRAND}", "Страница не найдена.", body)
@@ -675,9 +707,6 @@ def build_assets():
     for d in ("images", "videos"):
         if (ROOT / d).exists():
             shutil.copytree(ROOT / d, DIST / d, dirs_exist_ok=True)
-    shutil.copytree(ROOT / "api", DIST / "api", dirs_exist_ok=True)
-    fav = LOGO_EM.replace('class="logo-em" ', 'xmlns="http://www.w3.org/2000/svg" ')
-    (DIST / "favicon.svg").write_text(fav, encoding="utf-8")
     for f in ("favicon.png", "apple-touch-icon.png"):
         if (ROOT / "assets" / f).exists():
             shutil.copy(ROOT / "assets" / f, DIST / f)
