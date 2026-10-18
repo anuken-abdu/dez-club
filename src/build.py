@@ -399,7 +399,7 @@ def initials(n):
     return (p[1][0] + p[0][0]) if len(p) > 1 else p[0][0]
 
 def team_html():
-    cards = "".join(f'''<li class="tm"><div class="tm-ph"><span>{initials(n)}</span><img src="/images/team/team-{i}.jpg" alt="{E(n)} — {E(r)}" width="400" height="400" loading="lazy" onerror="this.remove()"></div><b>{E(n)}</b><small>{E(r)}</small></li>''' for i, (n, r) in enumerate(TEAM, 1))
+    cards = "".join(f'''<li class="tm"><div class="tm-ph"><span>{initials(n)}</span><img src="/images/team/team-{i}.webp" alt="{E(n)} — {E(r)}" width="914" height="1000" loading="lazy" style="object-position:50% 20%" onerror="this.remove()"></div><b>{E(n)}</b><small>{E(r)}</small></li>''' for i, (n, r) in enumerate(TEAM, 1))
     return f'<ul class="team">{cards}</ul>'
 
 def team_sec(alt=False):
@@ -711,7 +711,7 @@ def build_assets():
         if (ROOT / "assets" / f).exists():
             shutil.copy(ROOT / "assets" / f, DIST / f)
 
-VER = datetime.datetime.now().strftime("%y%m%d%H%M")
+VER = "2610182153"  # менять при изменении styles.css / app.js
 
 if __name__ == "__main__":
     if DIST.exists(): shutil.rmtree(DIST)
