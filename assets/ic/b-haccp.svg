@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><path id="ht" d="M12 32a20 20 0 0 1 40 0"/><path id="hb" d="M10.5 32a21.5 21.5 0 0 0 43 0"/><linearGradient id="hg" x1="10" y1="6" x2="54" y2="58" gradientUnits="userSpaceOnUse"><stop stop-color="#3A4741"/><stop offset="1" stop-color="#1F2723"/></linearGradient></defs>
+<circle cx="32" cy="32" r="31" fill="url(#hg)"/><circle cx="32" cy="32" r="27.6" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width=".8"/>
+<text font-family="Arial,Helvetica,sans-serif" font-size="6.2" font-weight="700" letter-spacing="1.4" fill="#fff" text-anchor="middle"><textPath href="#ht" startOffset="50%">CERTIFIED</textPath></text>
+<text font-family="Arial,Helvetica,sans-serif" font-size="5.6" font-weight="700" letter-spacing="1.2" fill="#9FD27A" text-anchor="middle"><textPath href="#hb" startOffset="50%" side="right">FOOD SAFETY</textPath></text>
+<rect x="5" y="25" width="54" height="14" rx="2" fill="#4F9F2A"/><text x="32" y="36.2" font-family="Arial Black,Arial,Helvetica,sans-serif" font-size="11.5" font-weight="900" fill="#fff" text-anchor="middle" letter-spacing=".4">HACCP</text>
+</svg>
