@@ -388,7 +388,7 @@ def geo_sec(cur="almaty"):
 <div><h3>Города Казахстана</h3><p>Работаем по всему Казахстану. Выберите город, чтобы узнать условия выезда.</p><ul class="chips">{cities}</ul></div></div>''', alt=True)
 
 def hero_art():
-    return f'''<div class="hero-art"><img class="hero-ph" src="/images/hero.png" alt="Специалисты {BRAND} в защитных костюмах" width="900" height="900" fetchpriority="high">
+    return f'''<div class="hero-art"><img class="hero-ph" src="/images/hero-1.webp" alt="Специалисты {BRAND} в защитных костюмах" width="900" height="900" fetchpriority="high">
 <div class="art-card art-k3">{icon("doc", eager=True)}<span>Договор и акт выполненных работ<small>для квартир, домов и бизнеса</small></span></div></div>'''
 
 def trust_html():
