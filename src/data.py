@@ -9,7 +9,8 @@ PHONE_DISPLAY = "+7 700 525 01 08"
 PHONE_TEL = "+77005250108"
 WA_NUMBER = "77005250108"
 GADS_ID = "AW-18464190084"   # Google Ads
-GADS_CALL_LABEL = "f8elCPb4uKIdEITdtORE"  # конверсия: клики по телефону и WhatsApp
+GADS_CALL_LABEL = "f8elCPb4uKIdEITdtORE"  # конверсия «Интерактивные номера телефонов»: клик по номеру
+GADS_WA_LABEL = "cCTZCOqoq6IdEITdtORE"    # конверсия «Контакт»: переход в WhatsApp (кнопки, формы, чат)
 GA4_ID = "G-SFKKH7V028"     # Google Analytics 4
 
 COMPANY = {

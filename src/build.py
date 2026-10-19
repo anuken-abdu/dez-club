@@ -293,7 +293,7 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
 </main>
 {footer()}
 {overlays()}
-<script>window.DZ={json.dumps({"wa": WA_NUMBER, "ads": GADS_ID, "adsLabel": GADS_CALL_LABEL, "ga": GA4_ID, "price": PRICE_TXT, "promo": PROMO_TXT, "manager": MANAGER[1], "avatar": MANAGER[2] + "?v=" + MV}, ensure_ascii=False)};</script>
+<script>window.DZ={json.dumps({"wa": WA_NUMBER, "ads": GADS_ID, "adsLabel": GADS_CALL_LABEL, "adsLabelWa": GADS_WA_LABEL, "ga": GA4_ID, "price": PRICE_TXT, "promo": PROMO_TXT, "manager": MANAGER[1], "avatar": MANAGER[2] + "?v=" + MV}, ensure_ascii=False)};</script>
 <script src="/assets/app.js?v={VER}" defer></script>
 </body>
 </html>'''
@@ -888,7 +888,7 @@ def build_assets():
         if (ROOT / "assets" / f).exists():
             shutil.copy(ROOT / "assets" / f, DIST / f)
 
-VER = "2610192010"  # версия файлов: менять при обновлении стилей, скриптов и фото
+VER = "2610192035"  # версия файлов: менять при обновлении стилей, скриптов и фото
 MV = VER
 
 if __name__ == "__main__":

@@ -24,7 +24,8 @@
   function track(kind) {
     var t = Date.now(); if (t - lastTrack < 1500) return; lastTrack = t;
     if (typeof window.gtag !== "function") return;
-    if (CFG.ads && CFG.adsLabel) window.gtag("event", "conversion", { send_to: CFG.ads + "/" + CFG.adsLabel, value: 1.0, currency: "USD" });
+    var label = kind === "phone_click" ? CFG.adsLabel : (CFG.adsLabelWa || CFG.adsLabel);
+    if (CFG.ads && label) window.gtag("event", "conversion", { send_to: CFG.ads + "/" + label, value: 1.0, currency: "USD" });
     if (CFG.ga) window.gtag("event", kind || "whatsapp_click", { page_path: location.pathname, city: city ? city[1] : "" });
   }
   var lockCount = 0;
