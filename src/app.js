@@ -20,10 +20,12 @@
     if (w) { try { w.opener = null; } catch (e) {} } else location.href = u;
     track();
   }
-  function track() {
-    if (CFG.ads && CFG.adsLabel && typeof window.gtag === "function") {
-      window.gtag("event", "conversion", { send_to: CFG.ads + "/" + CFG.adsLabel });
-    }
+  var lastTrack = 0;
+  function track(kind) {
+    var t = Date.now(); if (t - lastTrack < 1500) return; lastTrack = t;
+    if (typeof window.gtag !== "function") return;
+    if (CFG.ads && CFG.adsLabel) window.gtag("event", "conversion", { send_to: CFG.ads + "/" + CFG.adsLabel, value: 1.0, currency: "USD" });
+    if (CFG.ga) window.gtag("event", kind || "whatsapp_click", { page_path: location.pathname, city: city ? city[1] : "" });
   }
   var lockCount = 0;
   function lock(on) {
@@ -236,8 +238,8 @@
   });
   document.addEventListener("click", function (e) {
     var a = e.target.closest('a[href^="tel:"], a[href*="wa.me/"]');
-    if (a && a.getAttribute("href").indexOf(CFG.wa) > -1) track();
-    else if (a && a.getAttribute("href").indexOf("tel:") === 0) track();
+    if (a && a.getAttribute("href").indexOf("tel:") === 0) track("phone_click");
+    else if (a && a.getAttribute("href").indexOf(CFG.wa) > -1) track("whatsapp_click");
   });
   $$("[data-copy]").forEach(function (b) {
     b.addEventListener("click", function () {
@@ -452,7 +454,7 @@
     $$("[data-chat]").forEach(function (b) { b.addEventListener("click", function (e) { e.preventDefault(); openChat(); }); });
     $$("[data-chat-x]").forEach(function (b) { b.addEventListener("click", closeChat); });
     chF.addEventListener("submit", function (e) { e.preventDefault(); var v = chI.value; chI.value = ""; send(v); });
-    chWa.addEventListener("click", function () { chWa.href = waUrl(transcript()); track(); });
+    chWa.addEventListener("click", function () { chWa.href = waUrl(transcript()); });
   }
   var tip = $("#fabTip");
   function hideTip() { if (tip) tip.classList.remove("on"); }

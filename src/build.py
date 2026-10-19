@@ -263,7 +263,7 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
         body = body.replace("<!--CRUMBS-->", crumbs_html)
     gtag = ""
     if GADS_ID:
-        gtag = f'<script async src="https://www.googletagmanager.com/gtag/js?id={GADS_ID}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","{GADS_ID}");</script>'
+        gtag = f'<!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id={GADS_ID}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","{GADS_ID}");gtag("config","{GA4_ID}");</script>'
     ld = "".join(f'<script type="application/ld+json">{json.dumps(s, ensure_ascii=False, separators=(",", ":"))}</script>' for s in sch)
     data_city = f' data-city="{city_fixed}" data-fixed="1"' if city_fixed else ""
     doc = f'''<!doctype html>
@@ -293,7 +293,7 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
 </main>
 {footer()}
 {overlays()}
-<script>window.DZ={json.dumps({"wa": WA_NUMBER, "ads": GADS_ID, "adsLabel": GADS_CALL_LABEL, "price": PRICE_TXT, "promo": PROMO_TXT, "manager": MANAGER[1], "avatar": MANAGER[2] + "?v=" + MV}, ensure_ascii=False)};</script>
+<script>window.DZ={json.dumps({"wa": WA_NUMBER, "ads": GADS_ID, "adsLabel": GADS_CALL_LABEL, "ga": GA4_ID, "price": PRICE_TXT, "promo": PROMO_TXT, "manager": MANAGER[1], "avatar": MANAGER[2] + "?v=" + MV}, ensure_ascii=False)};</script>
 <script src="/assets/app.js?v={VER}" defer></script>
 </body>
 </html>'''
@@ -888,7 +888,7 @@ def build_assets():
         if (ROOT / "assets" / f).exists():
             shutil.copy(ROOT / "assets" / f, DIST / f)
 
-VER = "2610191800"  # версия файлов: менять при обновлении стилей, скриптов и фото
+VER = "2610192010"  # версия файлов: менять при обновлении стилей, скриптов и фото
 MV = VER
 
 if __name__ == "__main__":

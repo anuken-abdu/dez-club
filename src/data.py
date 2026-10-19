@@ -8,8 +8,9 @@ BRAND_TAG = "мир без вредителей"
 PHONE_DISPLAY = "+7 700 525 01 08"
 PHONE_TEL = "+77005250108"
 WA_NUMBER = "77005250108"
-GADS_ID = ""          # например "AW-1234567890" — вставить при запуске рекламы
-GADS_CALL_LABEL = ""  # метка конверсии для кликов по телефону/WhatsApp
+GADS_ID = "AW-18464190084"   # Google Ads
+GADS_CALL_LABEL = "f8elCPb4uKIdEITdtORE"  # конверсия: клики по телефону и WhatsApp
+GA4_ID = "G-SFKKH7V028"     # Google Analytics 4
 
 COMPANY = {
     "legal": 'ТОО "DezClub"',
