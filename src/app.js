@@ -498,6 +498,33 @@
     var lbl = b.firstChild.nodeValue;
     b.addEventListener("click", function () { var o = t.classList.toggle("open"); b.classList.toggle("open", o); b.firstChild.nodeValue = o ? "Свернуть " : lbl; });
   });
+  // «Показать ещё» вместо горизонтальной прокрутки (только телефон, на ПК скрытые карточки видны)
+  var CHEV = '<svg class="ui ui-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>';
+  [[".pest-g", 6], [".obj-g", 6], [".oth-g", 4], [".adv-g", 4], [".team", 4], [".eq-g", 2], ["#scrR", 2], ["#scrV", 2], ["#scrD", 2], [".doc-g", 4], [".svc-g", 6], [".art-list", 3]].forEach(function (cfg) {
+    $$(cfg[0]).forEach(function (g) {
+      var kids = Array.prototype.slice.call(g.children), n = cfg[1];
+      if (kids.length <= n + 1) return;
+      kids.slice(n).forEach(function (k) { k.classList.add("m-hid"); });
+      var rest = kids.length - n, lbl = "Показать ещё (" + rest + ") ";
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "m-more m-cut-btn"; b.innerHTML = lbl + CHEV;
+      b.addEventListener("click", function () {
+        var o = g.classList.toggle("m-open"); b.classList.toggle("open", o); b.firstChild.nodeValue = o ? "Свернуть " : lbl;
+        if (!o) { var y = g.getBoundingClientRect().top + window.pageYOffset - 140; if (window.pageYOffset > y) window.scrollTo(0, y); }
+      });
+      var host = g.parentNode && g.parentNode.classList.contains("scr") ? g.parentNode : g;
+      host.parentNode.insertBefore(b, host.nextSibling);
+    });
+  });
+  // тарифы: состав раскрывается по кнопке
+  $$(".tf").forEach(function (t) {
+    var ul = t.querySelector("ul"); if (!ul) return;
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "m-more tf-more"; b.innerHTML = "Что входит " + CHEV;
+    ul.parentNode.insertBefore(b, ul);
+    if (t.classList.contains("tf-hot")) { t.classList.add("open"); b.classList.add("open"); }
+    b.addEventListener("click", function () { var o = t.classList.toggle("open"); b.classList.toggle("open", o); });
+  });
   $$(".ftr .f-col h4").forEach(function (h) {
     h.addEventListener("click", function () { if (window.matchMedia("(max-width:767px)").matches) h.parentNode.classList.toggle("open"); });
   });

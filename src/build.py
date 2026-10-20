@@ -278,7 +278,8 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
 <meta property="og:type" content="website"><meta property="og:locale" content="ru_KZ"><meta property="og:site_name" content="{BRAND}">
 <meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}"><meta property="og:url" content="{full}"><meta property="og:image" content="{SITE_URL}{og_img}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="{SITE_URL}{og_img}">
-<link rel="icon" href="/favicon.png" sizes="96x96" type="image/png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png"><link rel="icon" href="/favicon.png" sizes="96x96" type="image/png"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest">
+<script type="application/ld+json">{{"@context":"https://schema.org","@type":"WebSite","name":"{BRAND}","alternateName":"ТОО DezClub","url":"{SITE_URL}/"}}</script>
 <link rel="preload" href="/assets/fonts/montserrat-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/montserrat-cyrillic-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/styles.css?v={VER}">
@@ -927,11 +928,12 @@ def build_assets():
     for d in ("images", "videos"):
         if (ROOT / d).exists():
             shutil.copytree(ROOT / d, DIST / d, dirs_exist_ok=True)
-    for f in ("favicon.png", "apple-touch-icon.png"):
+    for f in ("favicon.png", "favicon.ico", "icon-192.png", "icon-512.png", "apple-touch-icon.png"):
         if (ROOT / "assets" / f).exists():
             shutil.copy(ROOT / "assets" / f, DIST / f)
+    (DIST / "site.webmanifest").write_text(json.dumps({"name": "DezClub — санитарная служба", "short_name": BRAND, "start_url": "/", "display": "browser", "background_color": "#ffffff", "theme_color": "#4f9f2a", "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}]}, ensure_ascii=False), encoding="utf-8")
 
-VER = "2610202300"  # версия файлов: менять при обновлении стилей, скриптов и фото
+VER = "2610210030"  # версия файлов: менять при обновлении стилей, скриптов и фото
 MV = VER
 
 if __name__ == "__main__":
