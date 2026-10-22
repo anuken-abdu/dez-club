@@ -757,7 +757,7 @@ ul,ol{margin:0;padding:0}
 
 /* ===== орнамент DezClub: горы, угловые и боковые элементы, разделители ===== */
 .hero,.ph{position:relative;isolation:isolate}
-.hero::before,.ph::before{content:"";position:absolute;left:50%;bottom:0;height:min(400px,33vw);aspect-ratio:937/306;transform:translateX(-50%);z-index:-1;pointer-events:none;background:url(/assets/orn/mountains.webp?v=2) no-repeat center bottom/100% 100%;opacity:.55;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
+.hero::before,.ph::before{content:"";position:absolute;left:50%;bottom:0;width:min(1224px,100%);height:auto;aspect-ratio:937/306;transform:translateX(-50%);z-index:-1;pointer-events:none;background:url(/assets/orn/mountains.webp?v=2) no-repeat center bottom/100% 100%;opacity:.55;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
 .ph::after{content:"";position:absolute;top:14px;right:max(8px,calc((100vw - 1520px)/2));width:190px;height:220px;z-index:-1;pointer-events:none;background:url(/assets/orn/corner-tr.webp?v=1) no-repeat right top/contain;opacity:.55}
 .sec-h{flex-wrap:wrap;row-gap:18px}
 .sec-h::after{content:"";order:9;flex:0 0 100%;width:100%;height:26px;background:url(/assets/orn/diamond.webp?v=2) no-repeat center/auto 26px,linear-gradient(90deg,rgba(104,146,84,0),rgba(104,146,84,.55) 14%,rgba(104,146,84,.55) 86%,rgba(104,146,84,0)) no-repeat center/100% 1.5px}
@@ -770,12 +770,12 @@ ul,ol{margin:0;padding:0}
 .lead::before,.lead::after{content:"";position:absolute;width:170px;height:196px;z-index:-1;pointer-events:none;opacity:.6}
 .lead::before{left:10px;top:10px;width:190px;height:138px;background:url(/assets/orn/corner-br.webp?v=2) no-repeat right bottom/contain;transform:rotate(180deg)}
 .lead::after{right:10px;bottom:10px;width:190px;height:138px;background:url(/assets/orn/corner-br.webp?v=1) no-repeat right bottom/contain}
-main{padding-bottom:min(300px,24vw)}
+main{padding-bottom:min(300px,32.7vw)}
 .ftr{position:relative}
-.ftr::before{content:"";position:absolute;left:50%;bottom:100%;height:min(300px,24vw);aspect-ratio:937/306;transform:translateX(-50%);pointer-events:none;background:url(/assets/orn/mountains.webp?v=2) no-repeat center bottom/100% 100%;opacity:.75;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
+.ftr::before{content:"";position:absolute;left:50%;bottom:100%;width:min(918px,100%);height:auto;aspect-ratio:937/306;transform:translateX(-50%);pointer-events:none;background:url(/assets/orn/mountains.webp?v=2) no-repeat center bottom/100% 100%;opacity:.75;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
 .m-cut-btn,.tf-more{display:none}
 @media (max-width:767px){
-  .hero::before,.ph::before{height:150px;opacity:.75}
+  .hero::before,.ph::before{width:100%;opacity:.75}
   .ph::after{width:110px;height:128px;top:6px;opacity:.45}
   .sec-h::after{height:20px;background-size:auto 20px,100% 1.5px}
   .sec:has(.geo)::before,.sec:has(.geo)::after{width:130px;height:96px;opacity:.55}
@@ -843,6 +843,7 @@ main{padding-bottom:min(300px,24vw)}
 /* городские страницы: первый экран как на главной + хлебные крошки */
 .hero-c .hero-in{min-height:600px;padding-top:28px}
 @media (max-width:767px){.hero-c .hero-in{min-height:0;padding-top:18px}}
-@media (max-width:767px){main{padding-bottom:130px}.ftr::before{height:130px}}
+@media (max-width:767px){main{padding-bottom:32.7vw}.ftr::before{width:100%}}
+html{overflow-x:clip}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media print{.hdr,.nav,.fab,.mbar,.chat,.ftr{display:none}}
