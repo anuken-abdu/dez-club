@@ -505,6 +505,11 @@ def team_html():
 def team_sec(alt=False):
     return sec("Наша команда", team_html(), "Специалисты, которые отвечают за качество каждой обработки.", alt=alt, sid="team")
 
+def hero_city(h1, lead, ic, btn_text):
+    """Первый экран городской страницы: тот же блок, что на главной (фото руководителя и карточка «Договор и акт»), с городским заголовком."""
+    return f'''<section class="hero hero-c"><div class="wrap"><!--CRUMBS--></div><div class="wrap hero-in"><div>
+<h1>{h1}</h1><p class="hero-lead">{lead}</p>{btns_main(btn_text)}{trust_html()}</div>{hero_art()}</div></section>{rate_sec()}'''
+
 def ph(h1, lead, ic, btn_text):
     return f'''<section class="ph"><div class="wrap"><!--CRUMBS--></div><div class="wrap ph-in"><div><h1>{h1}</h1><p class="lead-t">{lead}</p>{btns_main(btn_text)}{trust_html()}</div><div class="ph-ic">{icon(ic)}</div></div></section>{rate_sec()}'''
 
@@ -680,7 +685,7 @@ def build_cities():
                ("Как узнать стоимость?", "Напишите в WhatsApp или онлайн-консультанту: вредитель, тип объекта и площадь. Назовём цену до выезда."),
                (f"Работаете ли с организациями {cin}?", "Да, заключаем договор, работаем по безналичному расчёту и выдаём документы для проверки."),
                ("Как быстро приедет специалист?", "Время выезда согласуем при заявке, учитывая адрес и объём работ.")]
-        body = f'''{ph(f"Дезинфекция, дезинсекция и дератизация {cin}", f"Санитарная служба {BRAND} {cin}: уничтожаем насекомых и грызунов, проводим дезинфекцию, озонирование и обработку территорий для жилья и бизнеса. Регион выезда — {region}.", "map", f"Здравствуйте! Нужна обработка, город {name}.")}
+        body = f'''{hero_city(f"Дезинфекция, дезинсекция и дератизация {cin}", f"Санитарная служба {BRAND} {cin}: уничтожаем насекомых и грызунов, проводим дезинфекцию, озонирование и обработку территорий для жилья и бизнеса. Регион выезда — {region}.", "map", f"Здравствуйте! Нужна обработка, город {name}.")}
 <section class="sec"><div class="wrap cnt"><article class="prose">
 <h2>Вредители, с которыми чаще обращаются {cin}</h2><p>{ctext}</p>{ck(cpests)}
 <h2>Услуги {cin}</h2>{svc_grid(compact=True)}
@@ -933,7 +938,7 @@ def build_assets():
             shutil.copy(ROOT / "assets" / f, DIST / f)
     (DIST / "site.webmanifest").write_text(json.dumps({"name": "DezClub — санитарная служба", "short_name": BRAND, "start_url": "/", "display": "browser", "background_color": "#ffffff", "theme_color": "#4f9f2a", "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}]}, ensure_ascii=False), encoding="utf-8")
 
-VER = "2610210030"  # версия файлов: менять при обновлении стилей, скриптов и фото
+VER = "2610230200"
 MV = VER
 
 if __name__ == "__main__":
