@@ -152,7 +152,7 @@ def footer():
     svc = "".join(f'<li><a href="/uslugi/{s["slug"]}/">{s["name"]}</a></li>' for s in SERVICES)
     pst = "".join(f'<li><a href="/vrediteli/{p["slug"]}/">{p["name"]}</a></li>' for p in PESTS)
     obj = "".join(f'<li><a href="/obekty/{o[0]}/">{o[1]}</a></li>' for o in OBJECTS)
-    return f'''<footer class="ftr"><div class="roaches" aria-hidden="true"></div><div class="wrap">
+    return f'''<footer class="ftr"><div class="wrap">
  <div class="ftr-g">
   <div>{logo()}<p class="ftr-req">{BRAND_SUB.capitalize()}.<br>{E(COMPANY["legal"])}, БИН {COMPANY["bin"]}<br><a href="/dokumenty/">Лицензия № {LICENSE_NO} от {LICENSE_DATE}</a><br>{E(COMPANY["address"])}</p></div>
   <div class="f-col"><h4>Услуги {ui("chev")}</h4><ul>{svc}</ul></div>
@@ -405,7 +405,6 @@ FACTS = [f"Опыт работы — {EXPERIENCE}",
          f"Государственная лицензия № {LICENSE_NO} от {LICENSE_DATE}",
          f"{PROMO_BIG.capitalize()} — размер зависит от объёма работ и объекта",
          "Оборудование: генератор горячего тумана IGEBA TF-W 60, генератор холодного тумана SM B100, опрыскиватели STIHL SR 420 и SG 51, живоловки для грызунов",
-         "Тарифы для бизнеса и pest control: Start, Standart, Pro",
          "Рейтинг 5.0 на OLX и 5.0 в 2ГИС",
          f"Менеджер — {MANAGER[0]}",
          "Основная база в Алматы, выезд по всему Казахстану",
@@ -435,7 +434,7 @@ def promo_sec():
     return f'''<section class="sec sec-promo"><div class="wrap"><div class="promo-bn">
 <div class="pb-l"><span class="pb-k">Акция</span><h2>{PROMO_BIG} на обработку</h2><p>{PROMO_HOW} Точную стоимость называем до выезда — без доплат на месте.</p></div>
 <div class="pb-r"><div class="pb-price"><small>Скидки</small><b>до 30%</b></div>
-<a class="btn btn-y" {wa_attr("Здравствуйте! Хочу узнать стоимость и скидку на обработку.")}>Узнать свою скидку</a><a class="pb-lnk" href="/ceny/">Тарифы и цены {ui("arrow")}</a></div>
+<a class="btn btn-y" {wa_attr("Здравствуйте! Хочу узнать стоимость и скидку на обработку.")}>Узнать свою скидку</a><a class="pb-lnk" href="/ceny/">Цены {ui("arrow")}</a></div>
 </div></div></section>'''
 
 def offer_box(what, slug=None):
@@ -467,18 +466,6 @@ def svc_group_sec():
     oth = '<div class="oth-g m-scroll">' + "".join(f'<a class="oth" href="/uslugi/{s["slug"]}/">{icon(s["icon"])}<span>{s["name"]}</span></a>' for s in other) + "</div>"
     return f'''<section class="sec"><div class="wrap"><div class="sec-h"><div><h2>Основные услуги</h2><p>Нажмите на услугу, чтобы узнать подробности, виды обработки и как подготовиться.</p></div><a class="lnk" href="/uslugi/">Все услуги {ui("arrow")}</a></div>
 {main_svc_html()}<h3 class="oth-t">Другие услуги</h3>{oth}</div></section>'''
-
-def tariffs_html():
-    cards = []
-    for i, (name, sub, pts, note, price) in enumerate(TARIFFS):
-        li = "".join(f"<li>{ui('check')}<span>{E(x)}</span></li>" for x in pts)
-        pr = f'<div class="tf-pr">{E(price)}</div>' if (price and SHOW_PRICES) else ""
-        cards.append(f'''<div class="tf{" tf-hot" if i == 1 else ""}">{'<span class="tf-badge">Популярный</span>' if i == 1 else ""}<h3>Тариф «{name}»</h3><p class="tf-sub">{E(sub)}</p><ul>{li}</ul>
-<p class="tf-note">{E(note)}</p>{pr}<a class="btn {"btn-y" if i == 1 else "btn-o"}" {wa_attr("Здравствуйте! Интересует тариф «" + name + "». Подскажите стоимость.")}>Узнать стоимость</a></div>''')
-    return '<div class="tf-g m-scroll">' + "".join(cards) + "</div>"
-
-def tariffs_sec(alt=False):
-    return sec("Тарифы: pest control и HACCP", tariffs_html(), "Для квартир, домов и бизнеса. Подберём тариф под степень заражения и требования проверок.", ("Тарифы и цены", "/ceny/"), alt=alt, sid="tarify")
 
 def trust_html():
     lic = f'<li><a href="/dokumenty/"><img src="/assets/ic/b-lic.svg" alt="" width="64" height="64"><span>Лицензия № {LICENSE_NO}</span></a></li>'
@@ -550,7 +537,6 @@ def build_home():
 {sec("Почему выбирают " + BRAND, adv_html(), alt=True)}
 {team_sec()}
 {docs_sec(alt=True)}
-{tariffs_sec()}
 {biz_html()}
 {sec("Обрабатываем любые объекты", obj_grid(), "", ("Все объекты", "/obekty/"), alt=True)}
 {reviews_sec()}
@@ -561,7 +547,6 @@ def build_home():
          "Санитарная служба DezClub в Алматы и по всему Казахстану: уничтожение тараканов, клопов, грызунов, дезинфекция, озонирование, pest control. Договор и акт для СЭС.",
          body, [faq_schema(FAQ_HOME)], kw="главная сэс санэпидемстанция", prio="1.0")
 
-TARIFF_PAGES = ("dezinsekciya", "deratizaciya", "dezinfekciya", "yuridicheskim-licam", "pest-control")
 
 def build_services():
     for s in SERVICES:
@@ -582,8 +567,7 @@ def build_services():
 <h2>Как подготовиться</h2>{ck(PREP)}
 <p>Подробнее — в статье <a href="/stati/kak-podgotovit-kvartiru-k-obrabotke/">как подготовить квартиру к обработке</a>.</p>
 </article>{side_box(s["name"], url)}</div></section>
-{tariffs_sec(alt=True) if s["slug"] in TARIFF_PAGES else ""}
-{portfolio_sec(alt=s["slug"] not in TARIFF_PAGES)}
+{portfolio_sec(alt=True)}
 {sec("Частые вопросы", faq_html(faq))}
 {sec("Другие услуги", svc_grid(exclude=s["slug"], compact=True, limit=8), alt=True)}
 {lead_form(svc=s["name"])}'''
@@ -592,7 +576,7 @@ def build_services():
              body, [service_schema(s["title"], url, s["lead"]), faq_schema(faq)],
              crumbs=[("Услуги", "/uslugi/"), (s["name"], url)], kw=s["sub"], prio="0.9")
     body = f'''{ph("Услуги санитарной службы", "Дезинсекция, дезинфекция, дератизация, фумигация, озонирование и комплексный pest control для квартир, домов, бизнеса и территорий.", "s_pest", "Здравствуйте! Подскажите, какая обработка мне нужна.")}
-{svc_group_sec()}{tariffs_sec(alt=True)}{biz_html()}{lead_form()}'''
+{svc_group_sec()}{biz_html()}{lead_form()}'''
     page("/uslugi/", f"Услуги дезинфекции, дезинсекции и дератизации в Алматы | {BRAND}",
          "Все услуги DezClub: дезинсекция, дезинфекция, дератизация, фумигация, дезодорация, озонирование, акарицидная и гербицидная обработка, pest control.",
          body, crumbs=[("Услуги", "/uslugi/")], kw="услуги", prio="0.8")
@@ -729,29 +713,27 @@ def build_articles():
          body, crumbs=[("Статьи", "/stati/")], kw="статьи памятки", prio="0.5")
 
 def build_misc():
-    # цены и тарифы
+    # цены
     factors = ["Вид вредителя или задача: насекомые, грызуны, дезинфекция, запахи",
                "Площадь и тип объекта: квартира, частный дом, кафе, склад, производство",
                "Степень заражения и нужен ли второй этап обработки",
-               "Выбранный тариф и препараты: отечественные, импортные или усиленные"]
-    pfaq = [("От чего зависит цена?", "От площади, вида вредителя, степени заражения, типа объекта и выбранного тарифа. Точную стоимость называем до выезда — без доплат на месте."),
+               "Количество обработок и выбранные препараты"]
+    pfaq = [("От чего зависит цена?", "От площади, вида вредителя, степени заражения, типа объекта и количества обработок. Точную стоимость называем до выезда — без доплат на месте."),
             ("Какие есть скидки?", "Скидки до 30%. " + PROMO_HOW),
-            ("Чем отличаются тарифы?", "Start — быстрая обработка за один визит на ранней стадии. Standart — гарантия до 3 месяцев, барьерная защита и два этапа. Pro — усиленные препараты, гарантия от 6 месяцев и станции контроля для сложных объектов."),
             ("Можно ли оплатить по безналу?", "Да, для организаций выставляем счёт на ТОО «DezClub» и заключаем договор.")]
     prices_note = ""
     if SHOW_PRICES:
         prices_note = '<h2>Стоимость основных услуг</h2><table class="req price-t"><tr><th>Услуга</th><td>Цена</td></tr>' + "".join(f'<tr><th>{SVC[k]["name"]}</th><td>{v}</td></tr>' for k, v in MAIN_PRICES.items()) + "</table>"
-    body = f'''{ph("Цены и тарифы на дезинфекцию, дезинсекцию и дератизацию", f"Стоимость рассчитываем индивидуально и называем до выезда. {PROMO_BIG} — размер зависит от объёма работ и объекта.", "card", "Здравствуйте! Хочу узнать стоимость обработки.")}
-{tariffs_sec()}
+    body = f'''{ph("Цены на дезинфекцию, дезинсекцию и дератизацию", f"Стоимость рассчитываем индивидуально и называем до выезда. {PROMO_BIG} — размер зависит от объёма работ и объекта.", "card", "Здравствуйте! Хочу узнать стоимость обработки.")}
 {promo_sec()}
 <section class="sec"><div class="wrap cnt"><article class="prose">{prices_note}
 <h2>Из чего складывается стоимость</h2>{ck(factors)}
 <p>Напишите в WhatsApp или онлайн-консультанту, что и где нужно обработать, — назовём точную цену с учётом скидки. Для бизнеса возможен годовой договор с плановыми выездами.</p>
 </article>{side_box("расчёт стоимости")}</div></section>
 {sec("Частые вопросы о ценах", faq_html(pfaq), alt=True)}{lead_form()}'''
-    page("/ceny/", f"Цены и тарифы на дезинфекцию в Алматы — скидки до 30% | {BRAND}",
-         "Тарифы DezClub на дезинсекцию, дератизацию, дезинфекцию и pest control: Start, Standart, Pro. Скидки до 30%. Точная стоимость — до выезда.",
-         body, [faq_schema(pfaq)], crumbs=[("Цены и тарифы", "/ceny/")], kw="цены прайс стоимость тарифы скидка акция", prio="0.8")
+    page("/ceny/", f"Цены на дезинфекцию, дезинсекцию и дератизацию в Алматы — скидки до 30% | {BRAND}",
+         "Стоимость дезинсекции, дератизации, дезинфекции и pest control в DezClub: от чего зависит цена, скидки до 30%. Точная стоимость — до выезда, без доплат на месте.",
+         body, [faq_schema(pfaq)], crumbs=[("Цены", "/ceny/")], kw="цены прайс стоимость скидка акция", prio="0.8")
     # портфолио
     body = f'''{ph("Портфолио: наши работы", "Видео с реальных объектов — квартиры, дома, кафе, склады и территории.", "s_pest", "Здравствуйте! Посмотрел ваши работы, хочу рассчитать стоимость.")}
 <section class="sec"><div class="wrap"><div class="grid-v">{"".join(video_cards())}</div></div></section>
@@ -908,8 +890,8 @@ def build_meta():
             f"- Генеральный директор: {COMPANY['director']}",
             "- Команда: " + "; ".join(f"{n} — {r}" for n, r in TEAM),
             "- Рейтинги и профили: " + "; ".join(f"{name} {val} ({url})" for _, name, val, _, url in RATINGS),
-            "", "## Цены, скидки и тарифы", "- Стоимость рассчитывается индивидуально и называется до выезда: зависит от площади, вредителя, степени заражения, объекта и тарифа.",
-            f"- Скидки: {PROMO_TXT}. {PROMO_HOW}"] + [f"- Тариф «{n}» ({sub}): " + "; ".join(pts) for n, sub, pts, _, _ in TARIFFS] + [f"- Подробнее: {SITE_URL}/ceny/",
+            "", "## Цены и скидки", "- Стоимость рассчитывается индивидуально и называется до выезда: зависит от площади, вредителя, степени заражения, объекта и количества обработок.",
+            f"- Скидки: {PROMO_TXT}. {PROMO_HOW}", f"- Подробнее: {SITE_URL}/ceny/",
             "", "## Оборудование"] + [f"- {t}: {d}" for _, t, d in EQUIPMENT] + [
             "", "## Частые вопросы"] + [f"- {q} — {a}" for q, a in FAQ_HOME] + ["",
             "## Услуги"] + [f"- [{s['title']}]({SITE_URL}/uslugi/{s['slug']}/): {s['sub']}" for s in SERVICES] + \
@@ -938,7 +920,7 @@ def build_assets():
             shutil.copy(ROOT / "assets" / f, DIST / f)
     (DIST / "site.webmanifest").write_text(json.dumps({"name": "DezClub — санитарная служба", "short_name": BRAND, "start_url": "/", "display": "browser", "background_color": "#ffffff", "theme_color": "#4f9f2a", "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}]}, ensure_ascii=False), encoding="utf-8")
 
-VER = "2610230230"
+VER = "2610230300"
 MV = VER
 
 if __name__ == "__main__":

@@ -291,7 +291,6 @@
     { k: ["с какого года", "сколько лет", "опыт", "давно работа", "давно на рынке"], a: "Опыт работы нашей команды — " + EXP + ". За это время обрабатывали квартиры, частные дома, кафе, склады, гостиницы и производства. Сейчас работаем как ТОО «DezClub» с государственной лицензией.", u: "/o-kompanii/" },
     { k: ["гарант"], a: "Гарантия и контрольный осмотр прописываются в договоре — условия зависят от вида обработки и объекта. Если вредители вернутся в гарантийный срок, приедем повторно по условиям договора.", u: null },
     { k: ["скидк", "акци", "промо", "дешевле", "подешевле"], a: "Сейчас действуют " + PROMO + ". Размер зависит от объёма работ, объекта и количества обработок — посчитаю при расчёте. Просто скажите, что вы с сайта.", u: "/ceny/", q: ["Рассчитать мою стоимость"] },
-    { k: ["тариф", "start", "standart", "standard", "стандарт", "старт"], a: "Есть три тарифа: Start — быстрая обработка за один визит на ранней стадии; Standart — гарантия до 3 месяцев, барьерная защита и два этапа; Pro — усиленные препараты, гарантия от 6 месяцев и станции контроля для сложных объектов. Подскажу, какой подойдёт вам.", u: "/ceny/", q: ["Квартира", "Кафе / бизнес"] },
     { k: ["сколько длит", "долго", "сколько времени", "по времени"], a: "Обработка квартиры обычно занимает от часа до нескольких часов — зависит от площади и метода. Точное время скажу при расчёте.", u: null },
     { k: ["срочно", "сегодня", "сейчас", "как быстро", "когда приед"], a: "Постараемся приехать как можно быстрее — время согласуем сразу при заявке. Оставьте номер или напишите в WhatsApp, и я сразу передам заявку специалисту.", wa: true },
     { k: ["город", "астан", "шымкент", "караганд", "актоб", "атырау", "актау", "павлодар", "семей", "костанай", "тараз", "уральск", "кызылорд", "область", "выезж", "казахстан"], a: "Основная база — в Алматы, работаем по всему Казахстану. Напишите город и адрес — согласуем выезд и стоимость.", u: "/goroda/" },
@@ -309,7 +308,7 @@
     { k: ["шутк", "анекдот", "пошути", "рассмеши"], a: ["Таракан приходит домой и говорит жене: «Всё, собирай вещи, к соседям вызвали DezClub». Так что можете спать спокойно :)", "Говорят, тараканы переживут что угодно. Мы просто не встречали тех тараканов, которые пережили бы нашу обработку :)"] },
     { k: ["погод"], a: ["Про погоду не подскажу, а вот про насекомых — сколько угодно :) Кстати, в тёплый сезон активнее муравьи, клещи и осы."] },
     { k: [" ок ", " окей", "понятно", "ясно", "хорошо", " понял", "поняла", "супер", "отлично", "класс"], a: ["Отлично! Если готовы — оставьте номер или нажмите «Продолжить в WhatsApp», и я передам заявку.", "Хорошо! Если появятся вопросы — пишите, я здесь."], wa: true },
-    { k: ["дорого", "дороговато", "много денег"], a: ["Понимаю. Действуют " + PROMO + ", а ещё есть тариф Start — самый бюджетный. Напишите площадь и что за вредители — посчитаю честно, без лишних услуг."] }
+    { k: ["дорого", "дороговато", "много денег"], a: ["Понимаю. Действуют " + PROMO + " Напишите площадь и что за вредители — посчитаю честно, без лишних услуг."] }
   ];
   var PRICE = ["цен", "стоим", "сколько стоит", "почем", "почём", "прайс", "тенге", "₸", "сколько будет", "рассчитать"];
   var HELLO = ["здравств", "привет", "добрый день", "салем", "сәлем", "салам", "hello", " hi ", "здраст", "ассалам", "салют"];
@@ -516,76 +515,9 @@
       host.parentNode.insertBefore(b, host.nextSibling);
     });
   });
-  // тарифы: состав раскрывается по кнопке
-  $$(".tf").forEach(function (t) {
-    var ul = t.querySelector("ul"); if (!ul) return;
-    var b = document.createElement("button");
-    b.type = "button"; b.className = "m-more tf-more"; b.innerHTML = "Что входит " + CHEV;
-    ul.parentNode.insertBefore(b, ul);
-    if (t.classList.contains("tf-hot")) { t.classList.add("open"); b.classList.add("open"); }
-    b.addEventListener("click", function () { var o = t.classList.toggle("open"); b.classList.toggle("open", o); });
-  });
   $$(".ftr .f-col h4").forEach(function (h) {
     h.addEventListener("click", function () { if (window.matchMedia("(max-width:767px)").matches) h.parentNode.classList.toggle("open"); });
   });
-
-  /* ---------------- тараканы в подвале ---------------- */
-  (function () {
-    var ftr = $(".ftr"), lay = ftr ? $(".roaches", ftr) : null;
-    if (!lay || reduce || !window.requestAnimationFrame) return;
-    var alive = [], visible = false, timer = null, kills = 0;
-    var SAY = ["Попался!", "Минус один", "DezClub не дремлет", "Ещё один готов", "Чисто!"];
-    function spawn() {
-      if (!visible || alive.length >= 4 || document.hidden) return;
-      var W = ftr.clientWidth, H = ftr.clientHeight;
-      var el = document.createElement("div"); el.className = "roach";
-      el.innerHTML = '<img src="/assets/ic/cockroach.svg" alt="">';
-      lay.appendChild(el);
-      var size = el.offsetWidth || 46;
-      var dir = Math.random() < .5 ? 1 : -1;
-      var r = { el: el, x: dir > 0 ? -size : W + size, y: 40 + Math.random() * Math.max(60, H - 120), vx: dir * (90 + Math.random() * 110), t: Math.random() * 6, amp: 18 + Math.random() * 30, dead: false, pause: 0 };
-      el.addEventListener("click", function () { squash(r); });
-      alive.push(r);
-    }
-    function squash(r) {
-      if (r.dead) return; r.dead = true; kills++;
-      r.el.classList.add("dead");
-      var s = document.createElement("div"); s.className = "splat";
-      s.textContent = kills > 1 ? pick(SAY) + " (" + kills + ")" : pick(SAY);
-      s.style.left = r.x + "px"; s.style.top = (r.y - 26) + "px"; lay.appendChild(s);
-      setTimeout(function () { s.remove(); }, 1400);
-      setTimeout(function () { r.el.style.transition = "opacity .6s"; r.el.style.opacity = "0"; }, 700);
-      setTimeout(function () { r.el.remove(); alive = alive.filter(function (x) { return x !== r; }); }, 1400);
-    }
-    var last = 0;
-    function tick(ts) {
-      var dt = last ? Math.min(.05, (ts - last) / 1000) : 0; last = ts;
-      var W = ftr.clientWidth;
-      alive.forEach(function (r) {
-        if (r.dead) return;
-        if (r.pause > 0) { r.pause -= dt; r.el.firstChild.style.animationPlayState = "paused"; }
-        else {
-          r.el.firstChild.style.animationPlayState = "running";
-          r.t += dt * 2.2; r.x += r.vx * dt;
-          if (Math.random() < .004) r.pause = .3 + Math.random() * .7;
-        }
-        var y = r.y + Math.sin(r.t) * r.amp, dy = Math.cos(r.t) * r.amp * 2.2;
-        var ang = Math.atan2(dy, r.vx) * 180 / Math.PI + 90;
-        r.el.style.transform = "translate(" + r.x + "px," + y + "px) rotate(" + ang + "deg)";
-        if ((r.vx > 0 && r.x > W + 60) || (r.vx < 0 && r.x < -60)) { r.dead = true; r.el.remove(); }
-      });
-      alive = alive.filter(function (r) { return !r.dead || r.el.isConnected; });
-      if (visible || alive.length) requestAnimationFrame(tick); else last = 0;
-    }
-    function loop() { spawn(); timer = setTimeout(loop, 1800 + Math.random() * 3200); }
-    if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (es) {
-        var v = es[0].isIntersecting;
-        if (v && !visible) { visible = true; last = 0; requestAnimationFrame(tick); clearTimeout(timer); setTimeout(spawn, 400); loop(); }
-        if (!v) { visible = false; clearTimeout(timer); }
-      }, { threshold: .15 }).observe(ftr);
-    }
-  })();
 
   /* ---------------- Esc ---------------- */
   document.addEventListener("keydown", function (e) {
