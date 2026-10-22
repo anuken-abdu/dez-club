@@ -764,17 +764,29 @@ ul,ol{margin:0;padding:0}
   .city-g{grid-template-columns:minmax(0,1fr)}
 }
 
-/* ===== узоры: №1 молекулы, №9 круги, №11 молекулы на зелёном ===== */
+/* ===== орнамент DezClub: горы, угловые и боковые элементы, разделители ===== */
 .hero,.ph{position:relative;isolation:isolate}
-.hero::before,.ph::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='146' viewBox='0 0 84 146'%3E%3Cg fill='none' stroke='%234f9f2a' stroke-opacity='.24' stroke-width='1.2'%3E%3Cpath d='M42 0v24M42 24L21 36v24l21 12 21-12V36zM0 60h21M63 60h21M42 72v26M42 98L21 110v24M42 98l21 12v24'/%3E%3C/g%3E%3Cg fill='%234f9f2a' fill-opacity='.38'%3E%3Ccircle cx='42' cy='24' r='3'/%3E%3Ccircle cx='21' cy='60' r='3'/%3E%3Ccircle cx='63' cy='36' r='2.4'/%3E%3Ccircle cx='42' cy='98' r='3'/%3E%3Ccircle cx='63' cy='110' r='2.4'/%3E%3C/g%3E%3C/svg%3E");-webkit-mask-image:linear-gradient(100deg,transparent 28%,#000 72%);mask-image:linear-gradient(100deg,transparent 28%,#000 72%)}
+.hero::before,.ph::before{content:"";position:absolute;left:0;right:0;bottom:0;height:230px;z-index:-1;pointer-events:none;background:url(/assets/orn/mountains.webp?v=1) repeat-x left bottom/auto 230px;opacity:.6}
+.ph::after{content:"";position:absolute;top:14px;right:max(8px,calc((100vw - 1520px)/2));width:190px;height:220px;z-index:-1;pointer-events:none;background:url(/assets/orn/corner-tr.webp?v=1) no-repeat right top/contain;opacity:.55}
+.sec-h h2::after{content:"";display:block;width:150px;height:22px;margin-top:12px;background:url(/assets/orn/divider-min.webp?v=1) no-repeat left center/contain;opacity:.9}
 .sec:has(.geo){position:relative;isolation:isolate;overflow:hidden}
-.sec:has(.geo)::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:repeating-radial-gradient(circle at 100% 30%,transparent 0 30px,rgba(79,159,42,.15) 30px 31.5px);-webkit-mask-image:radial-gradient(circle at 100% 30%,#000 18%,transparent 62%);mask-image:radial-gradient(circle at 100% 30%,#000 18%,transparent 62%)}
-.promo-bn,.biz{position:relative;isolation:isolate;overflow:hidden}
-.promo-bn::after,.biz::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='146' viewBox='0 0 84 146'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.16' stroke-width='1.2'%3E%3Cpath d='M42 0v24M42 24L21 36v24l21 12 21-12V36zM0 60h21M63 60h21M42 72v26M42 98L21 110v24M42 98l21 12v24'/%3E%3C/g%3E%3Cg fill='%23ffffff' fill-opacity='.28'%3E%3Ccircle cx='42' cy='24' r='3'/%3E%3Ccircle cx='21' cy='60' r='3'/%3E%3Ccircle cx='63' cy='36' r='2.4'/%3E%3Ccircle cx='42' cy='98' r='3'/%3E%3Ccircle cx='63' cy='110' r='2.4'/%3E%3C/g%3E%3C/svg%3E");-webkit-mask-image:linear-gradient(100deg,transparent 35%,#000 80%);mask-image:linear-gradient(100deg,transparent 35%,#000 80%)}
+.sec:has(.geo)::before,.sec:has(.geo)::after{content:"";position:absolute;bottom:0;width:250px;height:184px;z-index:-1;pointer-events:none;opacity:.7}
+.sec:has(.geo)::before{left:0;background:url(/assets/orn/corner-bl.webp?v=1) no-repeat left bottom/contain}
+.sec:has(.geo)::after{right:0;background:url(/assets/orn/corner-br.webp?v=1) no-repeat right bottom/contain}
+.promo-bn,.biz,.lead{position:relative;isolation:isolate;overflow:hidden}
+.promo-bn::after,.biz::after{content:"";position:absolute;right:-30px;top:50%;width:440px;height:262px;transform:translateY(-50%);z-index:-1;pointer-events:none;background:url(/assets/orn/bg-big.webp?v=1) no-repeat center/contain;filter:brightness(0) invert(1);opacity:.16}
+.lead::before,.lead::after{content:"";position:absolute;width:170px;height:196px;z-index:-1;pointer-events:none;opacity:.6}
+.lead::before{left:10px;top:10px;background:url(/assets/orn/corner-tl.webp?v=1) no-repeat left top/contain}
+.lead::after{right:10px;bottom:10px;width:190px;height:138px;background:url(/assets/orn/corner-br.webp?v=1) no-repeat right bottom/contain}
 .m-cut-btn,.tf-more{display:none}
 @media (max-width:767px){
-  .hero::before,.ph::before{-webkit-mask-image:linear-gradient(180deg,#000 0,transparent 55%);mask-image:linear-gradient(180deg,#000 0,transparent 55%);opacity:.8}
-  .promo-bn::after,.biz::after{-webkit-mask-image:linear-gradient(200deg,#000 10%,transparent 60%);mask-image:linear-gradient(200deg,#000 10%,transparent 60%)}
+  .hero::before,.ph::before{height:120px;background-size:auto 120px;opacity:.5}
+  .ph::after{width:110px;height:128px;top:6px;opacity:.45}
+  .sec-h h2::after{width:120px;height:18px;margin-top:8px}
+  .sec:has(.geo)::before,.sec:has(.geo)::after{width:130px;height:96px;opacity:.55}
+  .promo-bn::after,.biz::after{width:260px;height:155px;right:-40px;top:auto;bottom:-20px;transform:none;opacity:.14}
+  .lead::before{width:100px;height:115px;opacity:.45}
+  .lead::after{width:110px;height:80px;opacity:.45}
   /* раскрытие вместо прокрутки */
   :not(.m-open)>.m-hid{display:none!important}
   .m-cut-btn{display:flex;justify-content:center;width:100%;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:14.5px}
