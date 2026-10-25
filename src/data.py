@@ -423,10 +423,10 @@ DOCS = [
 
 
 # ---------------------------------------------------------------- цены, акция, факты
-# Цены на сайте скрыты (SHOW_PRICES = False), чтобы не переделывать сайт при их изменении.
+# Начальные цены показываются на сайте (SHOW_PRICES = True). Чтобы скрыть — поставить False.
 # Чтобы показать — поставить True: цены появятся на трёх основных услугах.
-SHOW_PRICES = False
-MAIN_PRICES = {"dezinsekciya": "от 5 000 ₸", "deratizaciya": "от 7 000 ₸", "dezinfekciya": "от 5 000 ₸"}
+SHOW_PRICES = True
+MAIN_PRICES = {"dezinsekciya": "от 8 000 ₸", "deratizaciya": "от 7 000 ₸", "dezinfekciya": "от 6 000 ₸"}
 PROMO_BIG = "Скидки до 30%"
 PROMO_TXT = "скидки до 30%"
 PROMO_HOW = "Размер скидки зависит от объёма работ, объекта и количества обработок — назовём её при расчёте. Скажите, что нашли нас на сайте."
@@ -457,3 +457,50 @@ EQUIPMENT = [  # файл, название, описание
     ("stihl-sg51", "Ручной опрыскиватель STIHL SG 51", "Точечная обработка плинтусов, щелей, подвалов и периметра дома, где нужна аккуратность."),
     ("zhivolovka", "Контейнер-живоловка для грызунов", "Ловит крыс и мышей без яда — подходит для кафе, складов, детских и медицинских учреждений."),
 ]
+
+# ---------- каталог услуг (ТЗ клиента): категория → список (slug, название, иконка, страница с подробностями или None)
+# Фото карточки: images/katalog/<slug>.jpg (если файла нет — показывается иконка).
+CATALOG = {
+    "dezinsekciya": ("Дезинсекция", "от 8 000 ₸", [
+        ("tarakany", "Уничтожение тараканов", "cockroach", "/vrediteli/tarakany/"),
+        ("klopy", "Уничтожение постельных клопов", "bedbug", "/vrediteli/klopy/"),
+        ("muravi", "Уничтожение муравьёв", "ant", "/vrediteli/muravi/"),
+        ("blohi", "Уничтожение блох", "flea", "/vrediteli/blohi/"),
+        ("kleshchi", "Обработка от клещей", "tick", "/uslugi/akaricidnaya-obrabotka/"),
+        ("komary", "Уничтожение комаров", "k_mosquito", None),
+        ("muhi", "Уничтожение мух", "fly", "/vrediteli/muhi/"),
+        ("mol", "Уничтожение моли", "moth", "/vrediteli/mol/"),
+        ("pauki", "Уничтожение пауков", "k_spider", None),
+        ("osy", "Уничтожение ос и пчёл", "wasp", "/vrediteli/osy/"),
+        ("mokricy", "Уничтожение мокриц", "woodlouse", "/vrediteli/mokricy/"),
+        ("drevesnye-klopy", "Обработка от древесных клопов", "k_treebug", None),
+        ("tlya", "Уничтожение тли", "k_aphid", None),
+        ("koroedy", "Уничтожение короедов и жуков-точильщиков", "beetle", "/vrediteli/koroedy/"),
+        ("gusenicy", "Уничтожение гусениц", "k_caterpillar", None),
+        ("babochki", "Уничтожение бабочек-вредителей", "k_butterfly", None),
+        ("komary-tigry", "Уничтожение комаров-тигров", "k_tiger", None),
+        ("vshi", "Обработка от вшей", "k_lice", None),
+    ]),
+    "deratizaciya": ("Дератизация", "от 7 000 ₸", [
+        ("krysy", "Уничтожение крыс", "rat", "/vrediteli/krysy/"),
+        ("myshi", "Уничтожение мышей", "mouse", "/vrediteli/myshi/"),
+        ("kroty", "Борьба с кротами и сурками", "k_mole", None),
+        ("polevki", "Уничтожение полёвок", "k_vole", None),
+        ("homyaki", "Борьба с хомяками", "k_hamster", None),
+        ("belki", "Защита объектов от белок", "k_squirrel", None),
+    ]),
+    "dezinfekciya": ("Дезинфекция", "от 6 000 ₸", [
+        ("dezinfekciya-pomeshcheniy", "Дезинфекция помещений", "k_room", None),
+        ("plesen", "Удаление плесени и обработка от грибка", "k_mold", None),
+        ("zapahi", "Устранение неприятных запахов", "k_odor", "/uslugi/dezodoraciya/"),
+        ("ozonirovanie", "Озонирование помещений и транспорта", "s_ozone", "/uslugi/ozonirovanie/"),
+        ("avtotransport", "Дезинфекция автотранспорта", "k_car", None),
+        ("moh", "Удаление мха", "k_moss", None),
+        ("lishaynik", "Удаление лишайника", "k_lichen", None),
+    ]),
+}
+PARTNERS = [  # slug файла в images/partners, точное название (ALT)
+    ("alina-dent", "Alina DENT"), ("ckmed", "CKmed HEALTH CENTER"), ("acap", "АСАР"), ("olzha", "Олжа"),
+    ("sab-trade", "SAB Trade"), ("altyn-arba", "Алтын Арба"), ("al-mart", "AL-MART"),
+]
+PARTNER_WA = "Здравствуйте! Хочу обсудить сотрудничество с DezClub и санитарное обслуживание нашего объекта. Прошу связаться со мной для уточнения условий."
