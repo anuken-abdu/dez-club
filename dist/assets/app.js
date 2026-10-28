@@ -166,7 +166,14 @@
     var src = it.getAttribute("data-src"), t = it.getAttribute("data-type");
     lbM.innerHTML = "";
     var el;
-    if (t === "video") {
+    if (t === "yt") {
+      el = document.createElement("div"); el.className = "lb-yt";
+      var fr = document.createElement("iframe");
+      fr.src = "https://www.youtube-nocookie.com/embed/" + encodeURIComponent(src) + "?autoplay=1&playsinline=1&rel=0";
+      fr.title = it.getAttribute("title") || "Видео"; fr.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen"; fr.allowFullscreen = true;
+      var a = document.createElement("a"); a.className = "lb-yt-l"; a.href = it.getAttribute("data-url"); a.target = "_blank"; a.rel = "noopener"; a.textContent = "Смотреть на YouTube";
+      el.appendChild(fr); el.appendChild(a);
+    } else if (t === "video") {
       el = document.createElement("video");
       el.src = src; el.controls = true; el.autoplay = true; el.playsInline = true; el.setAttribute("playsinline", "");
       var img = it.querySelector("img"); if (img) el.poster = img.currentSrc || img.src;
@@ -499,7 +506,7 @@
   });
   // «Показать ещё» вместо горизонтальной прокрутки (только телефон, на ПК скрытые карточки видны)
   var CHEV = '<svg class="ui ui-chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>';
-  [[".pest-g", 6], [".obj-g", 6], [".oth-g", 4], [".adv-g", 4], [".team", 4], [".eq-g", 2], ["#scrR", 2], ["#scrV", 2], ["#scrD", 2], [".doc-g", 4], [".svc-g", 6], [".art-list", 3]].forEach(function (cfg) {
+  [[".pest-g", 6], [".obj-g", 6], [".oth-g", 4], [".adv-g", 4], [".team", 4], [".eq-g", 2], ["#scrR", 2], ["#scrV", 2], ["#scrD", 2], [".doc-g", 4], [".svc-g", 6], [".art-list", 3], [".sl-g", 4]].forEach(function (cfg) {
     $$(cfg[0]).forEach(function (g) {
       var kids = Array.prototype.slice.call(g.children), n = cfg[1];
       if (kids.length <= n + 1) return;

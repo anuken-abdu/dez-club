@@ -379,17 +379,18 @@ ARTICLES = [
 ]
 
 # ---------------------------------------------------------------- портфолио
-VIDEOS = [
-    ("Обработка квартиры от тараканов", "Квартира"),
-    ("Обработка от клопов спальни и мебели", "Квартира"),
-    ("Дератизация склада", "Склад"),
-    ("Дезинфекция офиса", "Офис"),
-    ("Обработка кафе в нерабочее время", "Кафе"),
-    ("Акарицидная обработка участка", "Участок"),
-    ("Обработка подвала жилого дома", "Подвал"),
-    ("Обработка частного дома", "Частный дом"),
-    ("Удаление осиного гнезда", "Частный дом"),
-]
+# «Наши работы»: видео YouTube. Чтобы добавить ролик — новая строка: ссылка, название, обложка ("" = обложка YouTube), порядок.
+VIDEOS = sorted([
+    dict(url="https://youtube.com/shorts/w3KyDIoegRc", title="Акарицидная обработка участка от клещей | DezClub", cover="", order=1),
+    dict(url="https://youtube.com/shorts/7l67NC7ACv4", title="Профессиональная дезинсекция коммерческих помещений | DezClub", cover="", order=2),
+    dict(url="https://youtube.com/shorts/j_3X6w9u2HI", title="Профессиональная дезинсекция магазина | Обработка от насекомых | DezClub", cover="", order=3),
+    dict(url="https://youtube.com/shorts/qqU-rPrBO_o", title="Профессиональная дезинсекция ТРЦ MEGA | DezClub", cover="", order=4),
+    dict(url="https://youtube.com/shorts/BCsB40gxZF4", title="Уничтожение клопов и тараканов в квартире | Профессиональная обработка DezClub", cover="", order=5),
+    dict(url="https://youtube.com/shorts/esNIHSw8yE4", title="Сильное заражение тараканами | Профессиональная дезинсекция DezClub", cover="", order=6),
+    dict(url="https://youtube.com/shorts/S8JaGh66EjY", title="Реакция постельного клопа на инсектицид | Демонстрация действия препарата DezClub", cover="", order=7),
+    dict(url="https://youtube.com/shorts/FEI3dNKJLI8", title="Профессиональная дератизация | Приманки, ловушки и борьба с крысами и мышами | DezClub", cover="", order=8),
+], key=lambda v: v["order"])
+def yt_id(url): return url.rstrip("/").split("/")[-1].split("?")[0].split("v=")[-1]
 REVIEWS_COUNT = 7
 
 # ---------------------------------------------------------------- документы
@@ -446,7 +447,7 @@ MAIN_SERVICES = [
 
 RATINGS = [
     ("olx", "OLX", "5.0", "Рейтинг на OLX", "https://www.olx.kz/d/obyavlenie/dezinfektsiya-unichtozhenie-klopov-tarakanov-bloh-muravev-krys-i-myshey-IDrcCbN.html"),
-    ("2gis", "2ГИС", "5.0", "Рейтинг в 2ГИС", "https://2gis.kz/astana/firm/70000001098499110"),
+    ("2gis", "2ГИС", "5.0", "Рейтинг в 2ГИС", "https://2gis.kz/almaty/geo/70000001082661942?inv_by=802aad40c76e4fafb9ea3ceff7630adc&inv_ts=1793205196"),
     ("instagram", "Instagram", "@dezclub.kz", "Фото и видео наших работ", "https://www.instagram.com/dezclub.kz/"),
 ]
 
@@ -504,3 +505,6 @@ PARTNERS = [  # slug файла в images/partners, точное названи�
     ("sab-trade", "SAB Trade"), ("altyn-arba", "Алтын Арба"), ("al-mart", "AL-MART"),
 ]
 PARTNER_WA = "Здравствуйте! Хочу обсудить сотрудничество с DezClub и санитарное обслуживание нашего объекта. Прошу связаться со мной для уточнения условий."
+
+# 2ГИС по городам: Алматы — ссылка из RATINGS, Астана — своя карточка, остальные города — блок без перехода
+GIS_CITY = {"astana": "https://2gis.kz/astana/firm/70000001098499110"}

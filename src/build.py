@@ -215,7 +215,7 @@ def org_schema():
         "name": BRAND, "legalName": COMPANY["legal"].replace('"', ""), "taxID": COMPANY["bin"],
         "description": f"Санитарная служба: дезинфекция, дезинсекция, дератизация, фумигация, озонирование и pest control в Алматы и по всему Казахстану. Опыт работы {EXPERIENCE}, {PROMO_TXT}.",
         "currenciesAccepted": "KZT", "paymentAccepted": "Наличные, перевод, безналичный расчёт",
-        "sameAs": [r[4] for r in RATINGS],
+        "sameAs": [r[4] for r in RATINGS] + list(GIS_CITY.values()) + [v["url"] for v in VIDEOS],
         "url": SITE_URL + "/", "logo": SITE_URL + "/assets/logo.png", "image": SITE_URL + "/assets/og.png",
         "telephone": PHONE_TEL,
         "address": {"@type": "PostalAddress", "streetAddress": COMPANY["street"], "addressLocality": "Алматы",
@@ -343,13 +343,14 @@ def biz_html():
 <div class="btns"><a class="btn btn-y" {wa_attr("Здравствуйте! Нужен договор на обработку для организации.")}>Запросить договор</a><a class="btn btn-o" href="/uslugi/yuridicheskim-licam/" style="background:transparent;color:#fff;border-color:#fff">Подробнее</a></div></div>
 <ul>{li}</ul></div></div></section>'''
 
-def poster(i):
-    return f"/images/portfolio/work-{i}.jpg?v={MV}"
+def poster(v):
+    return v["cover"] or f"https://i.ytimg.com/vi/{yt_id(v['url'])}/hqdefault.jpg"
 
 def video_cards(n=None):
     out = []
-    for i, (t, o) in enumerate(VIDEOS[:n] if n else VIDEOS, 1):
-        out.append(f'<button class="vid" type="button" data-lb="v" data-type="video" data-src="/videos/work-{i}.mp4" aria-label="Смотреть видео: {E(t)}"><img src="{poster(i)}" alt="{E(t)} — {BRAND}" loading="lazy" width="540" height="960"><span class="pl">{ui("play")}</span><span class="cap">{E(t)}<small>{E(o)}</small></span></button>')
+    for v in (VIDEOS[:n] if n else VIDEOS):
+        t, vid = v["title"], yt_id(v["url"])
+        out.append(f'<button class="vid" type="button" data-lb="v" data-type="yt" data-src="{vid}" data-url="https://www.youtube.com/shorts/{vid}" title="{E(t)}" aria-label="Смотреть видео: {E(t)}"><img src="{poster(v)}" alt="{E(t)}" loading="lazy" width="480" height="360"><span class="pl">{ui("play")}</span><span class="cap">{E(t)}</span></button>')
     return out
 
 def review_cards():
@@ -413,16 +414,19 @@ FACTS = [f"Опыт работы — {EXPERIENCE}",
 def stars():
     return '<span class="stars" aria-hidden="true">★★★★★</span>'
 
-def rate_html():
+def rate_html(city=None):
     out = []
     for slug, name, val, label, url in RATINGS:
+        if slug == "2gis" and city and city != "almaty":
+            url = GIS_CITY.get(city)
         ic = f'/assets/ic/{slug}.' + ("svg" if slug == "instagram" else "png")
         mid = f'<b class="rt-v">{E(val)}</b>{stars()}' if val[0].isdigit() else f'<b class="rt-v rt-h">{E(val)}</b>'
-        out.append(f'<a class="rt" href="{url}" target="_blank" rel="noopener"><img src="{ic}" alt="{name}" width="56" height="56" loading="lazy"><span class="rt-t"><span class="rt-m">{mid}</span><small>{E(label)}</small></span>{ui("arrow")}</a>')
+        inner = f'<img src="{ic}" alt="{name}" width="56" height="56" loading="lazy"><span class="rt-t"><span class="rt-m">{mid}</span><small>{E(label)}</small></span>{ui("arrow")}'
+        out.append(f'<a class="rt" href="{url}" target="_blank" rel="noopener">{inner}</a>' if url else f'<div class="rt rt-off">{inner}</div>')
     return '<div class="rt-g">' + "".join(out) + "</div>"
 
-def rate_sec(alt=False):
-    return f'<section class="sec sec-rt{" sec-alt" if alt else ""}"><div class="wrap">{rate_html()}</div></section>'
+def rate_sec(alt=False, city=None):
+    return f'<section class="sec sec-rt{" sec-alt" if alt else ""}"><div class="wrap">{rate_html(city)}</div></section>'
 
 def social_html():
     return "".join(f'<a href="{url}" target="_blank" rel="noopener" aria-label="{name}"><img src="/assets/ic/{slug}.{"svg" if slug == "instagram" else "png"}" alt="{name}" width="40" height="40" loading="lazy"></a>' for slug, name, val, label, url in RATINGS)
@@ -464,10 +468,17 @@ def main_svc_html():
 <p>{E(text)}</p><span class="ms-f">{prh}<span class="ms-go">Подробнее {ui("arrow")}</span></span></a>''')
     return '<div class="ms-g">' + "".join(out) + "</div>"
 
-def kat_card(slug, name, ic, link, price):
+def kat_card(slug, name, ic, link, price, btn="Заказать"):
     title = f'<a href="{link}">{E(name)}</a>' if link else E(name)
     return f'''<article class="kc"><div class="kc-im"><img class="kc-ic" src="/assets/ic/{ic}.svg" alt="" width="88" height="88" loading="lazy"><img class="kc-ph" src="/images/katalog/{slug}.jpg?v={MV}" alt="{E(name)}" loading="lazy" onerror="this.remove()"></div>
-<div class="kc-b"><h3>{title}</h3><span class="kc-pr">{price}</span><a class="btn btn-y kc-btn" {wa_attr("Здравствуйте! Хочу заказать: " + name + ".")}>Заказать</a></div></article>'''
+<div class="kc-b"><h3>{title}</h3><span class="kc-pr">{price}</span><a class="btn btn-y kc-btn" {wa_attr("Здравствуйте! Хочу заказать: " + name + ".")}>{btn}</a></div></article>'''
+def svc_list_sec(alt=False):
+    """Список всех услуг с кнопками «Заказать услугу» — карточки каталога, сгруппированные по категориям."""
+    out = ""
+    for cat, (name, price, items) in CATALOG.items():
+        cards = "".join(kat_card(s, n, ic, ln, price, "Заказать услугу") for s, n, ic, ln in items)
+        out += f'<h3 class="sl-t"><a href="/uslugi/{cat}/">{name}</a><small>{ru_count(len(items))}</small></h3><div class="kc-g sl-g">{cards}</div>'
+    return sec("Список услуг", out, "Нажмите «Заказать услугу» — откроется WhatsApp с названием услуги. Стоимость с учётом площади и скидки назовём до выезда.", alt=alt)
 
 def catalog_sec(cat, alt=False):
     name, price, items = CATALOG[cat]
@@ -527,10 +538,10 @@ def team_html():
 def team_sec(alt=False):
     return sec("Наша команда", team_html(), "Специалисты, которые отвечают за качество каждой обработки.", alt=alt, sid="team")
 
-def hero_city(h1, lead, ic, btn_text):
+def hero_city(h1, lead, ic, btn_text, city=None):
     """Первый экран городской страницы: тот же блок, что на главной (фото руководителя и карточка «Договор и акт»), с городским заголовком."""
     return f'''<section class="hero hero-c"><div class="wrap"><!--CRUMBS--></div><div class="wrap hero-in"><div>
-<h1>{h1}</h1><p class="hero-lead">{lead}</p>{btns_main(btn_text)}{trust_html()}</div>{hero_art()}</div></section>{rate_sec()}'''
+<h1>{h1}</h1><p class="hero-lead">{lead}</p>{btns_main(btn_text)}{trust_html()}</div>{hero_art()}</div></section>{rate_sec(city=city)}'''
 
 def ph(h1, lead, ic, btn_text):
     return f'''<section class="ph"><div class="wrap"><!--CRUMBS--></div><div class="wrap ph-in"><div><h1>{h1}</h1><p class="lead-t">{lead}</p>{btns_main(btn_text)}{trust_html()}</div><div class="ph-ic">{icon(ic)}</div></div></section>{rate_sec()}'''
@@ -605,6 +616,8 @@ def build_services():
 <h2>Как подготовиться</h2>{ck(PREP)}
 <p>Подробнее — в статье <a href="/stati/kak-podgotovit-kvartiru-k-obrabotke/">как подготовить квартиру к обработке</a>.</p>
 </article>{side_box(s["name"], url)}</div></section>
+{price_list_sec(alt=True)}
+{partners_sec()}
 {portfolio_sec(alt=True)}
 {sec("Частые вопросы", faq_html(faq))}
 {sec("Другие услуги", svc_grid(exclude=s["slug"], compact=True, limit=8), alt=True)}
@@ -707,13 +720,18 @@ def build_cities():
                ("Как узнать стоимость?", "Напишите в WhatsApp или онлайн-консультанту: вредитель, тип объекта и площадь. Назовём цену до выезда."),
                (f"Работаете ли с организациями {cin}?", "Да, заключаем договор, работаем по безналичному расчёту и выдаём документы для проверки."),
                ("Как быстро приедет специалист?", "Время выезда согласуем при заявке, учитывая адрес и объём работ.")]
-        body = f'''{hero_city(f"Дезинфекция, дезинсекция и дератизация {cin}", f"Санитарная служба {BRAND} {cin}: уничтожаем насекомых и грызунов, проводим дезинфекцию, озонирование и обработку территорий для жилья и бизнеса. Регион выезда — {region}.", "map", f"Здравствуйте! Нужна обработка, город {name}.")}
+        body = f'''{hero_city(f"Дезинфекция, дезинсекция и дератизация {cin}", f"Санитарная служба {BRAND} {cin}: уничтожаем насекомых и грызунов, проводим дезинфекцию, озонирование и обработку территорий для жилья и бизнеса. Регион выезда — {region}.", "map", f"Здравствуйте! Нужна обработка, город {name}.", city=slug)}
+{svc_group_sec()}
+{svc_list_sec(alt=True)}
+{price_list_sec()}
 <section class="sec"><div class="wrap cnt"><article class="prose">
 <h2>Вредители, с которыми чаще обращаются {cin}</h2><p>{ctext}</p>{ck(cpests)}
 <h2>Услуги {cin}</h2>{svc_grid(compact=True)}
 <h2>Для организаций {cin}</h2><p>Обслуживаем кафе, магазины, склады, гостиницы, офисы и производства по договору: акты, журналы, схема точек контроля, безналичный расчёт. Плановые обработки проводим в нерабочее время.</p>
 <h2>Как заказать</h2>{ck([f"<b>{t}.</b> {d}" for t, d in STEPS])}
 </article>{side_box(f"обработка, {name}", None)}</div></section>
+{partners_sec(alt=True)}
+{portfolio_sec()}
 {sec(f"Частые вопросы — {name}", faq_html(faq), alt=True)}
 {reviews_sec()}
 {geo_sec(slug)}
@@ -775,8 +793,8 @@ def build_misc():
     body = f'''{ph("Портфолио: наши работы", "Видео с реальных объектов — квартиры, дома, кафе, склады и территории.", "s_pest", "Здравствуйте! Посмотрел ваши работы, хочу рассчитать стоимость.")}
 <section class="sec"><div class="wrap"><div class="grid-v">{"".join(video_cards())}</div></div></section>
 {reviews_sec(alt=True)}{lead_form()}'''
-    vids = [{"@context": "https://schema.org", "@type": "VideoObject", "name": t, "description": f"{t} — {BRAND}",
-             "thumbnailUrl": SITE_URL + poster(i), "contentUrl": f"{SITE_URL}/videos/work-{i}.mp4", "uploadDate": TODAY} for i, (t, _) in enumerate(VIDEOS, 1)]
+    vids = [{"@context": "https://schema.org", "@type": "VideoObject", "name": v["title"], "description": f"{v['title']} — {BRAND}",
+             "thumbnailUrl": poster(v), "contentUrl": v["url"], "embedUrl": f"https://www.youtube.com/embed/{yt_id(v['url'])}", "uploadDate": TODAY} for v in VIDEOS]
     page("/portfolio/", f"Портфолио — видео наших работ | {BRAND}", "Видео реальных обработок DezClub: дезинсекция квартир, дератизация складов, дезинфекция офисов и кафе.",
          body, vids, crumbs=[("Портфолио", "/portfolio/")], kw="портфолио видео работы", prio="0.6")
     # отзывы

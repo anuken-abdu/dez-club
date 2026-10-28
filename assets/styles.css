@@ -941,3 +941,19 @@ html{overflow-x:clip}
   .pt-h{text-align:left;margin-bottom:22px}.pt-h p{font-size:15.5px;margin-left:0}
 }
 @media (max-width:359px){.kc-g{grid-template-columns:minmax(0,1fr)}}
+
+/* «Наши работы»: YouTube */
+.vid .cap{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.lb-yt{position:relative;height:calc(100vh - 140px);max-height:860px;aspect-ratio:9/16;max-width:100%;display:flex;flex-direction:column;gap:10px}
+.lb-yt iframe{flex:1;width:100%;border:0;border-radius:12px;background:#000}
+.lb-yt-l{align-self:center;color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:4px}
+.lb-yt-l:hover{color:var(--c-l2,#dcebd2)}
+/* 2ГИС без перехода */
+.rt-off{cursor:default}
+.rt-off:hover{border-color:var(--line);box-shadow:none}
+/* список услуг на городских страницах */
+.sl-t{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:34px 0 16px;font-size:22px}
+.sl-t:first-child{margin-top:0}
+.sl-t a{color:var(--ink)}
+.sl-t small{font-size:15px;font-weight:600;color:var(--mut)}
+@media (max-width:767px){.lb-yt{height:auto;width:100%;aspect-ratio:auto}.lb-yt iframe{aspect-ratio:9/16;max-height:calc(100vh - 160px)}}
