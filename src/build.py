@@ -392,6 +392,12 @@ def lead_form(title="Рассчитаем стоимость обработки"
 </form></div></div></section>'''
 
 def geo_sec(cur="almaty"):
+    if cur != "almaty":
+        c = next(x for x in CITIES if x[0] == cur)
+        cities = "".join(f'<li><a href="{city_url(x[0])}"{" class=cur" if x[0]==cur else ""}>{x[1]}</a></li>' for x in CITIES)
+        return sec("География работы", f'''<div class="geo">
+<div><h3>{c[1]} и регион</h3><p>Выезжаем по всему городу и по региону: {c[3]}. Время выезда согласуем при заявке.</p></div>
+<div><h3>Города Казахстана</h3><p>Работаем по всему Казахстану. Выберите город, чтобы узнать условия выезда.</p><ul class="chips m-clip" id="geoC">{cities}</ul><button class="m-more" type="button" data-more="geoC">Показать все города {ui("chev")}</button></div></div>''', alt=True)
     distr = "".join(f'<li class="ch">{d} район</li>' for d in ALMATY_DISTRICTS)
     cities = "".join(f'<li><a href="{city_url(c[0])}"{" class=cur" if c[0]==cur else ""}>{c[1]}</a></li>' for c in CITIES)
     return sec("География работы", f'''<div class="geo">
@@ -566,18 +572,12 @@ PREP = ["Уберите продукты, посуду и корм для жив
         "После возвращения проветрите помещение и протрите контактные поверхности"]
 
 # ------------------------------------------------------------------ страницы
-def build_home():
-    body = f'''<section class="hero"><div class="wrap hero-in"><div>
-<h1>Санитарная служба дезинсекции, дезинфекции, дератизации и пест‑контроля <span data-cin>в Алматы</span></h1>
-<p class="hero-lead">Избавляем дома, бизнес и производства от насекомых, грызунов, бактерий и запахов. <b>Подбираем метод под объект</b> — квартиру с детьми, кафе, склад или участок, — работаем <b>по договору</b> и выдаём акт выполненных работ.</p>
-{btns_main()}
-{trust_html()}
-</div>{hero_art()}</div></section>
-{rate_sec()}
-{svc_group_sec()}
+def home_sections(city=None, pests_sub="Определяем вид вредителя и подбираем средство, которое действует именно на него.", faq=None, geo=None, lead=None):
+    """Порядок секций страницы Алматы — один для всех городов."""
+    return f'''{svc_group_sec()}
 {price_list_sec(alt=True)}
 {promo_sec()}
-{sec("От кого избавляем", pest_grid(), "Определяем вид вредителя и подбираем средство, которое действует именно на него.", ("Все вредители", "/vrediteli/"), alt=True)}
+{sec("От кого избавляем", pest_grid(), pests_sub, ("Все вредители", "/vrediteli/"), alt=True)}
 {sec("Как мы работаем", steps_html())}
 {equip_sec(alt=True)}
 {portfolio_sec()}
@@ -588,9 +588,19 @@ def build_home():
 {partners_sec()}
 {sec("Обрабатываем любые объекты", obj_grid(), "", ("Все объекты", "/obekty/"), alt=True)}
 {reviews_sec()}
-{sec("Частые вопросы", faq_html(FAQ_HOME), alt=True)}
-{geo_sec()}
-{lead_form()}'''
+{sec("Частые вопросы", faq_html(faq or FAQ_HOME), alt=True)}
+{geo or geo_sec()}
+{lead or lead_form()}'''
+
+def build_home():
+    body = f'''<section class="hero"><div class="wrap hero-in"><div>
+<h1>Санитарная служба дезинсекции, дезинфекции, дератизации и пест‑контроля <span data-cin>в Алматы</span></h1>
+<p class="hero-lead">Избавляем дома, бизнес и производства от насекомых, грызунов, бактерий и запахов. <b>Подбираем метод под объект</b> — квартиру с детьми, кафе, склад или участок, — работаем <b>по договору</b> и выдаём акт выполненных работ.</p>
+{btns_main()}
+{trust_html()}
+</div>{hero_art()}</div></section>
+{rate_sec()}
+{home_sections()}'''
     page("/", f"Дезинфекция, дезинсекция, дератизация в Алматы — СЭС служба {BRAND}",
          "Санитарная служба DezClub в Алматы и по всему Казахстану: уничтожение тараканов, клопов, грызунов, дезинфекция, озонирование, pest control. Договор и акт для СЭС.",
          body, [faq_schema(FAQ_HOME)], kw="главная сэс санэпидемстанция", prio="1.0")
@@ -720,25 +730,14 @@ def build_cities():
                ("Как узнать стоимость?", "Напишите в WhatsApp или онлайн-консультанту: вредитель, тип объекта и площадь. Назовём цену до выезда."),
                (f"Работаете ли с организациями {cin}?", "Да, заключаем договор, работаем по безналичному расчёту и выдаём документы для проверки."),
                ("Как быстро приедет специалист?", "Время выезда согласуем при заявке, учитывая адрес и объём работ.")]
-        body = f'''{hero_city(f"Дезинфекция, дезинсекция и дератизация {cin}", f"Санитарная служба {BRAND} {cin}: уничтожаем насекомых и грызунов, проводим дезинфекцию, озонирование и обработку территорий для жилья и бизнеса. Регион выезда — {region}.", "map", f"Здравствуйте! Нужна обработка, город {name}.", city=slug)}
-{svc_group_sec()}
-{svc_list_sec(alt=True)}
-{price_list_sec()}
-<section class="sec"><div class="wrap cnt"><article class="prose">
-<h2>Вредители, с которыми чаще обращаются {cin}</h2><p>{ctext}</p>{ck(cpests)}
-<h2>Услуги {cin}</h2>{svc_grid(compact=True)}
-<h2>Для организаций {cin}</h2><p>Обслуживаем кафе, магазины, склады, гостиницы, офисы и производства по договору: акты, журналы, схема точек контроля, безналичный расчёт. Плановые обработки проводим в нерабочее время.</p>
-<h2>Как заказать</h2>{ck([f"<b>{t}.</b> {d}" for t, d in STEPS])}
-</article>{side_box(f"обработка, {name}", None)}</div></section>
-{partners_sec(alt=True)}
-{portfolio_sec()}
-{sec(f"Частые вопросы — {name}", faq_html(faq), alt=True)}
-{reviews_sec()}
-{geo_sec(slug)}
-{lead_form(f"Рассчитаем стоимость обработки {cin}", city=slug)}'''
+        cfaq = faq + [x for x in FAQ_HOME if x[0] not in {q for q, _ in faq}]
+        h1 = f'Санитарная служба дезинсекции, дезинфекции, дератизации и пест‑контроля <span data-cin>{cin}</span>'
+        lead = "Избавляем дома, бизнес и производства от насекомых, грызунов, бактерий и запахов. <b>Подбираем метод под объект</b> — квартиру с детьми, кафе, склад или участок, — работаем <b>по договору</b> и выдаём акт выполненных работ."
+        body = f'''{hero_city(h1, lead, "map", f"Здравствуйте! Нужна обработка, город {name}.", city=slug)}
+{home_sections(slug, f"{ctext} Определяем вид вредителя и подбираем средство, которое действует именно на него.", cfaq, geo_sec(slug), lead_form(f"Рассчитаем стоимость обработки {cin}", city=slug))}'''
         page(url, f"Дезинфекция, дезинсекция, дератизация {cin} — СЭС служба | {BRAND}",
              f"Уничтожение тараканов, клопов, крыс и мышей, дезинфекция и озонирование {cin}. {region}. Договор и акт для СЭС. Работаем по всему Казахстану.",
-             body, [service_schema(f"Дезинфекция, дезинсекция и дератизация {cin}", url, ctext, city=name), faq_schema(faq)],
+             body, [service_schema(f"Дезинфекция, дезинсекция и дератизация {cin}", url, ctext, city=name), faq_schema(cfaq)],
              crumbs=[("Города", "/goroda/"), (name, url)], city_fixed=slug, kw=f"{name} {cin}", prio="0.7")
     cl = "".join(f'<li><a href="{city_url(c[0])}">{c[1]}</a></li>' for c in CITIES)
     body = f'''{ph("Работаем по всему Казахстану", "Основная база — в Алматы. Выезжаем в областные центры, города и районы республики. Выберите свой город.", "map", "Здравствуйте! В каком городе вы работаете?")}
@@ -975,7 +974,7 @@ def build_assets():
             shutil.copy(ROOT / "assets" / f, DIST / f)
     (DIST / "site.webmanifest").write_text(json.dumps({"name": "DezClub — санитарная служба", "short_name": BRAND, "start_url": "/", "display": "browser", "background_color": "#ffffff", "theme_color": "#4f9f2a", "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}]}, ensure_ascii=False), encoding="utf-8")
 
-VER = "2610251800"
+VER = "2910262300"
 MV = VER
 
 if __name__ == "__main__":

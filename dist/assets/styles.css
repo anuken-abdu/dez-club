@@ -956,4 +956,4 @@ html{overflow-x:clip}
 .sl-t:first-child{margin-top:0}
 .sl-t a{color:var(--ink)}
 .sl-t small{font-size:15px;font-weight:600;color:var(--mut)}
-@media (max-width:767px){.lb-yt{height:auto;width:100%;aspect-ratio:auto}.lb-yt iframe{aspect-ratio:9/16;max-height:calc(100vh - 160px)}}
+@media (max-width:767px){.lb-m:has(.lb-yt){width:100%}.lb-yt{margin:0 auto;height:auto;width:min(100%,calc((100vh - 170px) * 9 / 16));width:min(100%,calc((100dvh - 170px) * 9 / 16));aspect-ratio:auto;max-height:none}.lb-yt iframe{flex:none;display:block;width:100%;height:auto;aspect-ratio:9/16}}
