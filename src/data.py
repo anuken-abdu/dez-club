@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Контент сайта DezClub. Всё, что видит посетитель, — здесь."""
 
-SITE_URL = "https://dezclub.kz"          # заменить на итоговый домен
+SITE_URL = "https://www.dezclub.kz"  # основной адрес — с www (так его индексирует Google и отдаёт Vercel)
 BRAND = "DezClub"
 BRAND_SUB = "санитарная служба дезинфекции, дезинсекции и дератизации"
 BRAND_TAG = "мир без вредителей"

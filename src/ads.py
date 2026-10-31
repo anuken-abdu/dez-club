@@ -2,7 +2,7 @@
 """Генерация файла кампаний Google Ads для DezClub (Алматы, Астана) с проверкой лимитов."""
 from pathlib import Path
 
-SITE = "https://dezclub.kz"
+SITE = "https://www.dezclub.kz"
 CITIES = {
     "almaty": dict(nom="Алматы", inn="в Алматы", kw="алматы", q="", neg=["астана", "нур-султан", "шымкент", "караганда", "актобе", "атырау"]),
     "astana": dict(nom="Астана", inn="в Астане", kw="астана", q="?city=astana", neg=["алматы", "алма-ата", "алмата", "шымкент", "караганда", "актобе"]),
