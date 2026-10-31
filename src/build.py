@@ -516,6 +516,13 @@ def partners_sec(alt=False):
 <div class="pt-h"><h2>Нам доверяют</h2><p>Сотрудничаем с организациями на договорной основе, обеспечивая профессиональное санитарное обслуживание и системный контроль качества.</p></div>
 <ul class="pt-g">{logos}{join}</ul><ul class="pt-a">{advh}</ul></div></section>'''
 
+def thanks_sec(alt=False):
+    cards = "".join(f'''<li><button class="thx" type="button" data-lb="t" data-type="img" data-src="/images/blagodarnosti/{sl}.webp?v={MV}" aria-label="Открыть письмо: {E(org)}">
+<span class="thx-im"><img src="/images/blagodarnosti/{sl}-s.webp?v={MV}" alt="{E(kind.split(",")[0])} от {E(org)} для DezClub" width="760" height="1075" loading="lazy"></span>
+<span class="thx-b"><b>{E(org)}</b><small>{E(kind)}</small><q>{E(qt)}</q><span class="thx-o">Открыть письмо {ui("arrow")}</span></span></button></li>''' for sl, org, kind, qt in THANKS)
+    return f'''<section class="sec{" sec-alt" if alt else ""}" id="blagodarnosti"><div class="wrap"><div class="sec-h"><div><h2>Благодарственные письма</h2><p>Отзывы организаций, которые мы обслуживаем по договору. Нажмите на письмо, чтобы открыть скан целиком.</p></div></div>
+<ul class="thx-g">{cards}</ul></div></section>'''
+
 def svc_group_sec():
     main = {m[0] for m in MAIN_SERVICES}
     other = [s for s in SERVICES if s["slug"] not in main]
@@ -590,9 +597,10 @@ def home_sections(city=None, pests_sub="Определяем вид вредит
 {docs_sec(alt=True)}
 {biz_html()}
 {partners_sec()}
-{sec("Обрабатываем любые объекты", obj_grid(), "", ("Все объекты", "/obekty/"), alt=True)}
-{reviews_sec()}
-{sec("Частые вопросы", faq_html(faq or FAQ_HOME), alt=True)}
+{thanks_sec(alt=True)}
+{sec("Обрабатываем любые объекты", obj_grid(), "", ("Все объекты", "/obekty/"))}
+{reviews_sec(alt=True)}
+{sec("Частые вопросы", faq_html(faq or FAQ_HOME))}
 {geo or geo_sec()}
 {lead or lead_form()}'''
 
@@ -803,7 +811,7 @@ def build_misc():
     # отзывы
     body = f'''{ph("Отзывы клиентов", "Скриншоты сообщений, которые нам присылают клиенты после обработки.", "check", "Здравствуйте! Хочу заказать обработку.")}
 {rate_sec()}<section class="sec"><div class="wrap"><div class="grid-v">{"".join(review_cards())}</div></div></section>
-{portfolio_sec(alt=True)}{lead_form()}'''
+{thanks_sec(alt=True)}{portfolio_sec()}{lead_form()}'''
     page("/otzyvy/", f"Отзывы клиентов | {BRAND}", "Отзывы клиентов DezClub об обработке квартир, домов и объектов бизнеса.",
          body, crumbs=[("Отзывы", "/otzyvy/")], kw="отзывы", prio="0.6")
     # оплата
@@ -948,6 +956,7 @@ def build_meta():
             f"- Генеральный директор: {COMPANY['director']}",
             "- Команда: " + "; ".join(f"{n} — {r}" for n, r in TEAM),
             "- Рейтинги и профили: " + "; ".join(f"{name} {val} ({url})" for _, name, val, _, url in RATINGS),
+            "- Благодарственные и рекомендательные письма: " + "; ".join(f"{org} ({k.split(',')[0].lower()})" for _, org, k, _ in THANKS) + f" — {SITE_URL}/otzyvy/#blagodarnosti",
             "", "## Цены и скидки"] + [f"- {v[0]} — {v[1]}: " + "; ".join(n for _, n, _, _ in v[2]) for v in CATALOG.values()] + ["- Итоговая стоимость зависит от площади, вредителя, степени заражения и объекта, называется до выезда.",
             f"- Скидки: {PROMO_TXT}. {PROMO_HOW}", f"- Подробнее: {SITE_URL}/ceny/",
             "", "## Оборудование"] + [f"- {t}: {d}" for _, t, d in EQUIPMENT] + [
@@ -978,7 +987,7 @@ def build_assets():
             shutil.copy(ROOT / "assets" / f, DIST / f)
     (DIST / "site.webmanifest").write_text(json.dumps({"name": "DezClub — санитарная служба", "short_name": BRAND, "start_url": "/", "display": "browser", "background_color": "#ffffff", "theme_color": "#4f9f2a", "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}]}, ensure_ascii=False), encoding="utf-8")
 
-VER = "3110261300"
+VER = "3110261420"
 MV = VER
 
 if __name__ == "__main__":
