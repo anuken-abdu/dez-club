@@ -957,3 +957,8 @@ html{overflow-x:clip}
 .sl-t a{color:var(--ink)}
 .sl-t small{font-size:15px;font-weight:600;color:var(--mut)}
 @media (max-width:767px){.lb-m:has(.lb-yt){width:100%}.lb-yt{margin:0 auto;height:auto;width:min(100%,calc((100vh - 170px) * 9 / 16));width:min(100%,calc((100dvh - 170px) * 9 / 16));aspect-ratio:auto;max-height:none}.lb-yt iframe{flex:none;display:block;width:100%;height:auto;aspect-ratio:9/16}}
+
+/* мини-фото вредителей */
+.pest-ph{width:96px;height:96px;object-fit:contain;mix-blend-mode:multiply}
+@media (max-width:767px){.pest-ph{width:72px;height:72px}}
+@media (max-width:479px){.pest-ph{width:56px;height:56px}}

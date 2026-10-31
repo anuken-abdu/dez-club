@@ -317,7 +317,11 @@ def svc_grid(exclude=None, compact=False, limit=None):
 
 def pest_grid(exclude=None, only=None):
     items = [p for p in PESTS if p["slug"] != exclude and (not only or p["slug"] in only)]
-    return '<div class="pest-g">' + "".join(f'<a class="pest" href="/vrediteli/{p["slug"]}/">{icon(p["icon"])}<span>{p["name"]}</span></a>' for p in items) + "</div>"
+    def pic(p):
+        if (ROOT / "images" / "vrediteli" / f'{p["slug"]}.jpg').exists():
+            return f'<img class="pest-ph" src="/images/vrediteli/{p["slug"]}.jpg?v={MV}" alt="{E(p["name"])}" width="160" height="160" loading="lazy" decoding="async">'
+        return icon(p["icon"])
+    return '<div class="pest-g">' + "".join(f'<a class="pest" href="/vrediteli/{p["slug"]}/">{pic(p)}<span>{p["name"]}</span></a>' for p in items) + "</div>"
 
 def obj_grid(exclude=None):
     return '<div class="obj-g">' + "".join(f'<a class="obj" href="/obekty/{o[0]}/">{o[1]}{ui("right")}</a>' for o in OBJECTS if o[0] != exclude) + "</div>"
@@ -974,7 +978,7 @@ def build_assets():
             shutil.copy(ROOT / "assets" / f, DIST / f)
     (DIST / "site.webmanifest").write_text(json.dumps({"name": "DezClub — санитарная служба", "short_name": BRAND, "start_url": "/", "display": "browser", "background_color": "#ffffff", "theme_color": "#4f9f2a", "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}]}, ensure_ascii=False), encoding="utf-8")
 
-VER = "2910262300"
+VER = "3110261300"
 MV = VER
 
 if __name__ == "__main__":
