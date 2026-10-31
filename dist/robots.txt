@@ -29,4 +29,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://dezclub.kz/sitemap.xml
+Sitemap: https://www.dezclub.kz/sitemap.xml
