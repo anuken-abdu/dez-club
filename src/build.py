@@ -396,16 +396,13 @@ def lead_form(title="Рассчитаем стоимость обработки"
 </form></div></div></section>'''
 
 def geo_sec(cur="almaty"):
-    if cur != "almaty":
-        c = next(x for x in CITIES if x[0] == cur)
-        cities = "".join(f'<li><a href="{city_url(x[0])}"{" class=cur" if x[0]==cur else ""}>{x[1]}</a></li>' for x in CITIES)
-        return sec("География работы", f'''<div class="geo">
-<div><h3>{c[1]} и регион</h3><p>Выезжаем по всему городу и по региону: {c[3]}. Время выезда согласуем при заявке.</p></div>
-<div><h3>Города Казахстана</h3><p>Работаем по всему Казахстану. Выберите город, чтобы узнать условия выезда.</p><ul class="chips m-clip" id="geoC">{cities}</ul><button class="m-more" type="button" data-more="geoC">Показать все города {ui("chev")}</button></div></div>''', alt=True)
-    distr = "".join(f'<li class="ch">{d} район</li>' for d in ALMATY_DISTRICTS)
-    cities = "".join(f'<li><a href="{city_url(c[0])}"{" class=cur" if c[0]==cur else ""}>{c[1]}</a></li>' for c in CITIES)
+    """Районы — только своего города: CITY_AREAS, для остальных городов — части города без чужих названий."""
+    c = next(x for x in CITIES if x[0] == cur)
+    title, areas, note = CITY_AREAS.get(cur, (f"{c[1]}: где работаем", GEN_ALL, f"Выезжаем по всему городу и по региону: {c[3]}."))
+    distr = "".join(f'<li class="ch">{E(d)}</li>' for d in areas)
+    cities = "".join(f'<li><a href="{city_url(x[0])}"{" class=cur" if x[0]==cur else ""}>{x[1]}</a></li>' for x in CITIES)
     return sec("География работы", f'''<div class="geo">
-<div><h3>Районы Алматы</h3><p>Выезжаем во все районы города, в пригороды и посёлки Алматинской области.</p><ul class="chips m-clip" id="geoD">{distr}</ul><button class="m-more" type="button" data-more="geoD">Показать все районы {ui("chev")}</button></div>
+<div><h3>{E(title)}</h3><p>{E(note)} Время выезда согласуем при заявке.</p><ul class="chips m-clip" id="geoD">{distr}</ul><button class="m-more" type="button" data-more="geoD">Показать все районы {ui("chev")}</button></div>
 <div><h3>Города Казахстана</h3><p>Работаем по всему Казахстану. Выберите город, чтобы узнать условия выезда.</p><ul class="chips m-clip" id="geoC">{cities}</ul><button class="m-more" type="button" data-more="geoC">Показать все города {ui("chev")}</button></div></div>''', alt=True)
 
 def hero_art():
@@ -615,7 +612,7 @@ def build_home():
 {home_sections()}'''
     page("/", f"Дезинфекция, дезинсекция, дератизация в Алматы — СЭС служба {BRAND}",
          "Санитарная служба DezClub в Алматы и по всему Казахстану: уничтожение тараканов, клопов, грызунов, дезинфекция, озонирование, pest control. Договор и акт для СЭС.",
-         body, [faq_schema(FAQ_HOME)], kw="главная сэс санэпидемстанция", prio="1.0")
+         body, [faq_schema(FAQ_HOME)], city_fixed="almaty", kw="главная сэс санэпидемстанция", prio="1.0")
 
 
 def build_services():
@@ -987,7 +984,7 @@ def build_assets():
             shutil.copy(ROOT / "assets" / f, DIST / f)
     (DIST / "site.webmanifest").write_text(json.dumps({"name": "DezClub — санитарная служба", "short_name": BRAND, "start_url": "/", "display": "browser", "background_color": "#ffffff", "theme_color": "#4f9f2a", "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}]}, ensure_ascii=False), encoding="utf-8")
 
-VER = "3110261420"
+VER = "0211261330"
 MV = VER
 
 if __name__ == "__main__":

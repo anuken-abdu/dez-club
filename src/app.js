@@ -501,6 +501,9 @@
   /* ---------------- мобильные свёртки ---------------- */
   $$("[data-more]").forEach(function (b) {
     var t = document.getElementById(b.getAttribute("data-more")); if (!t) return;
+    // кнопка «Показать все» не нужна, если список и так помещается
+    function fit() { if (!t.classList.contains("open")) b.style.display = t.scrollHeight > t.clientHeight + 2 ? "" : "none"; }
+    fit(); window.addEventListener("resize", fit);
     var lbl = b.firstChild.nodeValue;
     b.addEventListener("click", function () { var o = t.classList.toggle("open"); b.classList.toggle("open", o); b.firstChild.nodeValue = o ? "Свернуть " : lbl; });
   });
