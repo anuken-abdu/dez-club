@@ -239,6 +239,11 @@
       var cs = f.elements.city ? findCity(f.elements.city.value)[1] : city[1];
       parts.push("Город: " + cs);
       if (f.elements.msg && f.elements.msg.value.trim()) parts.push("Комментарий: " + f.elements.msg.value.trim());
+      // расширенные конверсии Google Ads: телефон из формы передаётся тегу Google, он хеширует его (SHA-256) перед отправкой
+      if (p && typeof window.gtag === "function") {
+        var d = p.value.replace(/\D/g, "");
+        if (d.length === 11) window.gtag("set", "user_data", { phone_number: "+7" + d.slice(1) });
+      }
       openWa(parts.join("\n"));
       var m = f.closest(".mdl"); if (m) closeM(m);
       f.reset();
