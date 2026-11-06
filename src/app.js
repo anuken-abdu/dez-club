@@ -26,7 +26,7 @@
     if (typeof window.gtag !== "function") return;
     var label = kind === "phone_click" ? CFG.adsLabel : (CFG.adsLabelWa || CFG.adsLabel);
     if (CFG.ads && label) window.gtag("event", "conversion", { send_to: CFG.ads + "/" + label, value: 1.0, currency: "USD" });
-    if (CFG.ga) window.gtag("event", kind || "whatsapp_click", { page_path: location.pathname, city: city ? city[1] : "" });
+    if (CFG.ga) window.gtag("event", kind === "phone_click" ? "click_phone" : "click_whatsapp", { page_path: location.pathname, city: city ? city[1] : "" });
   }
   var lockCount = 0;
   function lock(on) {
@@ -240,6 +240,16 @@
       parts.push("Город: " + cs);
       if (f.elements.msg && f.elements.msg.value.trim()) parts.push("Комментарий: " + f.elements.msg.value.trim());
       // расширенные конверсии Google Ads: телефон из формы передаётся тегу Google, он хеширует его (SHA-256) перед отправкой
+      // заявка уходит на сервер (Telegram) до открытия WhatsApp; если сервер недоступен — WhatsApp всё равно откроется
+      try {
+        var utm = {}, q = new URLSearchParams(location.search);
+        ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid"].forEach(function (k) { if (q.get(k)) utm[k] = q.get(k); });
+        fetch("/api/lead", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+          name: n ? n.value.trim() : "", phone: p ? p.value.trim() : "", service: f.elements.service ? f.elements.service.value : "",
+          city: cs, msg: f.elements.msg ? f.elements.msg.value.trim() : "", page: location.pathname, utm: utm,
+          website: f.elements.website ? f.elements.website.value : "" }) }).catch(function () {});
+      } catch (e2) {}
+      if (CFG.ga && typeof window.gtag === "function") window.gtag("event", "lead_form_submit", { page_path: location.pathname, city: cs, service: f.elements.service ? f.elements.service.value : "" });
       if (p && typeof window.gtag === "function") {
         var d = p.value.replace(/\D/g, "");
         if (d.length === 11) window.gtag("set", "user_data", { phone_number: "+7" + d.slice(1) });
@@ -300,7 +310,7 @@
     { k: ["после обработ", "вернуть", "когда можно", "проветр", "мыть", "уборк", "уходить из дома", "уходить из квартир"], a: "Да, на время обработки нужно уйти. После возвращения проветрите помещение и протрите поверхности, которых касаются руки и продукты. Плинтусы, щели и места за мебелью не мойте, пока не пройдёт срок, который назовёт специалист, — там средство продолжает работать.", u: "/stati/chto-delat-posle-obrabotki/" },
     { k: ["лиценз", "сертификат", "документы компании", "разрешени", "квалификац"], a: "Работаем официально: у ТОО «DezClub» государственная лицензия на дезинфекцию, дезинсекцию и дератизацию № KZ28LAM00011917 от 17.08.2026. У специалистов есть документы о квалификации, на препараты — свидетельства о регистрации. Всё можно посмотреть на сайте.", u: "/dokumenty/" },
     { k: ["рейтинг", "отзыв", "olx", "олх", "2гис", "2gis", "инстаграм", "instagram", "инста"], a: "Рейтинг 5.0 на OLX и 5.0 в 2ГИС, а фото и видео работ — в нашем Instagram @dezclub.kz. Скриншоты отзывов клиентов есть на сайте.", u: "/otzyvy/" },
-    { k: ["с какого года", "сколько лет", "опыт", "давно работа", "давно на рынке"], a: "Опыт работы нашей команды — " + EXP + ". За это время обрабатывали квартиры, частные дома, кафе, склады, гостиницы и производства. Сейчас работаем как ТОО «DezClub» с государственной лицензией.", u: "/o-kompanii/" },
+    { k: ["с какого года", "сколько лет", "опыт", "давно работа", "давно на рынке"], a: "Специалисты нашей команды работают в отрасли " + EXP + ". ТОО «DezClub» зарегистрировано в 2026 году и работает с государственной лицензией на дезинфекцию, дезинсекцию и дератизацию.", u: "/o-kompanii/" },
     { k: ["гарант"], a: "Гарантия и контрольный осмотр прописываются в договоре — условия зависят от вида обработки и объекта. Если вредители вернутся в гарантийный срок, приедем повторно по условиям договора.", u: null },
     { k: ["скидк", "акци", "промо", "дешевле", "подешевле"], a: "Сейчас действуют " + PROMO + ". Размер зависит от объёма работ, объекта и количества обработок — посчитаю при расчёте. Просто скажите, что вы с сайта.", u: "/ceny/", q: ["Рассчитать мою стоимость"] },
     { k: ["сколько длит", "долго", "сколько времени", "по времени"], a: "Обработка квартиры обычно занимает от часа до нескольких часов — зависит от площади и метода. Точное время скажу при расчёте.", u: null },

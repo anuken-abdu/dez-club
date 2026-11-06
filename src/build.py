@@ -87,7 +87,7 @@ def mega():
 <div class="mega-r">
   <div class="srch"><label class="sr" for="q1">Поиск по сайту</label><input id="q1" type="search" placeholder="Поиск по сайту" autocomplete="off" data-search>{ui("search")}<ul class="srch-r"></ul></div>
   <div class="promo"><div class="promo-v">{icon("s_pest")}<strong>{PROMO_BIG} на обработку</strong></div>
-  <div class="promo-b"><h4>Опыт работы {EXPERIENCE}</h4><p>Менеджер {MANAGER[1]} подскажет, какая обработка нужна, и посчитает стоимость с учётом скидки.</p><button class="btn btn-o" type="button" data-chat>Спросить {MANAGER[1]}а</button></div></div>
+  <div class="promo-b"><h4>Опыт команды {EXPERIENCE}</h4><p>Менеджер {MANAGER[1]} подскажет, какая обработка нужна, и посчитает стоимость с учётом скидки.</p><button class="btn btn-o" type="button" data-chat>Спросить {MANAGER[1]}а</button></div></div>
 </div></div></div></div>'''
 
 def header():
@@ -104,7 +104,7 @@ def header():
    <a class="hdr-ph" href="tel:{PHONE_TEL}">{PHONE_DISPLAY}</a>
    <span class="hdr-note">Звонки и WhatsApp</span>
   </div>
-  <div class="hdr-geo"><span>Опыт работы {EXPERIENCE}</span><strong>{PROMO_BIG}</strong><span>По всему Казахстану</span></div>
+  <div class="hdr-geo"><span>Опыт команды {EXPERIENCE}</span><strong>{PROMO_BIG}</strong><span>По всему Казахстану</span></div>
   <div class="hdr-act">
    <a class="btn btn-wa" {wa_attr("Здравствуйте! Нужна консультация по обработке.")}>{ui("wa")}WhatsApp</a>
    <button class="btn btn-y" type="button" data-open="callback">Заказать звонок</button>
@@ -193,7 +193,7 @@ def overlays():
 <div class="mdl" id="callback" role="dialog" aria-modal="true" aria-labelledby="cbT"><div class="mdl-c">
  <button class="mdl-x" type="button" data-x aria-label="Закрыть">{ui("close")}</button>
  <h3 id="cbT">Заказать звонок</h3><p>Оставьте имя и номер — откроется WhatsApp с готовой заявкой, специалист перезвонит.</p>
- <form class="frm" data-wa-form="Здравствуйте! Прошу перезвонить."><div class="fld"><label for="cbN">Имя</label><input id="cbN" name="name" autocomplete="name" required></div>
+ <form class="frm" data-wa-form="Здравствуйте! Прошу перезвонить."><input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"><div class="fld"><label for="cbN">Имя</label><input id="cbN" name="name" autocomplete="name" required></div>
  <div class="fld"><label for="cbP">Телефон</label><input id="cbP" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" required data-mask></div>
  <button class="btn btn-y" type="submit">Отправить заявку</button><p class="frm-note">Нажимая кнопку, вы соглашаетесь с <a href="/privacy-policy/">политикой конфиденциальности</a>. Или позвоните: <a href="tel:{PHONE_TEL}">{PHONE_DISPLAY}</a></p></form>
 </div></div>
@@ -208,12 +208,28 @@ def overlays():
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Просмотр"><button class="x" type="button" aria-label="Закрыть">{ui("close")}</button><button class="p" type="button" aria-label="Назад">{ui("left")}</button><div class="lb-m"></div><button class="n" type="button" aria-label="Вперёд">{ui("right")}</button></div>
 {drawer()}'''
 
+def geo_meta(geo):
+    """geo = (город, широта, долгота, регион) или False — тогда гео-теги не выводятся"""
+    if not geo: return ""
+    n, la, lo, rg = geo
+    return f'<meta name="geo.region" content="{rg}"><meta name="geo.placename" content="{n}"><meta name="geo.position" content="{la};{lo}"><meta name="ICBM" content="{la}, {lo}">\n'
+
+def fit(parts, n=155):
+    """Мета-описание из частей: добавляем, пока влезает в n символов (видимая часть сниппета)"""
+    out = ""
+    for x in parts:
+        t = (out + " " + x).strip()
+        if len(t) <= n: out = t
+    return out
+
 # ------------------------------------------------------------------ schema
 def org_schema():
     return {
         "@context": "https://schema.org", "@type": "LocalBusiness", "@id": SITE_URL + "/#org",
         "name": BRAND, "legalName": COMPANY["legal"].replace('"', ""), "taxID": COMPANY["bin"],
-        "description": f"Санитарная служба: дезинфекция, дезинсекция, дератизация, фумигация, озонирование и pest control в Алматы и по всему Казахстану. Опыт работы {EXPERIENCE}, {PROMO_TXT}.",
+        "description": f"Санитарная служба: дезинфекция, дезинсекция, дератизация, фумигация, озонирование и pest control в Алматы и по всему Казахстану. ТОО зарегистрировано в 2026 году, лицензия от {LICENSE_DATE}; опыт специалистов команды — {EXPERIENCE}.",
+        "priceRange": "от " + min(MAIN_PRICES.values(), key=lambda x: int(re.sub(r"\D", "", x))).replace("от ", ""),
+        "hasMap": RATINGS[1][4],
         "currenciesAccepted": "KZT", "paymentAccepted": "Наличные, перевод, безналичный расчёт",
         "sameAs": [r[4] for r in RATINGS] + list(GIS_CITY.values()) + [v["url"] for v in VIDEOS],
         "url": SITE_URL + "/", "logo": SITE_URL + "/assets/logo.png", "image": SITE_URL + "/assets/og.png",
@@ -230,6 +246,7 @@ def org_schema():
         "employee": [{"@type": "Person", "name": n, "jobTitle": r} for n, r in TEAM],
         "contactPoint": {"@type": "ContactPoint", "telephone": PHONE_TEL, "contactType": "customer service",
                          "availableLanguage": ["ru", "kk"], "areaServed": "KZ"},
+        **({"openingHours": OPENING_HOURS} if OPENING_HOURS else {}),
         "makesOffer": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": s["name"], "url": f"{SITE_URL}/uslugi/{s['slug']}/"}} for s in SERVICES],
     }
 
@@ -247,7 +264,7 @@ def service_schema(name, url, desc, city="Казахстан"):
             "areaServed": [{"@type": "City", "name": c[1]} for c in CITIES] if city == "Казахстан" else {"@type": "City", "name": city}}
 
 # ------------------------------------------------------------------ страница
-def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="", prio="0.7"):
+def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="", prio="0.7", geo=None, noindex=False):
     url = path
     full = SITE_URL + url
     og_img = og_for(url, title)
@@ -262,6 +279,11 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
     gtag = ""
     if GADS_ID:
         gtag = f'<!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id={GADS_ID}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","{GADS_ID}");gtag("config","{GA4_ID}");</script>'
+    if geo is None: geo = ("Алматы", COMPANY["lat"], COMPANY["lng"], "KZ-75")
+    verify_meta = "".join(f'<meta name="{k}" content="{E(v)}">' for k, v in VERIFY.items() if v)
+    if YM_ID:
+        gtag += (f'<script>(function(m,e,t,r,i,k,a){{m[i]=m[i]||function(){{(m[i].a=m[i].a||[]).push(arguments)}};m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}})'
+                 f'(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym({YM_ID},"init",{{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true}});</script>')
     ld = "".join(f'<script type="application/ld+json">{json.dumps(s, ensure_ascii=False, separators=(",", ":"))}</script>' for s in sch)
     data_city = f' data-city="{city_fixed}" data-fixed="1"' if city_fixed else ""
     doc = f'''<!doctype html>
@@ -272,9 +294,9 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
 <title>{E(title)}</title>
 <meta name="description" content="{E(desc)}">
 <link rel="canonical" href="{full}">
-<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="robots" content="{"noindex,follow" if noindex else "index,follow,max-image-preview:large"}">
 <meta name="theme-color" content="#4f9f2a">
-<meta name="geo.region" content="KZ-75"><meta name="geo.placename" content="Алматы"><meta name="geo.position" content="{COMPANY["lat"]};{COMPANY["lng"]}"><meta name="ICBM" content="{COMPANY["lat"]}, {COMPANY["lng"]}">
+{geo_meta(geo)}{verify_meta}
 <meta property="og:type" content="website"><meta property="og:locale" content="ru_KZ"><meta property="og:site_name" content="{BRAND}">
 <meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}"><meta property="og:url" content="{full}"><meta property="og:image" content="{SITE_URL}{og_img}"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="{SITE_URL}{og_img}">
@@ -299,7 +321,7 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
     out = DIST / url.strip("/") / "index.html" if url != "/404.html" else DIST / "404.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(doc, encoding="utf-8")
-    if url != "/404.html":
+    if url != "/404.html" and not noindex:
         PAGES.append((url, prio))
         SEARCH.append([re.sub(r"\s*\|.*$", "", title), url, kw])
 
@@ -385,7 +407,7 @@ def lead_form(title="Рассчитаем стоимость обработки"
     copts = city_options().replace(f'value="{city}"', f'value="{city}" selected')
     return f'''<section class="sec"><div class="wrap"><div class="lead">
 <div><h2>{title}</h2><p>{text}</p><p>Телефон: <a href="tel:{PHONE_TEL}"><b>{PHONE_DISPLAY}</b></a></p></div>
-<form class="frm" data-wa-form="Здравствуйте! Заявка с сайта.">
+<form class="frm" data-wa-form="Здравствуйте! Заявка с сайта."><input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
  <div class="fld"><label for="lfN">Имя</label><input id="lfN" name="name" autocomplete="name" required></div>
  <div class="fld"><label for="lfP">Телефон</label><input id="lfP" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" required data-mask></div>
  <div class="fld"><label for="lfS">Услуга</label><select id="lfS" name="service">{opts}</select></div>
@@ -409,7 +431,7 @@ def hero_art():
     return f'''<div class="hero-art"><img class="hero-ph" src="/images/hero.png?v={MV}" alt="{BRAND} — санитарная служба" width="914" height="1000" fetchpriority="high">
 <div class="art-card art-k3">{icon("doc", eager=True)}<span>Договор и акт выполненных работ<small>для квартир, домов и бизнеса</small></span></div></div>'''
 
-FACTS = [f"Опыт работы — {EXPERIENCE}",
+FACTS = [f"Опыт специалистов команды — {EXPERIENCE}; ТОО «DezClub» зарегистрировано в 2026 году (БИН {COMPANY['bin']}), лицензия от {LICENSE_DATE}",
          f"Государственная лицензия № {LICENSE_NO} от {LICENSE_DATE}",
          f"{PROMO_BIG.capitalize()} — размер зависит от объёма работ и объекта",
          "Оборудование: генератор горячего тумана IGEBA TF-W 60, генератор холодного тумана SM B100, опрыскиватели STIHL SR 420 и SG 51, живоловки для грызунов",
@@ -458,7 +480,7 @@ def offer_box(what, slug=None):
 def equip_sec(alt=False):
     cards = "".join(f'<div class="eq"><div class="eq-im"><img src="/images/equip/{k}.webp?v={MV}" alt="{E(t)}" loading="lazy"></div><b>{E(t)}</b><p>{E(d)}</p></div>' for k, t, d in EQUIPMENT)
     photo = f'<div class="eq eq-ph"><img src="/images/equip/worker.webp?v={MV}" alt="Специалист {BRAND} за работой" loading="lazy"></div>'
-    return f'''<section class="sec{" sec-alt" if alt else ""}" id="equip"><div class="wrap"><div class="sec-h"><div><h2>Оборудование</h2><p>Профессиональная техника для квартир, бизнеса и территорий. Опыт работы — {EXPERIENCE}.</p></div></div>
+    return f'''<section class="sec{" sec-alt" if alt else ""}" id="equip"><div class="wrap"><div class="sec-h"><div><h2>Оборудование</h2><p>Профессиональная техника для квартир, бизнеса и территорий. Опыт команды — {EXPERIENCE}.</p></div></div>
 <div class="eq-g m-scroll">{cards}{photo}</div></div></section>'''
 
 def ru_count(n):
@@ -610,8 +632,8 @@ def build_home():
 </div>{hero_art()}</div></section>
 {rate_sec()}
 {home_sections()}'''
-    page("/", f"Дезинфекция, дезинсекция, дератизация в Алматы — СЭС служба {BRAND}",
-         "Санитарная служба DezClub в Алматы и по всему Казахстану: уничтожение тараканов, клопов, грызунов, дезинфекция, озонирование, pest control. Договор и акт для СЭС.",
+    page("/", f"Дезинфекция, дезинсекция, дератизация в Алматы — {BRAND}",
+         f"Дезинсекция от {MAIN_PRICES['dezinsekciya']}, дератизация, дезинфекция в Алматы и по Казахстану. Тараканы, клопы, крысы. Договор и акт. ☎ {PHONE_DISPLAY}",
          body, [faq_schema(FAQ_HOME)], city_fixed="almaty", kw="главная сэс санэпидемстанция", prio="1.0")
 
 
@@ -642,7 +664,7 @@ def build_services():
 {sec("Другие услуги", svc_grid(exclude=s["slug"], compact=True, limit=8), alt=True)}
 {lead_form(svc=s["name"])}'''
         page(url, SVC_TITLE[s["slug"]] + f" | {BRAND}",
-             f"{s['title']} в Алматы и по Казахстану от {BRAND}: {s['sub']}. {s['lead'][:90].rstrip(' ,.')}… Договор и акт.",
+             fit([f"{s['title']} в Алматы" + (f" — {price_of(s['slug'])}." if price_of(s['slug']) else "."), f"{s['sub'][:1].upper()}{s['sub'][1:]}.", "Договор и акт.", f"☎ {PHONE_DISPLAY}"]),
              body, [service_schema(s["title"], url, s["lead"]), faq_schema(faq)],
              crumbs=[("Услуги", "/uslugi/"), (s["name"], url)], kw=s["sub"], prio="0.9")
     body = f'''{ph("Услуги санитарной службы", "Дезинсекция, дезинфекция, дератизация, фумигация, озонирование и комплексный pest control для квартир, домов, бизнеса и территорий.", "s_pest", "Здравствуйте! Подскажите, какая обработка мне нужна.")}
@@ -667,6 +689,17 @@ GEN_PL = {"тараканы": "тараканов", "клопы": "клопов"
           "грызуны": "грызунов", "крысы": "крыс", "мыши": "мышей", "жуки": "жуков", "вирусы и бактерии": "вирусов",
           "осы": "ос", "клещи": "клещей", "комары": "комаров", "мокрицы": "мокриц", "насекомые": "насекомых", "птицы": "птиц", "сорняки": "сорняков"}
 
+PRICE_FACTORS = ["площадь и тип объекта: квартира, частный дом, кафе, склад или производство",
+                 "степень заселения и сколько помещений нужно обработать",
+                 "метод: гель, холодный или горячий туман, приманочные станции",
+                 "нужна ли повторная или плановая обработка по договору"]
+
+def pest_price(p):
+    pr = price_of(p["svc"])
+    if not pr: return ""
+    return (f'<h2>Сколько стоит обработка от {p["gen"]}</h2><p>Стоимость обработки от {p["gen"]} <span data-cin>в Алматы</span> — <b>{pr}</b>. Итоговая цена зависит от:</p>'
+            f'{ck([x.capitalize() for x in PRICE_FACTORS])}<p>Точную стоимость называем до выезда, без доплат на месте. {PROMO_HOW.split(" — ")[0]}. Подробнее — на странице <a href="/ceny/">цен</a>.</p>')
+
 def build_pests():
     for p in PESTS:
         url = f"/vrediteli/{p['slug']}/"
@@ -681,6 +714,7 @@ def build_pests():
 <section class="sec"><div class="wrap cnt"><article class="prose">
 <h2>Признаки, что пора вызывать специалиста</h2>{ck(p["signs"])}
 <h2>Как проходит обработка от {p["gen"]}</h2>{offer_box("обработка от " + p["gen"])}<p>{p["how"]}</p>
+{pest_price(p)}
 <p>Обработка входит в услугу <a href="/uslugi/{s["slug"]}/">{s["name"].lower()}</a>. После работы выдаём акт и рекомендации, при необходимости назначаем контрольный осмотр.</p>
 <h2>Как подготовиться</h2>{ck(PREP)}
 <h2>Где обрабатываем</h2>{objl}
@@ -691,8 +725,9 @@ def build_pests():
 {lead_form(svc=s["name"])}'''
         t = f"Обработка от {p['gen']} в Алматы — уничтожение {p['gen']}"
         if len(t) > 62: t = f"Обработка и уничтожение {p['gen']} в Алматы"
+        pr = price_of(p["svc"])
         page(url, f"{t} | {BRAND}",
-             f"Обработка, уничтожение и дезинфекция от {p['gen']} в Алматы и по всему Казахстану. {p['intro'][:90].rstrip(' ,.')}… Договор, акт, расчёт в WhatsApp.",
+             fit([f"Уничтожение {p['gen']} в Алматы" + (f" — {pr}." if pr else "."), "Договор и акт, выезд по городу и Казахстану.", "Цена до выезда.", f"☎ {PHONE_DISPLAY}"]),
              body, [service_schema(f"Уничтожение {p['gen']}", url, p["intro"]), faq_schema(faq)],
              crumbs=[("Вредители", "/vrediteli/"), (p["name"], url)], kw=p["gen"], prio="0.8")
     body = f'''{ph("Вредители, от которых избавляем", "Насекомые и грызуны в квартирах, домах, на складах и производствах. Выберите вредителя, чтобы узнать, как проходит обработка.", "s_insect", "Здравствуйте! Помогите определить вредителя.")}
@@ -720,8 +755,10 @@ def build_objects():
 {lead_form()}'''
         pl = [GEN_PL.get(x, x) for x in pests[:3]]
         plt = (", ".join(pl[:-1]) + " и " + pl[-1]) if len(pl) > 1 else pl[0]
-        page(url, f"Обработка {gen} от {plt} в Алматы | {BRAND}",
-             f"Дезинсекция, дезинфекция и дератизация {gen} в Алматы и по Казахстану. {text[:100].rstrip(' ,.')}…",
+        t = f"Обработка {gen} от {plt} в Алматы"
+        if len(t) > 52: t = f"Обработка {gen} в Алматы — от {pl[0]}" if len(f"Обработка {gen} в Алматы — от {pl[0]}") <= 52 else f"Обработка {gen} в Алматы"
+        page(url, f"{t} | {BRAND}",
+             fit([f"Дезинсекция, дезинфекция и дератизация {gen} в Алматы.", "Договор, акт и журналы для бизнеса.", "Цена до выезда.", f"☎ {PHONE_DISPLAY}"]),
              body, [service_schema(f"Обработка {gen}", url, text), faq_schema(faq)],
              crumbs=[("Объекты", "/obekty/"), (name, url)], kw=gen, prio="0.7")
     body = f'''{ph("Объекты, которые мы обрабатываем", "От квартиры до производства: подбираем обработку под тип помещения, режим работы и требования санитарных правил.", "s_biz", "Здравствуйте! Нужна обработка объекта.")}
@@ -742,12 +779,28 @@ def build_cities():
         cfaq = faq + [x for x in FAQ_HOME if x[0] not in {q for q, _ in faq}]
         h1 = f'Санитарная служба дезинсекции, дезинфекции, дератизации и пест‑контроля <span data-cin>{cin}</span>'
         lead = "Избавляем дома, бизнес и производства от насекомых, грызунов, бактерий и запахов. <b>Подбираем метод под объект</b> — квартиру с детьми, кафе, склад или участок, — работаем <b>по договору</b> и выдаём акт выполненных работ."
+        loc = CITY_LOCAL.get(slug)
+        local = ""
+        sch = [service_schema(f"Дезинфекция, дезинсекция и дератизация {cin}", url, ctext, city=name), faq_schema(cfaq)]
+        if loc:
+            objs = "".join(f"<li>{E(o)}</li>" for o in loc["objects"])
+            local = (f'<section class="sec"><div class="wrap cnt"><article class="prose"><h2>{loc["title"]}</h2>'
+                     + "".join(f"<p>{t}</p>" for t in loc["text"])
+                     + f'<h2>Какие объекты обрабатываем {cin}</h2>{ck(loc["objects"])}</article>'
+                     + side_box("обработка " + cin, url, [(c[1], city_url(c[0]), None) for c in CITIES if c[0] in INDEX_CITIES], "Города") + "</div></section>")
+            if slug in GIS_CITY:  # своя карточка в 2ГИС — отдельный LocalBusiness города
+                sch.append({"@context": "https://schema.org", "@type": "LocalBusiness", "@id": SITE_URL + url + "#local", "name": f"{BRAND} {name}",
+                            "parentOrganization": {"@id": SITE_URL + "/#org"}, "url": SITE_URL + url, "telephone": PHONE_TEL, "image": SITE_URL + "/assets/og.png",
+                            "address": {"@type": "PostalAddress", "addressLocality": name, "addressCountry": "KZ"},
+                            "geo": {"@type": "GeoCoordinates", "latitude": loc["geo"][0], "longitude": loc["geo"][1]},
+                            "areaServed": {"@type": "City", "name": name}, "hasMap": GIS_CITY[slug], "sameAs": [GIS_CITY[slug]]})
         body = f'''{hero_city(h1, lead, "map", f"Здравствуйте! Нужна обработка, город {name}.", city=slug)}
+{local}
 {home_sections(slug, f"{ctext} Определяем вид вредителя и подбираем средство, которое действует именно на него.", cfaq, geo_sec(slug), lead_form(f"Рассчитаем стоимость обработки {cin}", city=slug))}'''
-        page(url, f"Дезинфекция, дезинсекция, дератизация {cin} — СЭС служба | {BRAND}",
-             f"Уничтожение тараканов, клопов, крыс и мышей, дезинфекция и озонирование {cin}. {region}. Договор и акт для СЭС. Работаем по всему Казахстану.",
-             body, [service_schema(f"Дезинфекция, дезинсекция и дератизация {cin}", url, ctext, city=name), faq_schema(cfaq)],
-             crumbs=[("Города", "/goroda/"), (name, url)], city_fixed=slug, kw=f"{name} {cin}", prio="0.7")
+        page(url, f"Дезинфекция и дератизация {cin} — {BRAND}",
+             fit([f"Уничтожение тараканов, клопов, крыс и мышей, дезинфекция {cin}.", "Договор и акт выполненных работ.", f"☎ {PHONE_DISPLAY}"]),
+             body, sch, crumbs=[("Города", "/goroda/"), (name, url)], city_fixed=slug, kw=f"{name} {cin}", prio="0.7",
+             geo=(name, *loc["geo"]) if loc else False, noindex=slug not in INDEX_CITIES)
     cl = "".join(f'<li><a href="{city_url(c[0])}">{c[1]}</a></li>' for c in CITIES)
     body = f'''{ph("Работаем по всему Казахстану", "Основная база — в Алматы. Выезжаем в областные центры, города и районы республики. Выберите свой город.", "map", "Здравствуйте! В каком городе вы работаете?")}
 {sec("Города", f'<ul class="chips">{cl}</ul>')}{lead_form()}'''
@@ -762,18 +815,19 @@ def build_articles():
         others = [x for x in ARTICLES if x["slug"] != a["slug"]]
         side_items = [(x["title"], f"/stati/{x['slug']}/", None) for x in ARTICLES]
         body = f'''<section class="ph"><div class="wrap"><!--CRUMBS--></div><div class="wrap ph-in"><div><h1>{a["title"]}</h1><p class="lead-t">{a["desc"]}</p></div><div class="ph-ic">{icon("doc")}</div></div></section>
-<section class="sec"><div class="wrap cnt"><article class="prose">{content}<div class="btns" style="margin-top:28px"><a class="btn btn-y" {wa_attr("Здравствуйте! Прочитал статью на сайте, есть вопрос.")}>Задать вопрос в WhatsApp</a><button class="btn btn-o" type="button" data-chat>Спросить онлайн</button></div></article>
+<section class="sec"><div class="wrap cnt"><article class="prose"><p class="art-by">Проверено: <b>{E(ARTICLE_EXPERT[0])}</b>, {E(ARTICLE_EXPERT[1].lower())} {BRAND}</p>{content}<div class="btns" style="margin-top:28px"><a class="btn btn-y" {wa_attr("Здравствуйте! Прочитал статью на сайте, есть вопрос.")}>Задать вопрос в WhatsApp</a><button class="btn btn-o" type="button" data-chat>Спросить онлайн</button></div></article>
 {side_box("консультация", url, side_items, "Статьи")}</div></section>
 {sec("Услуги", svc_grid(compact=True, limit=8), alt=True)}'''
         art = {"@context": "https://schema.org", "@type": "Article", "headline": a["title"], "description": a["desc"],
-               "datePublished": TODAY, "dateModified": TODAY, "author": {"@type": "Organization", "name": BRAND},
+               "datePublished": TODAY, "dateModified": TODAY,
+               "author": {"@type": "Person", "name": ARTICLE_EXPERT[0], "jobTitle": ARTICLE_EXPERT[1], "worksFor": {"@id": SITE_URL + "/#org"}},
                "publisher": {"@id": SITE_URL + "/#org"}, "mainEntityOfPage": SITE_URL + url, "inLanguage": "ru"}
         page(url, f"{a['title']} | {BRAND}", a["desc"], body, [art],
              crumbs=[("Статьи", "/stati/"), (a["title"], url)], kw="статья", prio="0.6")
     items = "".join(f'<a class="art-it" href="/stati/{a["slug"]}/"><h3>{a["title"]}</h3><p>{a["desc"]}</p></a>' for a in ARTICLES)
     body = f'''{ph("Статьи и памятки", "Как подготовиться к обработке, что делать после неё и какие документы нужны бизнесу.", "doc", "Здравствуйте! Есть вопрос по обработке.")}
 {sec("Полезное", f'<div class="art-list">{items}</div>')}'''
-    page("/stati/", f"Статьи о дезинсекции и дезинфекции | {BRAND}", "Памятки и статьи DezClub: подготовка к обработке, поведение после дезинсекции, документы для СЭС, признаки клопов.",
+    page("/stati/", f"Статьи о дезинсекции и дезинфекции | {BRAND}", "Памятки DezClub: подготовка к обработке, сроки после дезинсекции, безопасность для детей и животных, туманы, требования СЭС к кафе.",
          body, crumbs=[("Статьи", "/stati/")], kw="статьи памятки", prio="0.5")
 
 def build_misc():
@@ -794,8 +848,8 @@ def build_misc():
 <p>Напишите в WhatsApp или онлайн-консультанту, что и где нужно обработать, — назовём точную цену с учётом скидки. Для бизнеса возможен годовой договор с плановыми выездами.</p>
 </article>{side_box("расчёт стоимости")}</div></section>
 {sec("Частые вопросы о ценах", faq_html(pfaq), alt=True)}{lead_form()}'''
-    page("/ceny/", f"Цены на дезинфекцию, дезинсекцию и дератизацию в Алматы — скидки до 30% | {BRAND}",
-         "Стоимость дезинсекции, дератизации, дезинфекции и pest control в DezClub: от чего зависит цена, скидки до 30%. Точная стоимость — до выезда, без доплат на месте.",
+    page("/ceny/", f"Цены на дезинсекцию и дезинфекцию в Алматы | {BRAND}",
+         f"Дезинсекция {MAIN_PRICES['dezinsekciya']}, дератизация {MAIN_PRICES['deratizaciya']}, дезинфекция {MAIN_PRICES['dezinfekciya']}. Скидки до 30%, цена до выезда, без доплат на месте.",
          body, [faq_schema(pfaq)], crumbs=[("Цены", "/ceny/")], kw="цены прайс стоимость скидка акция", prio="0.8")
     # портфолио
     body = f'''{ph("Портфолио: наши работы", "Видео с реальных объектов — квартиры, дома, кафе, склады и территории.", "s_pest", "Здравствуйте! Посмотрел ваши работы, хочу рассчитать стоимость.")}
@@ -852,7 +906,7 @@ def build_misc():
 <p>Лицензия, документы специалистов и свидетельства на препараты — на странице <a href="/dokumenty/">«Лицензия и документы»</a>.</p>
 <h2>Реквизиты</h2><p>{E(COMPANY["legal"])}, БИН {COMPANY["bin"]}. Генеральный директор — {E(COMPANY["director"])}. Адрес: {E(COMPANY["address"])}. <a href="/oplata/">Все реквизиты</a>.</p>
 </article>{side_box("консультация")}</div></section>{equip_sec(alt=True)}{team_sec()}{rate_sec(alt=True)}{portfolio_sec()}{reviews_sec(alt=True)}'''
-    page("/o-kompanii/", f"О компании DezClub — опыт работы {EXPERIENCE} | {BRAND}", f"DezClub — санитарная служба дезинфекции, дезинсекции и дератизации: опыт работы {EXPERIENCE}, лицензия № {LICENSE_NO}, скидки до 30%. Алматы и весь Казахстан.",
+    page("/o-kompanii/", f"О компании DezClub — опыт команды {EXPERIENCE} | {BRAND}", f"DezClub — санитарная служба дезинфекции, дезинсекции и дератизации: опыт команды {EXPERIENCE}, лицензия № {LICENSE_NO}, скидки до 30%. Алматы и весь Казахстан.",
          body, crumbs=[("О компании", "/o-kompanii/")], kw="о компании", prio="0.5")
     # лицензия и документы
     groups = "".join(f'<h2 class="doc-h">{E(h)}</h2><div class="doc-g">' + "".join(doc_card(*d) for d in items) + "</div>" for h, items in DOCS)
@@ -863,7 +917,7 @@ def build_misc():
     lic_sch = {"@context": "https://schema.org", "@type": "WebPage", "name": "Лицензия и документы", "url": SITE_URL + "/dokumenty/",
                "about": {"@id": SITE_URL + "/#org"}}
     page("/dokumenty/", f"Лицензия на дезинфекцию № {LICENSE_NO} и документы | {BRAND}",
-         f"Государственная лицензия ТОО «DezClub» на дезинфекцию, дезинсекцию и дератизацию № {LICENSE_NO} от {LICENSE_DATE}, документы специалистов и свидетельства на препараты.",
+         f"Лицензия ТОО «DezClub» № {LICENSE_NO} от {LICENSE_DATE} на дезинфекцию, дезинсекцию и дератизацию, документы специалистов и препаратов.",
          body, [lic_sch], crumbs=[("Лицензия и документы", "/dokumenty/")], kw="лицензия документы сертификаты свидетельства", prio="0.6")
     # политика конфиденциальности
     P = [
@@ -904,7 +958,6 @@ def og_for(url, title):
 
 def build_og():
     import json as _j, hashlib
-    from playwright.sync_api import sync_playwright
     out = ROOT / "images" / "og"; out.mkdir(parents=True, exist_ok=True)
     man_p = out / "manifest.json"
     man = _j.loads(man_p.read_text()) if man_p.exists() else {}
@@ -916,6 +969,7 @@ def build_og():
     OGV = "2"
     todo = {k: v for k, v in OG_JOBS.items() if man.get(k) != OGV + v or not (out / f"{k}.jpg").exists()}
     if todo:
+        from playwright.sync_api import sync_playwright  # нужен только для новых OG-картинок (локально); на Vercel все картинки уже в images/og
         with sync_playwright() as p:
             b = p.chromium.launch(); pg = b.new_page(viewport={"width": 1200, "height": 630})
             for k, big in todo.items():
@@ -927,7 +981,7 @@ body{{margin:0;width:1200px;height:630px;overflow:hidden;font-family:M,Arial,san
 h1{{font-size:{fs}px;line-height:1.1;font-weight:800;color:#1f2420;margin:0 0 22px;max-width:1060px}}
 .pr{{font-size:36px;font-weight:600;color:#2f6e17;margin-bottom:26px}}
 .ph{{font-size:62px;font-weight:800;color:#fff;background:#3d8520;border-radius:22px;padding:8px 36px}}
-</style></head><body><div class="b"><div class="lg"><img src="{logo}"><b>DezClub</b></div><h1>{html.escape(big)}</h1><div class="pr">Скидки до 30% · опыт работы {EXPERIENCE}</div><div class="ph">{PHONE_DISPLAY}</div></div></body></html>'''
+</style></head><body><div class="b"><div class="lg"><img src="{logo}"><b>DezClub</b></div><h1>{html.escape(big)}</h1><div class="pr">Скидки до 30% · опыт команды {EXPERIENCE}</div><div class="ph">{PHONE_DISPLAY}</div></div></body></html>'''
                 pg.set_content(html_); pg.wait_for_timeout(120)
                 pg.screenshot(path=str(out / f"{k}.jpg"), type="jpeg", quality=84)
                 man[k] = OGV + big
@@ -984,7 +1038,7 @@ def build_assets():
             shutil.copy(ROOT / "assets" / f, DIST / f)
     (DIST / "site.webmanifest").write_text(json.dumps({"name": "DezClub — санитарная служба", "short_name": BRAND, "start_url": "/", "display": "browser", "background_color": "#ffffff", "theme_color": "#4f9f2a", "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}]}, ensure_ascii=False), encoding="utf-8")
 
-VER = "0211261330"
+VER = "0611261200"
 MV = VER
 
 if __name__ == "__main__":
