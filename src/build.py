@@ -5,6 +5,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from data import *
+from content2 import *
 from icons import icon, ui
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -58,7 +59,7 @@ def mega_groups(s):
         "dezodoraciya": [[("Какие запахи", [(k[0], v) for k in s["kinds"]])],
                          [("Вместе с дезодорацией", svcs("ozonirovanie", "dezinfekciya"))]],
         "ozonirovanie": [[("Где применяем", [(k[0], v) for k in s["kinds"]] + objs("kvartiry", "ofisy", "gostinicy"))],
-                         [("Против чего", pests("pylevye-kleshchi") + svcs("dezodoraciya", "dezinfekciya"))]],
+                         [("Против чего", pests("kleshchi") + svcs("dezodoraciya", "dezinfekciya"))]],
         "akaricidnaya-obrabotka": [[("Территории", objs("uchastki", "doma")), ("По видам", [(k[0], v) for k in s["kinds"]])],
                                    [("Вместе с обработкой участка", svcs("gerbicidnaya-obrabotka") + pests("muravi", "osy"))]],
         "gerbicidnaya-obrabotka": [[("Территории", objs("uchastki", "doma", "predpriyatiya")), ("По видам", [(k[0], v) for k in s["kinds"]])],
@@ -161,7 +162,7 @@ def footer():
   <div class="f-col f-ct"><h4>Контакты {ui("chev")}</h4>
    <a class="ftr-ph" href="tel:{PHONE_TEL}">{PHONE_DISPLAY}</a>
    <ul><li><a {wa_attr("Здравствуйте! Нужна консультация.")}>Написать в WhatsApp</a></li>
-   <li><a href="/kontakty/">Адрес и карта</a></li><li><a href="/ceny/">Цены и скидки</a></li><li><a href="/oplata/">Оплата и реквизиты</a></li><li><a href="/dokumenty/">Лицензия и документы</a></li><li><a href="/o-kompanii/">О компании</a></li><li><a href="/portfolio/">Портфолио</a></li><li><a href="/otzyvy/">Отзывы</a></li><li><a href="/stati/">Статьи</a></li><li><a href="/goroda/">Города Казахстана</a></li></ul>
+   <li><a href="/kontakty/">Адрес и карта</a></li><li><a href="/ses/">СЭС Алматы</a></li><li><a href="/ceny/">Цены и скидки</a></li><li><a href="/oplata/">Оплата и реквизиты</a></li><li><a href="/dokumenty/">Лицензия и документы</a></li><li><a href="/o-kompanii/">О компании</a></li><li><a href="/portfolio/">Портфолио</a></li><li><a href="/otzyvy/">Отзывы</a></li><li><a href="/stati/">Статьи</a></li><li><a href="/goroda/">Города Казахстана</a></li></ul>
   </div>
  </div>
  <div class="ftr-soc">{social_html()}</div>
@@ -205,6 +206,10 @@ def overlays():
  <ul class="city-g">{cities}</ul>
 </div></div>
 
+<div class="cz" id="cz" role="region" aria-label="Город и cookie">
+ <div class="cz-c" id="czCity" hidden><b>Ваш город — <span data-c>Алматы</span>?</b><p>Покажем условия выезда и цены для вашего города.</p><div class="cz-a"><button class="btn btn-y" type="button" data-cz-yes>Да, верно</button><button class="btn btn-o" type="button" data-cz-other>Выбрать другой</button></div></div>
+ <div class="cz-k" id="czCk" hidden><p>Мы используем cookie и локальное хранилище, чтобы запоминать город и улучшать работу сайта. <a href="/privacy-policy/">Подробнее</a></p><button class="cz-x" type="button" data-cz-ok>Понятно</button></div>
+</div>
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Просмотр"><button class="x" type="button" aria-label="Закрыть">{ui("close")}</button><button class="p" type="button" aria-label="Назад">{ui("left")}</button><div class="lb-m"></div><button class="n" type="button" aria-label="Вперёд">{ui("right")}</button></div>
 {drawer()}'''
 
@@ -236,7 +241,7 @@ def org_schema():
         "telephone": PHONE_TEL,
         "address": {"@type": "PostalAddress", "streetAddress": COMPANY["street"], "addressLocality": "Алматы",
                     "addressRegion": "Алматы", "addressCountry": "KZ"},
-        "geo": {"@type": "GeoCoordinates", "latitude": COMPANY["lat"], "longitude": COMPANY["lng"]},
+        **({"geo": {"@type": "GeoCoordinates", "latitude": COMPANY["lat"], "longitude": COMPANY["lng"]}} if COMPANY["lat"] else {}),
         "areaServed": [{"@type": "Country", "name": "Казахстан"}] + [{"@type": "City", "name": c[1]} for c in CITIES],
         "founder": {"@type": "Person", "name": COMPANY["director"], "jobTitle": "Генеральный директор"},
         "hasCredential": {"@type": "EducationalOccupationalCredential", "credentialCategory": "license",
@@ -279,13 +284,13 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
     gtag = ""
     if GADS_ID:
         gtag = f'<!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id={GADS_ID}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments)}}gtag("js",new Date());gtag("config","{GADS_ID}");gtag("config","{GA4_ID}");</script>'
-    if geo is None: geo = ("Алматы", COMPANY["lat"], COMPANY["lng"], "KZ-75")
+    if geo is None: geo = ("Алматы", COMPANY["lat"] or 43.2389, COMPANY["lng"] or 76.8897, "KZ-75")
     verify_meta = "".join(f'<meta name="{k}" content="{E(v)}">' for k, v in VERIFY.items() if v)
-    if YM_ID:
-        gtag += (f'<script>(function(m,e,t,r,i,k,a){{m[i]=m[i]||function(){{(m[i].a=m[i].a||[]).push(arguments)}};m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}})'
-                 f'(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym({YM_ID},"init",{{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true}});</script>')
     ld = "".join(f'<script type="application/ld+json">{json.dumps(s, ensure_ascii=False, separators=(",", ":"))}</script>' for s in sch)
     data_city = f' data-city="{city_fixed}" data-fixed="1"' if city_fixed else ""
+    m = re.search(r'<figure class="ph-m[^"]*"><img[^>]*fetchpriority="high"[^>]*>', body)   # только фото первого экрана внутренних страниц
+    lcp = re.search(r'src="([^"]+)"', m.group(0)).group(1) if m else ""
+    preload = f'<link rel="preload" as="image" href="{lcp}" fetchpriority="high">\n' if lcp else ""
     doc = f'''<!doctype html>
 <html lang="ru">
 <head>
@@ -304,7 +309,7 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
 <script type="application/ld+json">{{"@context":"https://schema.org","@type":"WebSite","name":"{BRAND}","alternateName":"ТОО DezClub","url":"{SITE_URL}/"}}</script>
 <link rel="preload" href="/assets/fonts/montserrat-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/montserrat-cyrillic-800-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/styles.css?v={VER}">
+{preload}<link rel="stylesheet" href="/assets/styles.css?v={VER}">
 {ld}{gtag}
 </head>
 <body{data_city}>
@@ -318,6 +323,11 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
 <script src="/assets/app.js?v={VER}" defer></script>
 </body>
 </html>'''
+    if city_fixed and city_fixed != "almaty":
+        c = CITY[city_fixed]
+        doc = (doc.replace("<span data-c>Алматы</span>", f"<span data-c>{c[1]}</span>").replace("<span data-cin>в Алматы</span>", f"<span data-cin>{c[2]}</span>")
+                  .replace(quote(" Город: Алматы."), quote(f" Город: {c[1]}.")).replace('value="almaty" selected', 'value="almaty"'))
+        if f'value="{city_fixed}" selected' not in doc: doc = doc.replace(f'value="{city_fixed}"', f'value="{city_fixed}" selected', 1)
     out = DIST / url.strip("/") / "index.html" if url != "/404.html" else DIST / "404.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(doc, encoding="utf-8")
@@ -353,9 +363,6 @@ def sec(title, inner, sub="", link=None, alt=False, sid=""):
     sp = f"<p>{sub}</p>" if sub else ""
     i = f' id="{sid}"' if sid else ""
     return f'<section class="sec{" sec-alt" if alt else ""}"{i}><div class="wrap"><div class="sec-h"><div><h2>{title}</h2>{sp}</div>{lk}</div>{inner}</div></section>'
-
-def steps_html():
-    return '<ol class="steps">' + "".join(f"<li><b>{t}</b><p>{d}</p></li>" for t, d in STEPS) + "</ol>"
 
 def adv_html():
     return '<div class="adv-g">' + "".join(f'<div class="adv">{icon(i)}<div><b>{t}</b><p>{d}</p></div></div>' for i, t, d in ADVANTAGES) + "</div>"
@@ -428,7 +435,7 @@ def geo_sec(cur="almaty"):
 <div><h3>Города Казахстана</h3><p>Работаем по всему Казахстану. Выберите город, чтобы узнать условия выезда.</p><ul class="chips m-clip" id="geoC">{cities}</ul><button class="m-more" type="button" data-more="geoC">Показать все города {ui("chev")}</button></div></div>''', alt=True)
 
 def hero_art():
-    return f'''<div class="hero-art"><img class="hero-ph" src="/images/hero.png?v={MV}" alt="{BRAND} — санитарная служба" width="914" height="1000" fetchpriority="high">
+    return f'''<div class="hero-art"><img class="hero-ph" src="/images/hero.webp?v={MV}" alt="{BRAND} — санитарная служба" width="914" height="1000" fetchpriority="high">
 <div class="art-card art-k3">{icon("doc", eager=True)}<span>Договор и акт выполненных работ<small>для квартир, домов и бизнеса</small></span></div></div>'''
 
 FACTS = [f"Опыт специалистов команды — {EXPERIENCE}; ТОО «DezClub» зарегистрировано в 2026 году (БИН {COMPANY['bin']}), лицензия от {LICENSE_DATE}",
@@ -497,31 +504,35 @@ def main_svc_html():
 <p>{E(text)}</p><span class="ms-f">{prh}<span class="ms-go">Подробнее {ui("arrow")}</span></span></a>''')
     return '<div class="ms-g">' + "".join(out) + "</div>"
 
+def item_price(cat, slug):
+    if cat == "dezinfekciya": return NO_PRICE
+    return ITEM_PRICES.get(slug, NO_PRICE)
+
 def kat_card(slug, name, ic, link, price, btn="Заказать"):
     title = f'<a href="{link}">{E(name)}</a>' if link else E(name)
     return f'''<article class="kc"><div class="kc-im"><img class="kc-ic" src="/assets/ic/{ic}.svg" alt="" width="88" height="88" loading="lazy"><img class="kc-ph" src="/images/katalog/{slug}.jpg?v={MV}" alt="{E(name)}" loading="lazy" onerror="this.remove()"></div>
-<div class="kc-b"><h3>{title}</h3><span class="kc-pr">{price}</span><a class="btn btn-y kc-btn" {wa_attr("Здравствуйте! Хочу заказать: " + name + ".")}>{btn}</a></div></article>'''
+<div class="kc-b"><h3>{title}</h3><span class="kc-pr{' kc-pr-q' if price == NO_PRICE else ''}">{price}</span><a class="btn btn-y kc-btn" {wa_attr("Здравствуйте! Хочу заказать: " + name + ".")}>{btn}</a></div></article>'''
 def svc_list_sec(alt=False):
     """Список всех услуг с кнопками «Заказать услугу» — карточки каталога, сгруппированные по категориям."""
     out = ""
     for cat, (name, price, items) in CATALOG.items():
-        cards = "".join(kat_card(s, n, ic, ln, price, "Заказать услугу") for s, n, ic, ln in items)
+        cards = "".join(kat_card(s, n, ic, ln, item_price(cat, s), "Заказать услугу") for s, n, ic, ln in items)
         out += f'<h3 class="sl-t"><a href="/uslugi/{cat}/">{name}</a><small>{ru_count(len(items))}</small></h3><div class="kc-g sl-g">{cards}</div>'
     return sec("Список услуг", out, "Нажмите «Заказать услугу» — откроется WhatsApp с названием услуги. Стоимость с учётом площади и скидки назовём до выезда.", alt=alt)
 
 def catalog_sec(cat, alt=False):
     name, price, items = CATALOG[cat]
-    cards = "".join(kat_card(s, n, ic, ln, price) for s, n, ic, ln in items)
+    cards = "".join(kat_card(s, n, ic, ln, item_price(cat, s)) for s, n, ic, ln in items)
     return f'''<section class="sec{" sec-alt" if alt else ""}" id="katalog"><div class="wrap"><div class="sec-h"><div><h2>{name}: {ru_count(len(items))}</h2><p>Нажмите «Заказать» — откроется WhatsApp с названием услуги. Точную стоимость с учётом площади и скидки назовём до выезда.</p></div></div>
 <div class="kc-g">{cards}</div></div></section>'''
 
 def price_list_sec(alt=False):
     det = ""
     for cat, (name, price, items) in CATALOG.items():
-        rows = "".join(f'<li><span>{E(n)}</span><b>{price}</b></li>' for _, n, _, _ in items)
+        rows = "".join(f'<li><span>{E(n)}</span><b>{item_price(cat, sl)}</b></li>' for sl, n, _, _ in items)
         det += f'''<details class="pl"><summary><span class="pl-t">{name}</span><span class="pl-n">{ru_count(len(items))} · {price}</span>{ui("chev")}</summary><ul>{rows}</ul>
-<div class="pl-f"><a class="lnk" href="/uslugi/{cat}/#katalog">Каталог с фото {ui("arrow")}</a></div></details>'''
-    return sec("Стоимость услуг", f'<div class="pl-g">{det}</div><p class="pl-note">Указана начальная стоимость. Итог зависит от площади, степени заражения и объекта — называем его до выезда, без доплат на месте. {PROMO_BIG.capitalize()}.</p>', "", alt=alt)
+<div class="pl-f"><a class="lnk" href="/uslugi/{cat}/#katalog">Каталог с фото {ui("arrow")}</a><a class="lnk" href="/ceny/">Полный прайс {ui("arrow")}</a></div></details>'''
+    return sec("Стоимость услуг", f'<div class="pl-g">{det}</div><p class="pl-note">Указана начальная стоимость по прайсу. Итог зависит от площади, степени заражения и объекта — называем его до выезда, без доплат на месте. {PROMO_BIG.capitalize()}.</p>', "", alt=alt)
 
 def partners_sec(alt=False):
     logos = "".join(f'<li class="pt"><img src="/images/partners/{s}.webp?v={MV}" alt="{E(n)} — логотип организации" loading="lazy"></li>' for s, n in PARTNERS)
@@ -579,9 +590,6 @@ def hero_city(h1, lead, ic, btn_text, city=None):
     return f'''<section class="hero hero-c"><div class="wrap"><!--CRUMBS--></div><div class="wrap hero-in"><div>
 <h1>{h1}</h1><p class="hero-lead">{lead}</p>{btns_main(btn_text)}{trust_html()}</div>{hero_art()}</div></section>{rate_sec(city=city)}'''
 
-def ph(h1, lead, ic, btn_text):
-    return f'''<section class="ph"><div class="wrap"><!--CRUMBS--></div><div class="wrap ph-in"><div><h1>{h1}</h1><p class="lead-t">{lead}</p>{btns_main(btn_text)}{trust_html()}</div><div class="ph-ic">{icon(ic)}</div></div></section>{rate_sec()}'''
-
 def side_box(svc_name, cur_url=None, list_items=None, list_title="Все услуги"):
     if list_items is None:
         list_items = [(s["name"], f"/uslugi/{s['slug']}/", s["icon"]) for s in SERVICES]
@@ -601,27 +609,148 @@ PREP = ["Уберите продукты, посуду и корм для жив
         "На время обработки людям и животным нужно покинуть помещение",
         "После возвращения проветрите помещение и протрите контактные поверхности"]
 
+# ------------------------------------------------------------------ первый экран с фото, цены, «где обрабатываем», контроль качества
+from functools import lru_cache
+_SIZES = json.loads((ROOT / "images" / "hero" / "sizes.json").read_text())   # размеры фото: на Vercel нет Pillow
+@lru_cache(None)
+def img_size(rel):
+    if rel in _SIZES: return tuple(_SIZES[rel])
+    from PIL import Image
+    with Image.open(ROOT / rel.lstrip("/")) as im: return im.size
+
+SVC_HERO = {s: f"/images/hero/svc-{s}.webp" for s in ["dezinsekciya", "deratizaciya", "dezinfekciya", "fumigaciya", "dezodoraciya", "ozonirovanie",
+                                                     "akaricidnaya-obrabotka", "gerbicidnaya-obrabotka", "pest-control"]}
+SVC_HERO["yuridicheskim-licam"] = "/images/hero/ses.webp"
+SES_IMG = "/images/hero/ses.webp"
+
+def ph(h1, lead, ic, btn_text, img=None, v="r", badge=None, alt="", fit_="cover"):
+    """Первый экран внутренних страниц. С img — фото-баннер (варианты: r — справа, l — слева, c — круг), без img — прежняя иконка."""
+    if not img:
+        return f'''<section class="ph"><div class="wrap"><!--CRUMBS--></div><div class="wrap ph-in"><div><h1>{h1}</h1><p class="lead-t">{lead}</p>{btns_main(btn_text)}{trust_html()}</div><div class="ph-ic">{icon(ic)}</div></div></section>{rate_sec()}'''
+    w, h = img_size(img)
+    bd = f'<span class="ph-bd">{badge}</span>' if badge else ""
+    media = f'<figure class="ph-m ph-{fit_}"><img src="{img}?v={MV}" alt="{E(alt)}" width="{w}" height="{h}" fetchpriority="high" decoding="async">{bd}</figure>'
+    return f'''<section class="ph ph-img ph-{v}"><div class="wrap"><!--CRUMBS--></div><div class="wrap ph-in"><div class="ph-t"><h1>{h1}</h1><p class="lead-t">{lead}</p>{btns_main(btn_text)}{trust_html()}</div>{media}</div></section>{rate_sec()}'''
+
+STEP_IC = ["people", "card", "shield", "doc"]
+def steps_html():
+    return '<ol class="steps">' + "".join(f"<li>{icon(STEP_IC[i % 4], 46)}<b>{t}</b><p>{d}</p></li>" for i, (t, d) in enumerate(STEPS)) + "</ol>"
+
+def tl_html():
+    """Этапы — вертикальная лента с иконками (без цифр)."""
+    return '<ol class="tl">' + "".join(f'<li><span class="tl-i">{icon(STEP_IC[i % 4], 30)}</span><div><b>{t}</b><p>{d}</p></div></li>' for i, (t, d) in enumerate(STEPS)) + "</ol>"
+
+def prices_sec(keys, title="Цены", sub="Цены по прайсу. Точную стоимость с учётом площади и скидки называем до выезда.", alt=False, sid="ceny-tbl"):
+    extra = table_html(EXTRA)
+    return f'''<section class="sec{" sec-alt" if alt else ""}" id="{sid}"><div class="wrap"><div class="sec-h"><div><h2>{title}</h2><p>{sub}</p></div><a class="lnk" href="/ceny/">Полный прайс {ui("arrow")}</a></div>
+<div class="ptb-wrap">{tables_html(keys)}</div><details class="ptb-x"><summary>Выезд, ночные и загородные выезды {ui("chev")}</summary>{extra}</details></div></section>'''
+
+def where_sec(names, title="Где обрабатываем", sub="Работаем на любых объектах — от квартиры до производства. Нажмите на объект, чтобы узнать подробности.", alt=False):
+    return sec(title, where_html(names), sub, alt=alt)
+
+QUALITY_PAGES = set()
+def quality_sec(alt=False):
+    d = TEAM[0]
+    txt = "".join(f"<p>{E(t)}</p>" for t in QUALITY_TEXT)
+    return f'''<section class="sec{" sec-alt" if alt else ""}" id="kachestvo"><div class="wrap"><div class="qc">
+<div class="qc-ph"><img src="/images/team/team-1.webp?v={MV}" alt="{E(d[0])} — {E(d[1].lower())} {BRAND}" width="914" height="1000" loading="lazy"></div>
+<div class="qc-t"><h2>Контроль качества</h2>{txt}<p class="qc-n"><b>{E(d[0])}</b><small>{E(d[1].lower())} {E(COMPANY["legal"]).replace("&quot;", "«", 1).replace("&quot;", "»", 1)}</small></p>
+<a class="btn btn-y" {wa_attr("Здравствуйте! Хочу обратиться к директору DezClub.")}>Написать директору</a></div></div></div></section>'''
+
+def faq2(faq):
+    """FAQ в две колонки (для разнообразия раскладки)."""
+    half = (len(faq) + 1) // 2
+    return f'<div class="faq2">{faq_html(faq[:half])}{faq_html(faq[half:])}</div>'
+
+def cards_html(items, ic="check"):
+    return '<div class="sg">' + "".join(f'<div class="sg-c">{ui(ic)}<span>{x}</span></div>' for x in items) + "</div>"
+
+def split_sec(title, html_txt, img, alt_txt, alt=False, rev=False):
+    w, h = img_size(img)
+    return f'''<section class="sec{" sec-alt" if alt else ""}"><div class="wrap spl{" spl-r" if rev else ""}"><div class="spl-t prose"><h2>{title}</h2>{html_txt}</div>
+<figure class="spl-m"><img src="{img}?v={MV}" alt="{E(alt_txt)}" width="{w}" height="{h}" loading="lazy"></figure></div></section>'''
+
 # ------------------------------------------------------------------ страницы
-def home_sections(city=None, pests_sub="Определяем вид вредителя и подбираем средство, которое действует именно на него.", faq=None, geo=None, lead=None):
-    """Порядок секций страницы Алматы — один для всех городов."""
-    return f'''{svc_group_sec()}
-{price_list_sec(alt=True)}
-{promo_sec()}
-{sec("От кого избавляем", pest_grid(), pests_sub, ("Все вредители", "/vrediteli/"), alt=True)}
-{sec("Как мы работаем", steps_html())}
-{equip_sec(alt=True)}
-{portfolio_sec()}
-{sec("Почему выбирают " + BRAND, adv_html(), alt=True)}
-{team_sec()}
-{docs_sec(alt=True)}
-{biz_html()}
-{partners_sec()}
-{thanks_sec(alt=True)}
-{sec("Обрабатываем любые объекты", obj_grid(), "", ("Все объекты", "/obekty/"))}
-{reviews_sec(alt=True)}
-{sec("Частые вопросы", faq_html(faq or FAQ_HOME))}
-{geo or geo_sec()}
-{lead or lead_form()}'''
+def home_sections(city=None, pests_sub="Определяем вид вредителя и подбираем средство, которое действует именно на него.", faq=None, geo=None, lead=None, v=0, ses_link=None):
+    """Главная и страницы городов. v — вариант порядка блоков (у городов разный, чтобы страницы не были копиями); фон чередуется сам."""
+    B = {
+        "price": lambda a: price_list_sec(alt=a),
+        "pests": lambda a: sec("От кого избавляем", pest_grid(), pests_sub, ("Все вредители", "/vrediteli/"), alt=a),
+        "steps": lambda a: sec("Как мы работаем", steps_html(), alt=a),
+        "equip": lambda a: equip_sec(alt=a),
+        "port": lambda a: portfolio_sec(alt=a),
+        "adv": lambda a: sec("Почему выбирают " + BRAND, adv_html(), alt=a),
+        "team": lambda a: team_sec(alt=a),
+        "qc": lambda a: quality_sec(alt=a),
+        "docs": lambda a: docs_sec(alt=a),
+        "partn": lambda a: partners_sec(alt=a),
+        "thx": lambda a: thanks_sec(alt=a),
+        "obj": lambda a: sec("Обрабатываем любые объекты", obj_grid(), "", ("Все объекты", "/obekty/"), alt=a),
+        "rev": lambda a: reviews_sec(alt=a),
+        "ses": lambda a: (sec(f"СЭС {CITY[city][2] if city else 'в Алматы'}", f'<div class="ses-l"><p>Отдельная страница о санитарной службе: что входит в услуги СЭС, цены, документы для проверок и ответы на частые вопросы.</p><a class="btn btn-y" href="{ses_link}">Подробнее о СЭС {ui("arrow")}</a></div>', alt=a) if ses_link else ""),
+    }
+    orders = [["price", "pests", "steps", "equip", "port", "adv", "team", "qc", "docs", "partn", "thx", "obj", "rev", "ses"],
+              ["pests", "price", "ses", "adv", "qc", "steps", "rev", "team", "obj", "docs", "equip", "port", "thx", "partn"],
+              ["price", "qc", "obj", "pests", "ses", "port", "steps", "docs", "team", "rev", "adv", "partn", "equip", "thx"]]
+    out = [svc_group_sec(), promo_sec()]
+    alt = True
+    for k in orders[v % 3]:
+        h = B[k](alt)
+        if h: out.append(h); alt = not alt
+    out += [sec("Частые вопросы", faq_html(faq or FAQ_HOME), alt=alt), geo or geo_sec(), lead or lead_form()]
+    return "\n".join(out)
+
+def ses_url(slug):
+    return "/ses/" if slug == "almaty" else f"/goroda/{slug}/ses/"
+
+SES_POP = ("ses-pop", "Популярные услуги и цены", "Цены по прайсу; точную стоимость с учётом площади называем до выезда.", ["Услуга", "Цена"],
+           [["Гелевая обработка комнаты от тараканов", tg(2700)], ["Истребительная обработка 1-комнатной квартиры (тараканы, блохи, моль)", tg(14200)],
+            ["Обработка 1-комнатной квартиры от клопов", "от " + tg(10500)], ["Дератизация 1-комнатной квартиры", tg(10500)],
+            ["Обработка участка от клещей и комаров, за сотку", "от " + tg(2300)], ["Осиное гнездо", "от " + tg(1800)],
+            ["Организации: разовая обработка 50–100 м²", tg(17000)], ["Pest control, тариф Start", "от " + tg(18400)]])
+SES_DOCS = ["<b>Договор</b> — для организаций и по желанию для частных клиентов", "<b>Акт выполненных работ</b> — после каждой обработки",
+            "<b>Журналы учёта</b> дезинсекции и дератизации — для бизнеса", "<b>Схема точек контроля</b> — при pest control и дератизации предприятий",
+            f"<b>Лицензия № {LICENSE_NO}</b> — копию предоставим для проверки"]
+
+def build_ses():
+    for idx, (slug, name, cin, region, cl) in enumerate(CITIES):
+        url, v = ses_url(slug), idx % 3
+        ctext, cpests = CLIMATE[cl]
+        faq = ses_faq(cin, name)
+        h1 = f'СЭС {E(name)} — санитарная служба {BRAND}'
+        lead = (f"Частная санитарная служба {cin}: дезинсекция, дезинфекция, дератизация и pest control для квартир, домов и бизнеса. "
+                f"Работаем по лицензии и договору, после обработки выдаём акт и документы для проверок.")
+        intro = (f'<p>{BRAND} — лицензированная санитарная служба: проводим обработки {cin} и по региону ({E(region)}). Основная база — в Алматы, выезжаем по всему Казахстану.</p>'
+                 f'<p>{E(ctext)}</p><p>Чаще всего {cin} обращаются с такими задачами: {", ".join(x.lower() for x in cpests)}.</p>')
+        if slug in CITY_LOCAL: intro += f'<p>{CITY_LOCAL[slug]["text"][0]}</p>'
+        hero = ph(h1, lead, "s_pest", f"Здравствуйте! Нужна СЭС, город {name}.", img=SES_IMG, v=HV[v], badge="<small>Лицензия</small><b>СЭС РК</b>", alt=f"Специалисты санитарной службы {BRAND}", fit_="cover")
+        about = f'<section class="sec"><div class="wrap cnt"><article class="prose"><h2>Что такое СЭС {cin}</h2>{intro}<h2>Документы после обработки</h2>{ck(SES_DOCS)}</article>{side_box("услуги СЭС " + cin, url)}</div></section>'
+        blocks = {
+            "about": lambda a: about,
+            "svc": lambda a: sec(f"Услуги СЭС {cin}", svc_grid(), "Нажмите на услугу, чтобы узнать виды обработки и цены.", alt=a),
+            "price": lambda a: f'<section class="sec{" sec-alt" if a else ""}"><div class="wrap"><div class="sec-h"><div><h2>Сколько стоит вызвать СЭС {cin}</h2><p>{SES_POP[2]}</p></div><a class="lnk" href="/ceny/">Полный прайс {ui("arrow")}</a></div><div class="ptb-wrap">{table_html(SES_POP)}</div></div></section>',
+            "biz": lambda a: biz_html(),
+            "steps": lambda a: sec("Как работает СЭС", tl_html() if v == 1 else steps_html(), alt=a),
+            "qc": lambda a: quality_sec(alt=a),
+            "team": lambda a: team_sec(alt=a),
+            "docs": lambda a: docs_sec(alt=a),
+            "where": lambda a: where_sec(WHERE_SVC["yuridicheskim-licam"] + ["Квартиры", "Частные дома и дачи"], f"Какие объекты обслуживает СЭС {cin}", alt=a),
+            "rev": lambda a: reviews_sec(alt=a),
+        }
+        orders = [["about", "svc", "price", "steps", "where", "qc", "docs", "biz", "team", "rev"],
+                  ["price", "about", "steps", "svc", "qc", "biz", "where", "rev", "docs", "team"],
+                  ["svc", "about", "qc", "price", "where", "docs", "steps", "team", "biz", "rev"]]
+        out, alt = [hero], False
+        for k in orders[v]:
+            out.append(blocks[k](alt)); alt = not alt
+        out += [sec(f"Частые вопросы о СЭС {cin}", faq2(faq) if v == 2 else faq_html(faq), alt=alt), geo_sec(slug),
+                lead_form(f"Вызвать СЭС {cin}", city=slug)]
+        crumbs = [("СЭС", url)] if slug == "almaty" else [("Города", "/goroda/"), (name, city_url(slug)), ("СЭС", url)]
+        page(url, f"СЭС {name} — дезинсекция, дератизация, дезинфекция | {BRAND}",
+             fit([f"СЭС {cin}: обработка от тараканов, клопов, крыс и мышей, дезинфекция.", "Лицензия, договор и акт.", f"Цены от {tg(2700)}.", f"☎ {PHONE_DISPLAY}"]),
+             "\n".join(out), [service_schema(f"Санитарная служба (СЭС) {cin}", url, lead, city=name), faq_schema(faq)],
+             crumbs=crumbs, city_fixed=slug, kw=f"сэс {name} санэпидемстанция", prio="0.8" if slug == "almaty" else "0.6",
+             geo=None if slug == "almaty" else ((name, *CITY_LOCAL[slug]["geo"]) if slug in CITY_LOCAL else False), noindex=slug not in INDEX_CITIES)
 
 def build_home():
     body = f'''<section class="hero"><div class="wrap hero-in"><div>
@@ -631,44 +760,75 @@ def build_home():
 {trust_html()}
 </div>{hero_art()}</div></section>
 {rate_sec()}
-{home_sections()}'''
+{home_sections(ses_link="/ses/")}'''
     page("/", f"Дезинфекция, дезинсекция, дератизация в Алматы — {BRAND}",
-         f"Дезинсекция от {MAIN_PRICES['dezinsekciya']}, дератизация, дезинфекция в Алматы и по Казахстану. Тараканы, клопы, крысы. Договор и акт. ☎ {PHONE_DISPLAY}",
+         f"Дезинсекция {MAIN_PRICES['dezinsekciya']}, дератизация, дезинфекция в Алматы и по Казахстану. Тараканы, клопы, крысы. Договор и акт. ☎ {PHONE_DISPLAY}",
          body, [faq_schema(FAQ_HOME)], city_fixed="almaty", kw="главная сэс санэпидемстанция", prio="1.0")
 
 
+PROFIT_SVC = {"dezinsekciya", "deratizaciya", "dezinfekciya", "yuridicheskim-licam", "pest-control"}
+PROFIT_PEST = {"tarakany", "klopy", "krysy", "myshi", "blohi", "muravi"}
+HV = ["r", "l", "c"]
+
 def build_services():
-    for s in SERVICES:
-        url = f"/uslugi/{s['slug']}/"
-        rel_pests = [p["slug"] for p in PESTS if p["svc"] == s["slug"]]
+    for idx, s in enumerate(SERVICES):
+        slug, url, v = s["slug"], f"/uslugi/{s['slug']}/", idx % 3
+        rel_pests = [p["slug"] for p in PESTS if p["svc"] == slug]
         kinds = '<div class="kinds">' + "".join(f'<div class="kind"><b>{k}</b><p>{d}</p></div>' for k, d in s["kinds"]) + "</div>"
-        pest_block = f'<h2>От каких вредителей</h2>{pest_grid(only=rel_pests)}' if rel_pests else ""
-        faq = [(f"Сколько стоит {s['name'].lower()}?", "Стоимость зависит от площади, типа объекта и задачи. Опишите ситуацию в WhatsApp или онлайн-консультанту — назовём цену до выезда."),
-               ("Сколько длится обработка?", "Обычно от часа до нескольких часов в зависимости от площади и метода. Точное время скажем при расчёте."),
-               ("Вы выдаёте документы?", "Да. После обработки выдаём акт выполненных работ, для организаций — договор, журналы и схемы точек контроля."),
-               ("Вы работаете в других городах?", "Да, основная база в Алматы, выезжаем по всему Казахстану. Выберите город в шапке сайта.")]
-        body = f'''{ph(f'{s["title"]} <span data-cin>в Алматы</span>', s["lead"], s["icon"], f"Здравствуйте! Интересует {s['name'].lower()}.")}
-{catalog_sec(s["slug"]) if s["slug"] in CATALOG else ""}
+        faq = svc_faq(slug, s["name"])
+        tables = SVC_TABLES.get(slug)
+        pr = MAIN_PRICES.get(slug)
+        badge = f"<small>Цена</small><b>{pr}</b>" if pr else f"<small>Скидки</small><b>до 30%</b>"
+        hero = ph(f'{s["title"]} <span data-cin>в Алматы</span>', s["lead"], s["icon"], f"Здравствуйте! Интересует {s['name'].lower()}.",
+                  img=SVC_HERO.get(slug), v=HV[v], badge=badge, alt=f"{s['name']} — {BRAND}", fit_="cover")
+        cat = catalog_sec(slug) if slug in CATALOG else ""
+        price = prices_sec(tables, f"Цены: {s['name'].lower()}") if tables else ""
+        where = where_sec(WHERE_SVC.get(slug, []))
+        quality = quality_sec(alt=v != 1) if slug in PROFIT_SVC else ""
+        pests = sec("От каких вредителей", pest_grid(only=rel_pests), alt=True) if rel_pests else ""
+        how_txt = f'{offer_box(s["name"].lower(), slug)}' + "".join(f"<p>{p}</p>" for p in s["body"])
+        if v == 0:   # классика: статья с боковой колонкой
+            body = f'''{hero}{cat}
 <section class="sec"><div class="wrap cnt"><article class="prose">
-<h2>Как проходит {s["name"].lower()}</h2>{offer_box(s["name"].lower(), s["slug"])}{"".join(f"<p>{p}</p>" for p in s["body"])}
+<h2>Как проходит {s["name"].lower()}</h2>{how_txt}
 <h2 id="vidy">Виды обработки</h2>{kinds}
-{pest_block}
-<h2>Этапы работы</h2>{ck([f"<b>{t}.</b> {d}" for t, d in STEPS])}
+<h2>Этапы работы</h2>{tl_html()}
 <h2>Как подготовиться</h2>{ck(PREP)}
 <p>Подробнее — в статье <a href="/stati/kak-podgotovit-kvartiru-k-obrabotke/">как подготовить квартиру к обработке</a>.</p>
 </article>{side_box(s["name"], url)}</div></section>
-{price_list_sec(alt=True)}
-{partners_sec()}
-{portfolio_sec(alt=True)}
+{price}{where}{pests}{quality}{partners_sec()}{portfolio_sec(alt=True)}
 {sec("Частые вопросы", faq_html(faq))}
-{sec("Другие услуги", svc_grid(exclude=s["slug"], compact=True, limit=8), alt=True)}
+{sec("Другие услуги", svc_grid(exclude=slug, compact=True, limit=8), alt=True)}
 {lead_form(svc=s["name"])}'''
-        page(url, SVC_TITLE[s["slug"]] + f" | {BRAND}",
-             fit([f"{s['title']} в Алматы" + (f" — {price_of(s['slug'])}." if price_of(s['slug']) else "."), f"{s['sub'][:1].upper()}{s['sub'][1:]}.", "Договор и акт.", f"☎ {PHONE_DISPLAY}"]),
+        elif v == 1:  # карточки и фото: виды карточками, «как проходит» рядом с фото специалиста
+            body = f'''{hero}{price}
+{sec("Виды обработки", kinds, "Метод подбираем под объект, вредителя и тех, кто живёт или работает в помещении.", alt=True)}
+{split_sec(f"Как проходит {s['name'].lower()}", how_txt, "/images/equip/worker.webp", f"Специалист {BRAND} за работой")}
+{cat}{where_sec(WHERE_SVC.get(slug, []), alt=True)}
+{sec("Как мы работаем", steps_html())}
+{pests}{quality}{reviews_sec(alt=True)}
+{sec("Частые вопросы", faq2(faq))}
+{sec("Как подготовиться", cards_html(PREP), alt=True)}
+{sec("Другие услуги", svc_grid(exclude=slug, compact=True, limit=8))}
+{lead_form(svc=s["name"])}'''
+        else:         # цены вперёд: для тех, кто сравнивает
+            body = f'''{hero}{price or price_list_sec(alt=True)}
+<section class="sec"><div class="wrap cnt"><article class="prose">
+<h2>Как проходит {s["name"].lower()}</h2>{how_txt}
+<h2>Этапы работы</h2>{tl_html()}
+</article>{side_box(s["name"], url)}</div></section>
+{sec("Виды обработки", kinds, alt=True)}{cat}
+{where}{quality}{team_sec(alt=True)}
+{sec("Частые вопросы", faq_html(faq))}
+{docs_sec(alt=True)}
+{sec("Другие услуги", svc_grid(exclude=slug, compact=True, limit=8))}
+{lead_form(svc=s["name"])}'''
+        page(url, SVC_TITLE[slug] + f" | {BRAND}",
+             fit([f"{s['title']} в Алматы" + (f" — {pr}." if pr else "."), f"{s['sub'][:1].upper()}{s['sub'][1:]}.", "Договор и акт.", f"☎ {PHONE_DISPLAY}"]),
              body, [service_schema(s["title"], url, s["lead"]), faq_schema(faq)],
              crumbs=[("Услуги", "/uslugi/"), (s["name"], url)], kw=s["sub"], prio="0.9")
-    body = f'''{ph("Услуги санитарной службы", "Дезинсекция, дезинфекция, дератизация, фумигация, озонирование и комплексный pest control для квартир, домов, бизнеса и территорий.", "s_pest", "Здравствуйте! Подскажите, какая обработка мне нужна.")}
-{svc_group_sec()}{price_list_sec(alt=True)}{biz_html()}{partners_sec()}{lead_form()}'''
+    body = f'''{ph("Услуги санитарной службы", "Дезинсекция, дезинфекция, дератизация, фумигация, озонирование и комплексный pest control для квартир, домов, бизнеса и территорий.", "s_pest", "Здравствуйте! Подскажите, какая обработка мне нужна.", img=SES_IMG, v="r", alt=f"Специалисты {BRAND}")}
+{svc_group_sec()}{price_list_sec(alt=True)}{biz_html()}{quality_sec()}{partners_sec()}{lead_form()}'''
     page("/uslugi/", f"Услуги дезинфекции, дезинсекции и дератизации в Алматы | {BRAND}",
          "Все услуги DezClub: дезинсекция, дезинфекция, дератизация, фумигация, дезодорация, озонирование, акарицидная и гербицидная обработка, pest control.",
          body, crumbs=[("Услуги", "/uslugi/")], kw="услуги", prio="0.8")
@@ -695,37 +855,62 @@ PRICE_FACTORS = ["площадь и тип объекта: квартира, ч�
                  "нужна ли повторная или плановая обработка по договору"]
 
 def pest_price(p):
-    pr = price_of(p["svc"])
-    if not pr: return ""
-    return (f'<h2>Сколько стоит обработка от {p["gen"]}</h2><p>Стоимость обработки от {p["gen"]} <span data-cin>в Алматы</span> — <b>{pr}</b>. Итоговая цена зависит от:</p>'
-            f'{ck([x.capitalize() for x in PRICE_FACTORS])}<p>Точную стоимость называем до выезда, без доплат на месте. {PROMO_HOW.split(" — ")[0]}. Подробнее — на странице <a href="/ceny/">цен</a>.</p>')
+    keys = PEST_TABLES.get(p["slug"])
+    if keys: return ""   # цены — отдельной таблицей
+    return (f'<h2>Сколько стоит обработка от {p["gen"]}</h2><p>Стоимость зависит от площади, объекта и степени заражения:</p>'
+            f'{ck([x.capitalize() for x in PRICE_FACTORS])}<p>Пришлите фото или опишите ситуацию — назовём цену до выезда. Ориентиры по другим работам — на странице <a href="/ceny/">цен</a>.</p>')
 
 def build_pests():
-    for p in PESTS:
-        url = f"/vrediteli/{p['slug']}/"
+    for idx, p in enumerate(PESTS):
+        slug, url, v = p["slug"], f"/vrediteli/{p['slug']}/", (idx + 1) % 3
         s = SVC[p["svc"]]
-        faq = p["faq"] + [(f"Сколько стоит уничтожение {p['gen']}?", "Цена зависит от площади, типа объекта и степени заражения. Напишите в WhatsApp — назовём стоимость до выезда."),
-                          ("Нужно ли уходить из дома?", "Да, на время обработки людям и животным нужно покинуть помещение. Когда можно вернуться, специалист скажет в зависимости от препарата.")]
-        rel_obj = [o for o in OBJECTS if p["name"].lower().split()[0][:5] in " ".join(o[4])]
-        if not rel_obj: rel_obj = OBJECTS[:6]
-        objl = '<div class="obj-g" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">' + "".join(f'<a class="obj" href="/obekty/{o[0]}/">{o[1]}{ui("right")}</a>' for o in rel_obj) + "</div>"
+        faq = p["faq"] + pest_faq(slug, p["gen"])
         side_items = [(x["name"], f"/vrediteli/{x['slug']}/", x["icon"]) for x in PESTS]
-        body = f'''{ph(f'Уничтожение {p["gen"]} <span data-cin>в Алматы</span>', p["intro"], p["icon"], f"Здравствуйте! Нужна обработка от: {p['name'].lower()}.")}
+        keys = PEST_TABLES.get(slug)
+        pr = ITEM_PRICES.get(slug)
+        badge = f"<small>Цена</small><b>{pr}</b>" if pr else f"<small>Скидки</small><b>до 30%</b>"
+        hero = ph(f'Уничтожение {p["gen"]} <span data-cin>в Алматы</span>', p["intro"], p["icon"], f"Здравствуйте! Нужна обработка от: {p['name'].lower()}.",
+                  img=f"/images/hero/pest-{slug}.webp", v=HV[v], badge=badge, alt=f"{p['name']} — обработка {BRAND}", fit_="contain")
+        price = prices_sec(keys, f"Цены на обработку от {p['gen']}") if keys else ""
+        where = where_sec(WHERE.get(slug, [o[1] for o in OBJECTS[:6]]), f"Где обрабатываем от {p['gen']}")
+        quality = quality_sec(alt=True) if slug in PROFIT_PEST else ""
+        how = f'{offer_box("обработка от " + p["gen"])}<p>{p["how"]}</p><p>Обработка входит в услугу <a href="/uslugi/{s["slug"]}/">{s["name"].lower()}</a>. После работы выдаём акт и рекомендации, при необходимости назначаем контрольный осмотр.</p>'
+        if v == 0:
+            body = f'''{hero}
 <section class="sec"><div class="wrap cnt"><article class="prose">
 <h2>Признаки, что пора вызывать специалиста</h2>{ck(p["signs"])}
-<h2>Как проходит обработка от {p["gen"]}</h2>{offer_box("обработка от " + p["gen"])}<p>{p["how"]}</p>
+<h2>Как проходит обработка от {p["gen"]}</h2>{how}
 {pest_price(p)}
-<p>Обработка входит в услугу <a href="/uslugi/{s["slug"]}/">{s["name"].lower()}</a>. После работы выдаём акт и рекомендации, при необходимости назначаем контрольный осмотр.</p>
 <h2>Как подготовиться</h2>{ck(PREP)}
-<h2>Где обрабатываем</h2>{objl}
 </article>{side_box(p["name"], url, side_items, "Вредители")}</div></section>
-{portfolio_sec(alt=True)}
+{price}{where}{quality}{portfolio_sec(alt=not quality)}
 {sec("Частые вопросы", faq_html(faq))}
-{sec("Другие вредители", pest_grid(exclude=p["slug"]), alt=True)}
+{sec("Другие вредители", pest_grid(exclude=slug), alt=True)}
+{lead_form(svc=s["name"])}'''
+        elif v == 1:
+            body = f'''{hero}
+{sec("Признаки, что пора вызывать специалиста", cards_html(p["signs"], "search"), "Если заметили хотя бы один признак — лучше не ждать, пока вредителей станет больше.")}
+{price}
+{split_sec(f"Как проходит обработка от {p['gen']}", how + pest_price(p), "/images/equip/worker.webp", f"Специалист {BRAND} за работой", alt=True, rev=True)}
+{where}
+<section class="sec sec-alt"><div class="wrap two-c"><div><h2>Как мы работаем</h2>{tl_html()}</div><div><h2>Как подготовиться</h2>{ck(PREP)}</div></div></section>
+{quality}{reviews_sec()}
+{sec("Частые вопросы", faq2(faq), alt=True)}
+{sec("Другие вредители", pest_grid(exclude=slug))}
+{lead_form(svc=s["name"])}'''
+        else:
+            body = f'''{hero}{price}
+<section class="sec"><div class="wrap two-c two-c-panel"><div class="panel"><h2>Признаки, что пора вызывать специалиста</h2>{ck(p["signs"])}</div>
+<div class="prose"><h2>Как проходит обработка от {p["gen"]}</h2>{how}{pest_price(p)}</div></div></section>
+{sec("Этапы работы", steps_html(), alt=True)}
+{where}
+{sec("Как подготовиться", cards_html(PREP), alt=True)}
+{quality}{equip_sec(alt=not quality)}
+{sec("Частые вопросы", faq_html(faq))}
+{sec("Другие вредители", pest_grid(exclude=slug), alt=True)}
 {lead_form(svc=s["name"])}'''
         t = f"Обработка от {p['gen']} в Алматы — уничтожение {p['gen']}"
         if len(t) > 62: t = f"Обработка и уничтожение {p['gen']} в Алматы"
-        pr = price_of(p["svc"])
         page(url, f"{t} | {BRAND}",
              fit([f"Уничтожение {p['gen']} в Алматы" + (f" — {pr}." if pr else "."), "Договор и акт, выезд по городу и Казахстану.", "Цена до выезда.", f"☎ {PHONE_DISPLAY}"]),
              body, [service_schema(f"Уничтожение {p['gen']}", url, p["intro"]), faq_schema(faq)],
@@ -733,7 +918,7 @@ def build_pests():
     body = f'''{ph("Вредители, от которых избавляем", "Насекомые и грызуны в квартирах, домах, на складах и производствах. Выберите вредителя, чтобы узнать, как проходит обработка.", "s_insect", "Здравствуйте! Помогите определить вредителя.")}
 {sec("Насекомые и грызуны", pest_grid())}{lead_form()}'''
     page("/vrediteli/", f"Уничтожение насекомых и грызунов в Алматы | {BRAND}",
-         "Уничтожение тараканов, клопов, блох, муравьёв, моли, ос, мокриц, короедов, крыс и мышей в Алматы и по всему Казахстану.",
+         "Уничтожение тараканов, клопов, блох, муравьёв, моли, ос, мокриц, короедов, клещей, крыс и мышей в Алматы и по всему Казахстану.",
          body, crumbs=[("Вредители", "/vrediteli/")], kw="вредители насекомые", prio="0.8")
 
 def build_objects():
@@ -796,14 +981,14 @@ def build_cities():
                             "areaServed": {"@type": "City", "name": name}, "hasMap": GIS_CITY[slug], "sameAs": [GIS_CITY[slug]]})
         body = f'''{hero_city(h1, lead, "map", f"Здравствуйте! Нужна обработка, город {name}.", city=slug)}
 {local}
-{home_sections(slug, f"{ctext} Определяем вид вредителя и подбираем средство, которое действует именно на него.", cfaq, geo_sec(slug), lead_form(f"Рассчитаем стоимость обработки {cin}", city=slug))}'''
+{home_sections(slug, f"{ctext} Определяем вид вредителя и подбираем средство, которое действует именно на него.", cfaq, geo_sec(slug), lead_form(f"Рассчитаем стоимость обработки {cin}", city=slug), v=1 + CITIES.index(next(c for c in CITIES if c[0] == slug)) % 2, ses_link=ses_url(slug))}'''
         page(url, f"Дезинфекция и дератизация {cin} — {BRAND}",
              fit([f"Уничтожение тараканов, клопов, крыс и мышей, дезинфекция {cin}.", "Договор и акт выполненных работ.", f"☎ {PHONE_DISPLAY}"]),
              body, sch, crumbs=[("Города", "/goroda/"), (name, url)], city_fixed=slug, kw=f"{name} {cin}", prio="0.7",
              geo=(name, *loc["geo"]) if loc else False, noindex=slug not in INDEX_CITIES)
     cl = "".join(f'<li><a href="{city_url(c[0])}">{c[1]}</a></li>' for c in CITIES)
     body = f'''{ph("Работаем по всему Казахстану", "Основная база — в Алматы. Выезжаем в областные центры, города и районы республики. Выберите свой город.", "map", "Здравствуйте! В каком городе вы работаете?")}
-{sec("Города", f'<ul class="chips">{cl}</ul>')}{lead_form()}'''
+{sec("Города", f'<ul class="chips">{cl}</ul>')}{sec("СЭС по городам", '<ul class="chips">' + "".join(f'<li><a href="{ses_url(c[0])}">СЭС {c[1]}</a></li>' for c in CITIES if c[0] in INDEX_CITIES) + "</ul>", alt=True)}{lead_form()}'''
     page("/goroda/", f"Дезинфекция и дератизация по всему Казахстану — города | {BRAND}",
          "Санитарная служба DezClub работает по всему Казахстану: Алматы, Астана, Шымкент, Караганда, Актобе, Атырау и другие города.",
          body, crumbs=[("Города", "/goroda/")], kw="города казахстан", prio="0.6")
@@ -839,18 +1024,27 @@ def build_misc():
     pfaq = [("От чего зависит цена?", "От площади, вида вредителя, степени заражения, типа объекта и количества обработок. Точную стоимость называем до выезда — без доплат на месте."),
             ("Какие есть скидки?", "Скидки до 30%. " + PROMO_HOW),
             ("Можно ли оплатить по безналу?", "Да, для организаций выставляем счёт на ТОО «DezClub» и заключаем договор.")]
-    prices_note = ""
-    body = f'''{ph("Цены на дезинфекцию, дезинсекцию и дератизацию", f"Дезинсекция — от 8 000 ₸, дератизация — от 7 000 ₸, дезинфекция — от 6 000 ₸. Итоговую стоимость называем до выезда. {PROMO_BIG}.", "card", "Здравствуйте! Хочу узнать стоимость обработки.")}
-{price_list_sec()}
+    groups = [("ins", "Дезинсекция: тараканы, клещи, блохи, мухи, моль", ["insect"]),
+              ("klop", "Клопы и муравьи", ["klop-apt", "klop-area"]),
+              ("rat", "Дератизация: крысы и мыши", ["rat-apt", "rat-house"]),
+              ("plot", "Участки, осы и осиные гнёзда", ["plot", "wasps"]),
+              ("biz", "Юридическим лицам и pest control", ["biz", "sanit", "tariff"]),
+              ("dop", "Выезд и дополнительные условия", ["extra"])]
+    nav = '<ul class="chips pn">' + "".join(f'<li><a href="#p-{k}">{E(t.split(":")[0])}</a></li>' for k, t, _ in groups) + "</ul>"
+    secs = "".join(f'<section class="sec{" sec-alt" if n % 2 else ""}" id="p-{k}"><div class="wrap"><h2>{E(t)}</h2><div class="ptb-wrap">{tables_html(keys)}</div></div></section>' for n, (k, t, keys) in enumerate(groups))
+    body = f'''{ph("Цены на дезинсекцию, дератизацию и обработку участков", f"Прайс DezClub: гелевая обработка комнаты — от {tg(2700)}, обработка квартиры от клопов — от {tg(10500)}, дератизация квартиры — от {tg(10500)}. Дезинфекцию рассчитываем по объекту. {PROMO_BIG}.", "card", "Здравствуйте! Хочу узнать стоимость обработки.", img=SES_IMG, v="l", alt=f"Специалисты {BRAND}")}
+<section class="sec sec-pn"><div class="wrap">{nav}</div></section>
+{secs}
 {promo_sec()}
-<section class="sec"><div class="wrap cnt"><article class="prose">{prices_note}
+<section class="sec"><div class="wrap cnt"><article class="prose">
 <h2>Из чего складывается стоимость</h2>{ck(factors)}
-<p>Напишите в WhatsApp или онлайн-консультанту, что и где нужно обработать, — назовём точную цену с учётом скидки. Для бизнеса возможен годовой договор с плановыми выездами.</p>
+<p>Цены в таблицах — по прайсу на обработку. Напишите в WhatsApp или онлайн-консультанту, что и где нужно обработать, — назовём точную цену с учётом скидки. Дезинфекцию, фумигацию, дезодорацию и озонирование рассчитываем по объекту.</p>
 </article>{side_box("расчёт стоимости")}</div></section>
-{sec("Частые вопросы о ценах", faq_html(pfaq), alt=True)}{lead_form()}'''
-    page("/ceny/", f"Цены на дезинсекцию и дезинфекцию в Алматы | {BRAND}",
-         f"Дезинсекция {MAIN_PRICES['dezinsekciya']}, дератизация {MAIN_PRICES['deratizaciya']}, дезинфекция {MAIN_PRICES['dezinfekciya']}. Скидки до 30%, цена до выезда, без доплат на месте.",
-         body, [faq_schema(pfaq)], crumbs=[("Цены", "/ceny/")], kw="цены прайс стоимость скидка акция", prio="0.8")
+{quality_sec(alt=True)}
+{sec("Частые вопросы о ценах", faq_html(PRICE_FAQ))}{lead_form()}'''
+    page("/ceny/", f"Цены на дезинсекцию и дератизацию в Алматы — прайс | {BRAND}",
+         f"Прайс DezClub: дезинсекция {MAIN_PRICES['dezinsekciya']}, обработка от клопов от {tg(10500)}, дератизация {MAIN_PRICES['deratizaciya']}, участки от {tg(2300)} за сотку. Цены для юрлиц.",
+         body, [faq_schema(PRICE_FAQ)], crumbs=[("Цены", "/ceny/")], kw="цены прайс стоимость скидка акция", prio="0.8")
     # портфолио
     body = f'''{ph("Портфолио: наши работы", "Видео с реальных объектов — квартиры, дома, кафе, склады и территории.", "s_pest", "Здравствуйте! Посмотрел ваши работы, хочу рассчитать стоимость.")}
 <section class="sec"><div class="wrap"><div class="grid-v">{"".join(video_cards())}</div></div></section>
@@ -880,7 +1074,7 @@ def build_misc():
     page("/oplata/", f"Оплата и реквизиты ТОО DezClub | {BRAND}", "Реквизиты ТОО DezClub (БИН 260340008945) и способы оплаты: наличные, перевод, безналичный расчёт для юридических лиц.",
          body, crumbs=[("Оплата", "/oplata/")], kw="реквизиты оплата бин иик счет", prio="0.5")
     # контакты
-    q = quote("Алматы, улица Бекмаханова, 96")
+    q = quote("Алматы, улица Сыздыкова, 4")
     body = f'''{ph("Контакты", f"Звоните или пишите в WhatsApp — ответим, рассчитаем стоимость и согласуем время выезда.", "map", "Здравствуйте! Нужна консультация.")}
 <section class="sec"><div class="wrap cnt"><div class="prose">
 <h2>Связаться с нами</h2>
@@ -893,7 +1087,7 @@ def build_misc():
 <iframe class="map" title="DezClub на карте" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q={q}&z=15&output=embed"></iframe>
 <p style="margin-top:14px"><a href="https://2gis.kz/almaty/search/{q}" target="_blank" rel="noopener">Открыть в 2ГИС</a> · <a href="https://www.google.com/maps/search/?api=1&query={q}" target="_blank" rel="noopener">Открыть в Google Картах</a></p>
 </div>{side_box("консультация")}</div></section>{geo_sec()}'''
-    page("/kontakty/", f"Контакты санитарной службы {BRAND} в Алматы", f"Телефон {PHONE_DISPLAY}, WhatsApp, адрес: Алматы, ул. Бекмаханова, 96. Работаем по всему Казахстану.",
+    page("/kontakty/", f"Контакты санитарной службы {BRAND} в Алматы", f"Телефон {PHONE_DISPLAY}, WhatsApp, адрес: Алматы, ул. Сыздыкова, 4, 3 этаж, кабинет 306. Работаем по всему Казахстану.",
          body, crumbs=[("Контакты", "/kontakty/")], kw="контакты телефон адрес", prio="0.6")
     # о компании
     body = f'''{ph(f"О компании {BRAND}", f"{E(COMPANY['legal'])} — санитарная служба дезинфекции, дезинсекции и дератизации. Основная база в Алматы, работаем по всему Казахстану.", "shield", "Здравствуйте! Хочу узнать подробнее о ваших услугах.")}
@@ -1038,12 +1232,12 @@ def build_assets():
             shutil.copy(ROOT / "assets" / f, DIST / f)
     (DIST / "site.webmanifest").write_text(json.dumps({"name": "DezClub — санитарная служба", "short_name": BRAND, "start_url": "/", "display": "browser", "background_color": "#ffffff", "theme_color": "#4f9f2a", "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}]}, ensure_ascii=False), encoding="utf-8")
 
-VER = "0611261200"
+VER = "1111261930"
 MV = VER
 
 if __name__ == "__main__":
     if DIST.exists(): shutil.rmtree(DIST)
     DIST.mkdir()
-    build_home(); build_services(); build_pests(); build_objects(); build_cities(); build_articles(); build_misc()
+    build_home(); build_services(); build_pests(); build_objects(); build_cities(); build_ses(); build_articles(); build_misc()
     build_og(); build_assets(); build_meta()
     print("pages:", len(PAGES))

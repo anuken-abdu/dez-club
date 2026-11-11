@@ -43,7 +43,10 @@
   var city = findCity(body.getAttribute("data-fixed") ? body.getAttribute("data-city") : (store.get("dz_city") || "almaty"));
   if (body.getAttribute("data-fixed")) store.set("dz_city", city[0]);
 
+  var baseTitle = document.title, fixed = !!body.getAttribute("data-fixed");
   function applyCity() {
+    /* заголовок вкладки — тот же город, что в H1 (в HTML для Google остаётся город по умолчанию) */
+    if (!fixed) document.title = baseTitle.split(CITIES[0][2]).join(city[2]).split(CITIES[0][1]).join(city[1]);
     $$("[data-c]").forEach(function (el) { el.textContent = city[1]; });
     $$("[data-cin]").forEach(function (el) { el.textContent = city[2]; });
     $$("a[data-wa]").forEach(function (a) { a.href = waUrl(a.getAttribute("data-wa") + " Город: " + city[1] + "."); });
@@ -91,6 +94,24 @@
   $$("[data-city-sel]").forEach(function (s) {
     s.addEventListener("change", function () { city = findCity(s.value); store.set("dz_city", city[0]); applyCity(); });
   });
+
+  /* ---------------- уточнение города и cookie (один раз) ---------------- */
+  (function () {
+    var box = $("#cz"); if (!box) return;
+    var pc = $("#czCity"), pk = $("#czCk");
+    var needCity = !store.get("dz_city_ok"), needCk = !store.get("dz_ck");
+    if (!needCity && !needCk) return;
+    function upd() {
+      pc.hidden = !needCity; pk.hidden = !needCk;
+      if (!needCity && !needCk) box.classList.remove("on");
+    }
+    function okCity() { needCity = false; store.set("dz_city_ok", "1"); if (!fixed) store.set("dz_city", city[0]); upd(); }
+    $("[data-cz-yes]", box).addEventListener("click", okCity);
+    $("[data-cz-other]", box).addEventListener("click", function () { okCity(); openM(cityM); });
+    $("[data-cz-ok]", box).addEventListener("click", function () { needCk = false; store.set("dz_ck", "1"); upd(); });
+    $$("[data-city-set]").forEach(function (b) { b.addEventListener("click", function () { if (needCity) okCity(); }); });
+    setTimeout(function () { upd(); if (needCity || needCk) box.classList.add("on"); }, 1500);
+  })();
 
   /* ---------------- мега-меню ---------------- */
   var mega = $("#mega"), megaBtn = $("[data-mega]");
@@ -282,7 +303,7 @@
   var ctx = { pest: null, askedContact: false, lastTopic: null };
   var busy = false;
   function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
-  var PRICE_LINE = "Начальные цены: дезинсекция — от 8 000 ₸, дератизация — от 7 000 ₸, дезинфекция — от 6 000 ₸. Итог зависит от площади, вредителя и степени заражения — точную цену назову до выезда, без доплат на месте. Плюс действуют " + PROMO + ".";
+  var PRICE_LINE = "Примеры цен: гелевая обработка комнаты от тараканов — 2 700 ₸, однокомнатная квартира от клопов — от 10 500 ₸, дератизация однокомнатной квартиры — 10 500 ₸, участок от клещей — от 2 300 ₸ за сотку. Дезинфекцию считаем по объекту. Полный прайс — на странице «Цены». Плюс действуют " + PROMO + ".";
 
   var KB = [
     { k: ["таракан", "прусак"], pest: "тараканы", a: "Тараканов уничтожаем препаратами длительного действия и гелевыми приманками: кухня, санузел, щели плинтусов, места у труб и за техникой. Средство продолжает работать после обработки, поэтому погибают и молодые особи из яиц.", u: "/vrediteli/tarakany/", q: ["Сколько стоит?", "Как подготовиться?", "Это безопасно для детей?"] },
@@ -317,7 +338,7 @@
     { k: ["срочно", "сегодня", "сейчас", "как быстро", "когда приед"], a: "Постараемся приехать как можно быстрее — время согласуем сразу при заявке. Оставьте номер или напишите в WhatsApp, и я сразу передам заявку специалисту.", wa: true },
     { k: ["город", "астан", "шымкент", "караганд", "актоб", "атырау", "актау", "павлодар", "семей", "костанай", "тараз", "уральск", "кызылорд", "область", "выезж", "казахстан"], a: "Основная база — в Алматы, работаем по всему Казахстану. Напишите город и адрес — согласуем выезд и стоимость.", u: "/goroda/" },
     { k: ["график", "выходн", "ночь", "ночью", "вечер", "суббот", "воскрес", "часы работ", "время работ", "во сколько"], a: "Время выезда согласуем при заявке, для бизнеса работаем вечером, ночью и в выходные, чтобы не останавливать работу.", u: null },
-    { k: ["адрес", "где наход", "офис ваш", "приехать к вам"], a: "Мы в Алматы: Турксибский район, ул. Бекмаханова, 96. Но обычно ехать никуда не нужно — специалист сам приезжает на объект.", u: "/kontakty/" }
+    { k: ["адрес", "где наход", "офис ваш", "приехать к вам"], a: "Наш офис в Алматы: ул. Сыздыкова, 4, 3 этаж, кабинет 306. Но обычно ехать никуда не нужно — специалист сам приезжает на объект.", u: "/kontakty/" }
   ];
   var TALK = [
     { k: ["как дела", "как ты", "как жизнь", "как настроение", "как сам", "қалайсыз", "калайсыз", "как поживаешь"], a: ["Всё отлично, спасибо, что спросили! Работы много, тараканам в городе не позавидуешь. А у вас как — чем могу помочь?", "Хорошо, спасибо! День продуктивный. Рассказывайте, что у вас случилось — подскажу.", "Отлично! Только что помог одному клиенту с клопами. Чем помочь вам?"] },
