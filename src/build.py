@@ -92,10 +92,10 @@ def mega():
 </div></div></div></div>'''
 
 def header():
-    nav_company = [("О компании", "/o-kompanii/"), ("Лицензия и документы", "/dokumenty/"), ("Оплата и реквизиты", "/oplata/"), ("Портфолио", "/portfolio/"), ("Отзывы", "/otzyvy/"), ("Города", "/goroda/")]
+    nav_company = [("О компании", "/o-kompanii/"), ("Лицензия и документы", "/dokumenty/"), ("Оплата и реквизиты", "/oplata/"), ("Портфолио", "/portfolio/"), ("Отзывы", "/otzyvy/"), ("Города", "/goroda/"), ("СЭС Алматы", "/ses/")]
     nav_pests = [(p["name"], f"/vrediteli/{p['slug']}/") for p in PESTS]
     nav_obj = [(o[1], f"/obekty/{o[0]}/") for o in OBJECTS]
-    dd = lambda items: '<ul class="dd">' + "".join(f'<li><a href="{u}">{E(t)}</a></li>' for t, u in items) + "</ul>"
+    dd = lambda items: '<ul class="dd">' + "".join((f'<li><a href="{u}" data-ses>{E(t)}</a></li>' if u == "/ses/" else f'<li><a href="{u}">{E(t)}</a></li>') for t, u in items) + "</ul>"
     return f'''<a class="skip" href="#main">К содержимому</a>
 <header class="hdr">
  <div class="wrap hdr-top">
@@ -144,7 +144,7 @@ def drawer():
  <ul class="drw-l">
   {sub("Все услуги", svc)}{sub("Вредители", pst)}{sub("Объекты", obj)}
   <li><a href="/portfolio/">Портфолио</a></li><li><a href="/otzyvy/">Отзывы</a></li><li><a href="/o-kompanii/">О компании</a></li>
-  <li><a href="/ceny/">Цены и скидки</a></li><li><a href="/dokumenty/">Лицензия и документы</a></li><li><a href="/oplata/">Оплата и реквизиты</a></li><li><a href="/stati/">Статьи</a></li><li><a href="/goroda/">Города</a></li><li><a href="/kontakty/">Контакты</a></li>
+  <li><a href="/ceny/">Цены и скидки</a></li><li><a href="/dokumenty/">Лицензия и документы</a></li><li><a href="/oplata/">Оплата и реквизиты</a></li><li><a href="/stati/">Статьи</a></li><li><a href="/goroda/">Города</a></li><li><a href="/ses/" data-ses>СЭС Алматы</a></li><li><a href="/kontakty/">Контакты</a></li>
  </ul>
  <div class="drw-ct"><a class="btn btn-c" href="tel:{PHONE_TEL}">{ui("phone")}{PHONE_DISPLAY}</a><button class="btn btn-o" type="button" data-chat>Онлайн-консультант</button></div>
 </div></div>'''
@@ -162,7 +162,7 @@ def footer():
   <div class="f-col f-ct"><h4>Контакты {ui("chev")}</h4>
    <a class="ftr-ph" href="tel:{PHONE_TEL}">{PHONE_DISPLAY}</a>
    <ul><li><a {wa_attr("Здравствуйте! Нужна консультация.")}>Написать в WhatsApp</a></li>
-   <li><a href="/kontakty/">Адрес и карта</a></li><li><a href="/ses/">СЭС Алматы</a></li><li><a href="/ceny/">Цены и скидки</a></li><li><a href="/oplata/">Оплата и реквизиты</a></li><li><a href="/dokumenty/">Лицензия и документы</a></li><li><a href="/o-kompanii/">О компании</a></li><li><a href="/portfolio/">Портфолио</a></li><li><a href="/otzyvy/">Отзывы</a></li><li><a href="/stati/">Статьи</a></li><li><a href="/goroda/">Города Казахстана</a></li></ul>
+   <li><a href="/kontakty/">Адрес и карта</a></li><li><a href="/ses/" data-ses>СЭС Алматы</a></li><li><a href="/ceny/">Цены и скидки</a></li><li><a href="/oplata/">Оплата и реквизиты</a></li><li><a href="/dokumenty/">Лицензия и документы</a></li><li><a href="/o-kompanii/">О компании</a></li><li><a href="/portfolio/">Портфолио</a></li><li><a href="/otzyvy/">Отзывы</a></li><li><a href="/stati/">Статьи</a></li><li><a href="/goroda/">Города Казахстана</a></li></ul>
   </div>
  </div>
  <div class="ftr-soc">{social_html()}</div>
@@ -327,6 +327,7 @@ def page(path, title, desc, body, schemas=(), crumbs=None, city_fixed=None, kw="
         c = CITY[city_fixed]
         doc = (doc.replace("<span data-c>Алматы</span>", f"<span data-c>{c[1]}</span>").replace("<span data-cin>в Алматы</span>", f"<span data-cin>{c[2]}</span>")
                   .replace(quote(" Город: Алматы."), quote(f" Город: {c[1]}.")).replace('value="almaty" selected', 'value="almaty"'))
+        doc = doc.replace('<a href="/ses/" data-ses>СЭС Алматы</a>', f'<a href="{ses_url(city_fixed)}" data-ses>СЭС {c[1]}</a>')
         if f'value="{city_fixed}" selected' not in doc: doc = doc.replace(f'value="{city_fixed}"', f'value="{city_fixed}" selected', 1)
     out = DIST / url.strip("/") / "index.html" if url != "/404.html" else DIST / "404.html"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -988,7 +989,7 @@ def build_cities():
              geo=(name, *loc["geo"]) if loc else False, noindex=slug not in INDEX_CITIES)
     cl = "".join(f'<li><a href="{city_url(c[0])}">{c[1]}</a></li>' for c in CITIES)
     body = f'''{ph("Работаем по всему Казахстану", "Основная база — в Алматы. Выезжаем в областные центры, города и районы республики. Выберите свой город.", "map", "Здравствуйте! В каком городе вы работаете?")}
-{sec("Города", f'<ul class="chips">{cl}</ul>')}{sec("СЭС по городам", '<ul class="chips">' + "".join(f'<li><a href="{ses_url(c[0])}">СЭС {c[1]}</a></li>' for c in CITIES if c[0] in INDEX_CITIES) + "</ul>", alt=True)}{lead_form()}'''
+{sec("Города", f'<ul class="chips">{cl}</ul>')}{sec("СЭС по городам", '<ul class="chips">' + "".join(f'<li><a href="{ses_url(c[0])}">СЭС {c[1]}</a></li>' for c in CITIES) + "</ul>", alt=True)}{lead_form()}'''
     page("/goroda/", f"Дезинфекция и дератизация по всему Казахстану — города | {BRAND}",
          "Санитарная служба DezClub работает по всему Казахстану: Алматы, Астана, Шымкент, Караганда, Актобе, Атырау и другие города.",
          body, crumbs=[("Города", "/goroda/")], kw="города казахстан", prio="0.6")
@@ -1221,7 +1222,7 @@ def build_meta():
 def build_assets():
     shutil.copytree(ROOT / "assets", DIST / "assets", dirs_exist_ok=True)
     js = (ROOT / "src" / "app.js").read_text(encoding="utf-8")
-    cities = [[c[0], c[1], c[2], city_url(c[0])] for c in CITIES]
+    cities = [[c[0], c[1], c[2], city_url(c[0]), ses_url(c[0])] for c in CITIES]
     js = js.replace("/*__CITIES__*/[]", json.dumps(cities, ensure_ascii=False)).replace("/*__SEARCH__*/[]", json.dumps(SEARCH, ensure_ascii=False))
     (DIST / "assets" / "app.js").write_text(js, encoding="utf-8")
     for d in ("images", "videos"):
@@ -1232,7 +1233,7 @@ def build_assets():
             shutil.copy(ROOT / "assets" / f, DIST / f)
     (DIST / "site.webmanifest").write_text(json.dumps({"name": "DezClub — санитарная служба", "short_name": BRAND, "start_url": "/", "display": "browser", "background_color": "#ffffff", "theme_color": "#4f9f2a", "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"}, {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}]}, ensure_ascii=False), encoding="utf-8")
 
-VER = "1111261930"
+VER = "1111262030"
 MV = VER
 
 if __name__ == "__main__":

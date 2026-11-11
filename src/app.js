@@ -48,6 +48,7 @@
     /* заголовок вкладки — тот же город, что в H1 (в HTML для Google остаётся город по умолчанию) */
     if (!fixed) document.title = baseTitle.split(CITIES[0][2]).join(city[2]).split(CITIES[0][1]).join(city[1]);
     $$("[data-c]").forEach(function (el) { el.textContent = city[1]; });
+    $$("a[data-ses]").forEach(function (a) { a.href = city[4]; a.textContent = "СЭС " + city[1]; });
     $$("[data-cin]").forEach(function (el) { el.textContent = city[2]; });
     $$("a[data-wa]").forEach(function (a) { a.href = waUrl(a.getAttribute("data-wa") + " Город: " + city[1] + "."); });
     $$("[data-city-sel]").forEach(function (s) { s.value = city[0]; });
@@ -88,6 +89,7 @@
       closeM(cityM);
       var p = location.pathname;
       if (p === "/" || /^\/goroda\/[^/]+\/?$/.test(p)) { if (p !== city[3]) { location.href = city[3]; return; } }
+      if (/^\/ses\/?$/.test(p) || /^\/goroda\/[^/]+\/ses\/?$/.test(p)) { if (p !== city[4]) { location.href = city[4]; return; } }
       applyCity();
     });
   });
