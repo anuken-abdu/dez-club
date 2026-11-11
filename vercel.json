@@ -22,5 +22,17 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/vrediteli/pylevye-kleshchi/",
+      "destination": "/vrediteli/kleshchi/",
+      "permanent": true
+    },
+    {
+      "source": "/vrediteli/pylevye-kleshchi",
+      "destination": "/vrediteli/kleshchi/",
+      "permanent": true
+    }
   ]
 }
